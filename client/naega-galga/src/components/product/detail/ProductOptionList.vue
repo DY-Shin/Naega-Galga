@@ -103,7 +103,7 @@ export default defineComponent({
   align-content: center;
 }
 .icon-container {
-  margin-left: 1rem;
+  margin-left: 2rem;
 }
 
 .icon-bg {
@@ -113,13 +113,13 @@ export default defineComponent({
   border-radius: 5px;
 }
 .icon {
-  width: 2rem;
-  height: 2rem;
+  width: 3rem;
+  height: 3rem;
   object-fit: scale-down;
 }
 
 .option-name {
-  font-size: x-small;
+  font-size: var(--el-font-size-large);
   text-align: center;
   margin-top: 2px;
 }

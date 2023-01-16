@@ -1,52 +1,50 @@
 <template>
-  <el-row>
-    <el-col :span="4">{{ productInfo?.productType }}</el-col>
-    <el-col :span="20">{{ productInfo?.price }}</el-col>
-  </el-row>
-  <el-row>
-    <el-col :span="4">관리비</el-col>
-    <el-col :span="20"> {{ productInfo?.managePrice }}</el-col>
-  </el-row>
-  <el-row>
-    <el-col :span="4">층수</el-col>
-    <el-col :span="20">
-      {{ productInfo?.floor }}
-    </el-col>
-  </el-row>
-  <el-row>
-    <el-col :span="4">면적</el-col>
-    <el-col :span="20"> {{ productInfo.roomSize }}m<sup>2</sup> </el-col>
-  </el-row>
-  <el-row>
-    <el-col :span="4">건물 이름</el-col>
-    <el-col :span="20"> {{ productInfo.productName }}</el-col>
-  </el-row>
-  <el-row>
-    <el-col :span="4">상세주소</el-col>
-    <el-col :span="20">
-      {{ productInfo.address }}
-    </el-col>
-  </el-row>
-  <el-row>
-    <el-col :span="4">방향</el-col>
-    <el-col :span="20">
-      {{ productInfo.roomDirection }}
-    </el-col>
-  </el-row>
-  <el-row>
-    <el-col :span="4">반려동물</el-col>
-    <el-col :span="20">
-      {{ productInfo.animal }}
-    </el-col>
-  </el-row>
-  <el-row>
-    <el-col :span="4">주차</el-col>
-    <el-col :span="20">{{ productInfo.parking }}</el-col>
-  </el-row>
-  <el-row>
-    <el-col :span="4">판매자</el-col>
-    <el-col :span="20">{{ productInfo.seller }}</el-col>
-  </el-row>
+  <table>
+    <tbody>
+      <tr>
+        <td width="150px" class="text-bold text-large">
+          {{ productInfo?.productType }}
+        </td>
+        <td class="text-large">{{ productInfo?.price }}</td>
+      </tr>
+      <tr>
+        <td width="150px" class="text-bold text-large">관리비</td>
+        <td class="text-large">{{ productInfo?.managePrice }}</td>
+      </tr>
+      <tr>
+        <td width="150px" class="text-bold text-large">층수</td>
+        <td class="text-large">{{ productInfo?.floor }}</td>
+      </tr>
+      <tr>
+        <td width="150px" class="text-bold text-large">면적</td>
+        <td class="text-large">{{ productInfo.roomSize }}m<sup>2</sup></td>
+      </tr>
+      <tr>
+        <td width="150px" class="text-bold text-large">건물 이름</td>
+        <td class="text-large">{{ productInfo.productName }}</td>
+      </tr>
+      <tr>
+        <td width="150px" class="text-bold text-large">상세주소</td>
+        <td class="text-large">{{ productInfo.address }}</td>
+      </tr>
+      <tr>
+        <td width="150px" class="text-bold text-large">방향</td>
+        <td class="text-large">{{ productInfo.roomDirection }}</td>
+      </tr>
+      <tr>
+        <td width="150px" class="text-bold text-large">반려동물</td>
+        <td class="text-large">{{ productInfo.animal }}</td>
+      </tr>
+      <tr>
+        <td width="150px" class="text-bold text-large">주차</td>
+        <td class="text-large">{{ productInfo.parking }}</td>
+      </tr>
+      <tr>
+        <td width="150px" class="text-bold text-large">판매자</td>
+        <td class="text-large">{{ productInfo.seller }}</td>
+      </tr>
+    </tbody>
+  </table>
 </template>
 
 <script lang="ts">
@@ -85,8 +83,17 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.el-row {
+.text-bold {
+  font-weight: bold;
+}
+
+.text-large {
   font-size: var(--el-font-size-large);
-  margin-top: 20px;
+}
+
+td {
+  border-top: 1px solid #e9e9eb;
+  padding-top: 20px;
+  padding-bottom: 20px;
 }
 </style>
