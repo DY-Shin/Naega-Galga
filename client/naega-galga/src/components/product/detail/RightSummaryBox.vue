@@ -1,0 +1,164 @@
+<template>
+  <div class="container">
+    <div class="margin-bottom title-box">
+      <span class="font-large">
+        {{ summary.title }}
+      </span>
+      <el-button
+        type="info"
+        size="small"
+        text
+        class="heart-btn"
+        @click="toggleLike"
+      >
+        <img
+          class="heart-icon"
+          v-if="isLike.value"
+          src="@/assets/image/common/icon-heart-filled.png"
+        />
+        <img
+          class="heart-icon"
+          v-else
+          src="@/assets/image/common/icon-heart.png"
+        />
+      </el-button>
+    </div>
+    <div class="font-medium margin-bottom">
+      {{ summary.floor }}
+    </div>
+    <div class="font-medium margin-bottom">
+      {{ summary.managePrice }}
+    </div>
+    <div class="font-medium margin-bottom">
+      {{ summary.seller }}
+    </div>
+    <div class="margin-top">
+      <span
+        v-if="summary.explanationDate !== null"
+        class="font-small margin-bottom explanation-text"
+      >
+        {{ summary.explanationDate }}
+      </span>
+      <el-button type="info" circle :icon="Plus"></el-button>
+    </div>
+    <div class="margin-top width-full">
+      <el-button type="info" class="width-full">문의하기</el-button>
+    </div>
+  </div>
+</template>
+
+<script lang="ts">
+import { computed, defineComponent, reactive } from "vue";
+import { Plus } from "@element-plus/icons-vue";
+
+export default defineComponent({
+  props: {
+    summaryValue: {
+      type: Object,
+      value: {
+        type: String,
+        price: String,
+        floor: String,
+        managePrice: Number,
+        explanationDate: [String, null],
+        seller: String,
+      },
+    },
+  },
+  setup(props) {
+    const isLike = reactive({ value: false });
+
+    const toggleLike = () => {
+      isLike.value = !isLike.value;
+    };
+
+    const dateSplit = (divider: string, value: string): string[] =>
+      value.split(divider);
+
+    const summary = computed(() => {
+      const obj = { ...props.summaryValue };
+      let splitedDateString: string[] | null = null;
+      let dateString: string | null = null;
+
+      if (obj.explanationDate != null) {
+        //[2023, 1, 23]
+        splitedDateString = dateSplit(".", obj.explanationDate);
+        dateString = `${splitedDateString[1]}월 ${splitedDateString[2]}일 온라인 설명회 예정`;
+      }
+
+      return {
+        title: `${obj?.productType} ${obj?.price}`,
+        floor: obj?.floor,
+        managePrice: `관리비 월 ${obj?.managePrice}만`,
+        seller: obj?.seller,
+        explanationDate: dateString,
+      };
+    });
+
+    return {
+      summary,
+      isLike,
+      toggleLike,
+      Plus,
+    };
+  },
+});
+</script>
+
+<style scoped>
+.container {
+  border: 1px solid var(--el-color-info);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  right: 15vw;
+  padding: 20px;
+}
+
+.font-large {
+  font-size: var(--el-font-size-extra-large);
+}
+.font-medium {
+  font-size: var(--el-font-size-medium);
+}
+
+.font-small {
+  font-size: var(--el-font-size-small);
+}
+
+.margin-top {
+  margin-top: 10px;
+}
+
+.margin-bottom {
+  margin-bottom: 10px;
+}
+
+.title-box {
+  display: flex;
+  flex-direction: row;
+  align-content: center;
+}
+
+.heart-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.heart-btn {
+  margin-left: 15px;
+  float: right;
+}
+
+.width-full {
+  width: 100%;
+}
+
+.explanation-text {
+  background-color: #ff4444;
+  color: #f4f4f5;
+  padding: 8px 15px;
+  margin-right: 10px;
+  border-radius: 5px;
+}
+</style>
