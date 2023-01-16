@@ -1,7 +1,7 @@
 <template>
   <div class="container">
-    <div class="margin-bottom title-box">
-      <span class="font-large">
+    <div class="title-box">
+      <span class="font-large font-bold">
         {{ summary.title }}
       </span>
       <el-button
@@ -19,13 +19,13 @@
         <img class="heart-icon" v-else src="@/assets/image/icon-heart.png" />
       </el-button>
     </div>
-    <div class="font-medium margin-bottom">
+    <div class="font-medium margin-top">
       {{ summary.floor }}
     </div>
-    <div class="font-medium margin-bottom">
+    <div class="font-medium margin-top">
       {{ summary.managePrice }}
     </div>
-    <div class="font-medium margin-bottom">
+    <div class="font-medium margin-top">
       {{ summary.seller }}
     </div>
     <div class="margin-top">
@@ -106,9 +106,14 @@ export default defineComponent({
   border: 1px solid var(--el-color-info);
   display: flex;
   flex-direction: column;
-  position: fixed;
-  right: 15vw;
+  position: sticky;
+  float: right;
+  top: 50px;
   padding: 20px;
+}
+
+.font-bold {
+  font-weight: bold;
 }
 
 .font-large {
@@ -123,7 +128,7 @@ export default defineComponent({
 }
 
 .margin-top {
-  margin-top: 10px;
+  margin-top: 20px;
 }
 
 .margin-bottom {
@@ -133,7 +138,7 @@ export default defineComponent({
 .title-box {
   display: flex;
   flex-direction: row;
-  align-content: center;
+  align-items: center;
 }
 
 .heart-icon {
@@ -142,8 +147,8 @@ export default defineComponent({
 }
 
 .heart-btn {
-  margin-left: 15px;
-  float: right;
+  position: relative;
+  right: -80px;
 }
 
 .width-full {
