@@ -14,13 +14,9 @@
         <img
           class="heart-icon"
           v-if="isLike.value"
-          src="@/assets/image/common/icon-heart-filled.png"
+          src="@/assets/image/icon-heart-filled.png"
         />
-        <img
-          class="heart-icon"
-          v-else
-          src="@/assets/image/common/icon-heart.png"
-        />
+        <img class="heart-icon" v-else src="@/assets/image/icon-heart.png" />
       </el-button>
     </div>
     <div class="font-medium margin-bottom">
