@@ -1,29 +1,19 @@
 <template>
   <div class="common-layout">
-    <el-container v-if="isLog">
-      <home-side></home-side>
-      <el-container :style="{ height: 'calc(100vh - 150px)' }">
-        <ka-kao-map></ka-kao-map>
-      </el-container>
-    </el-container>
-    <home-intro v-else></home-intro>
+    <login-home v-if="isLog"></login-home>
+    <logout-home v-else></logout-home>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import HomeSide from "@/components/home/HomeSide.vue";
-import KaKaoMap from "@/components/home/KaKaoMap.vue";
-import HomeIntro from "@/components/home/HomeIntro.vue";
-
+import LoginHome from "@/components/home/login/LoginHome.vue";
+import LogoutHome from "@/components/home/logout/LogoutHome.vue";
 export default defineComponent({
-  name: "HomeView",
   data() {
-    return {
-      isLog: true,
-    };
+    return { isLog: true };
   },
-  components: { HomeSide, KaKaoMap, HomeIntro },
+  components: { LoginHome, LogoutHome },
 });
 </script>
 <style scoped>

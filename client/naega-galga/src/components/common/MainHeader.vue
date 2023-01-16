@@ -9,7 +9,7 @@
       >
     </div>
     <!-- 로그인 했을 때 -->
-    <el-dropdown style="float: right" v-if="isLog == true">
+    <el-dropdown v-if="isLog == true">
       <span class="el-dropdown-link">
         <el-button
           v-on:click="OpenMenu"
@@ -112,6 +112,33 @@ export default defineComponent({
 </script>
 
 <style scoped>
+.el-dropdown {
+  margin: 10px;
+  float: right;
+  right: 20px;
+}
+.el-popper.is-pure {
+  padding: 50px;
+  outline: auto;
+}
+.el-popper__arrow::before {
+  position: fixed;
+  width: 10px;
+  height: 10px;
+  z-index: -1;
+}
+.el-popper {
+  position: absolute;
+  border-radius: var(--el-popper-border-radius);
+  padding: 5px 11px;
+  z-index: 2000;
+  font-size: 12px;
+  line-height: 20px;
+  min-width: 10px;
+  word-wrap: break-word;
+  visibility: visible;
+  right: 20px;
+}
 .el-popper__arrow::before {
   left: 20px;
 }
