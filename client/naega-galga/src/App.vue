@@ -5,8 +5,8 @@
 </template>
 
 <script lang="ts">
-import MainHeader from "@/components/MainHeader.vue";
-import ChatWindow from "@/components/ChatWindow.vue";
+import MainHeader from "@/components/common/MainHeader.vue";
+import ChatWindow from "@/components/common/ChatWindow.vue";
 export default {
   name: "app",
   components: { MainHeader, ChatWindow },
