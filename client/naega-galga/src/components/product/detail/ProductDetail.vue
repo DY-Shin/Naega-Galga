@@ -4,10 +4,13 @@
   </div>
   <div>
     <right-summary-box :summary-value="summaryValue"></right-summary-box>
-    <h2>매물 정보</h2>
+    <h1 class="margin-bottom-large">매물 정보</h1>
     <product-info :info="product"></product-info>
-    <h2>옵션</h2>
-    <product-option-list :options="product.options"></product-option-list>
+    <h1 class="margin-top-large margin-bottom-large">옵션</h1>
+    <product-option-list
+      :options="product.options"
+      class="margin-bottom-large"
+    ></product-option-list>
   </div>
 </template>
 
@@ -78,10 +81,17 @@ export default {
 div > h2:nth-child(2) {
   margin-top: 10px !important;
 }
-div > h2:nth-child(4) {
-  margin-top: 40px !important;
+
+.margin-top-large {
+  margin-top: 100px;
+}
+.margin-top-medium {
+  margin-top: 50px;
 }
 
+.margin-bottom-large {
+  margin-bottom: 50px;
+}
 .image-list {
   display: flex;
   justify-content: center;
