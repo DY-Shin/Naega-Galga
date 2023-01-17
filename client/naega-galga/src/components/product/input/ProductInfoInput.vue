@@ -2,6 +2,7 @@
   <h1>매물 정보 입력</h1>
   <div class="guid-text">가격은 만원 단위로 입력해주세요</div>
   <!-- 월세 전세 라디오 -->
+  <hr />
   <el-row>
     <el-col :span="6">
       <div class="mb-2 flex items-center text-sm">
@@ -117,6 +118,20 @@
     </el-col>
   </el-row>
   <hr />
+  <el-row>
+    <el-col :span="6" class="text-align"><span>상세주소</span></el-col>
+    <el-col :span="18" class="text-align">
+      <el-input
+        v-model="roadAddress"
+        placeholder="주소"
+        class="el-full-width margin-right-small"
+      ></el-input>
+      <address-search-button
+        @getRoadAddress="setRoadAddress"
+      ></address-search-button>
+    </el-col>
+  </el-row>
+  <hr />
   <!-- 옵션 -->
   <el-row>
     <el-col :span="6" class="text-align"><span>옵션</span></el-col>
@@ -127,13 +142,18 @@
       </el-checkbox-group>
     </el-col>
   </el-row>
+  <hr />
 </template>
 
 <script lang="ts">
 import { ref } from "vue";
 import { computed, defineComponent } from "@vue/runtime-core";
+import AddressSearchButton from "@/components/common/AddressSearchButton.vue";
 
 export default defineComponent({
+  components: {
+    AddressSearchButton,
+  },
   setup() {
     //월세, 전세 처리
     const productContractTypeRadio = ref("월세");
@@ -193,6 +213,12 @@ export default defineComponent({
     //반려동물 여부
     const canAnimalRadio = ref("불가능");
 
+    //상세주소
+    const roadAddress = ref("");
+    const setRoadAddress = (address: string) => {
+      roadAddress.value = address;
+    };
+
     //옵션
     const selectedOptionList = ref([]);
     const optionList = [
@@ -233,6 +259,9 @@ export default defineComponent({
       parking,
       //반려동물
       canAnimalRadio,
+      //주소
+      roadAddress,
+      setRoadAddress,
       //옵션
       optionList,
       selectedOptionList,
@@ -250,6 +279,9 @@ export default defineComponent({
 
 .el-input {
   width: 150px;
+}
+.el-full-width {
+  width: 300px;
 }
 
 .slash {
