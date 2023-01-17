@@ -1,7 +1,9 @@
 package com.ssafy.commonpjt.api.service;
 
-public interface SearchService {
-    List<T> searchProduct();
+import java.util.List;
 
-    List<T> detailProduct();
+public interface SearchService {
+    List<?> searchProduct();
+
+//    List<?> detailProduct();
 }
