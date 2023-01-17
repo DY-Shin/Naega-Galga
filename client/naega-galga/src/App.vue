@@ -1,15 +1,13 @@
 <template>
   <main-header></main-header>
   <router-view></router-view>
-  <chat-window></chat-window>
 </template>
 
 <script lang="ts">
 import MainHeader from "@/components/common/MainHeader.vue";
-import ChatWindow from "@/components/common/ChatWindow.vue";
 export default {
   name: "app",
-  components: { MainHeader, ChatWindow },
+  components: { MainHeader },
 };
 </script>
 
