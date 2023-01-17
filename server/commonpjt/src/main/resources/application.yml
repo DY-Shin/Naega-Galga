@@ -1,15 +1,15 @@
 server:
   address: localhost
-  port: 8080
+  port: 8888
   servlet:
     context-path: /
 
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://stg-yswa-kr-practice-db-master.mariadb.database.azure.com:3306/S08P11D106?serverTimezone=UTC&useUnicode=true&characterEncoding=utf8
-    username: S08P11D106@stg-yswa-kr-practice-db-master
-    password: 0T8LarTzoV
+    url: jdbc:mysql://stg-yswa-kr-practice-db-master.mariadb.database.azure.com:3306/S08P12D106?serverTimezone=UTC&useUnicode=true&characterEncoding=utf8
+    username: S08P12D106@stg-yswa-kr-practice-db-master
+    password: w2TFbH3C22
 
   jpa:
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
@@ -18,6 +18,8 @@ spring:
     hibernate:
       format_sql: true
       ddl-auto: update
+  profiles:
+    include: key
 
-jwt:
-  secret: VlwEyVBsYt9V7zq57TejMnVUyzblYcfPQye08f7MGVA9XkHa
+#jwt:
+#  secret: VlwEyVBsYt9V7zq57TejMnVUyzblYcfPQye08f7MGVA9XkHa
