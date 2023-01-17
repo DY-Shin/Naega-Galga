@@ -1,10 +1,16 @@
-export default {
-  path: "/LoginHome",
-  component: import("@/views/UserView.vue"),
-  children: [
-    {
-      path: "",
-      component: import("@/components/home/login/LoginHome.vue"),
-    },
-  ],
-};
+export default [
+  {
+    path: "/user",
+    component: import("@/views/UserView.vue"),
+    children: [
+      // {
+      //   path: "login",
+      //   component: import("@/views/UserView.vue"),
+      // },
+    ],
+  },
+  {
+    path: "/join",
+    component: import("@/views/JoinView.vue"),
+  },
+];
