@@ -1,7 +1,7 @@
-package com.ssafy.commonpjt.config;
+package com.ssafy.commonpjt.common.config;
 
-import com.ssafy.commonpjt.jwt.JwtTokenAuthenticationFilter;
-import com.ssafy.commonpjt.jwt.JwtTokenProvider;
+import com.ssafy.commonpjt.common.jwt.JwtTokenAuthenticationFilter;
+import com.ssafy.commonpjt.common.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,7 +30,7 @@ public class SecurityConfig {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/api/users", "/api/users/login", "/api", "/api/users/logout").permitAll()
+                .antMatchers("/api/users", "/api/users/login", "/api/users/delete", "/api/users/logout").permitAll()
                 .antMatchers("/api/products").hasRole("USER")
 //                .anyRequest().authenticated()
                 .and()

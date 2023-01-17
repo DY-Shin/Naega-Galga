@@ -1,10 +1,10 @@
-package com.ssafy.commonpjt.service;
+package com.ssafy.commonpjt.api.service;
 
-import com.ssafy.commonpjt.dto.*;
-import com.ssafy.commonpjt.entity.User;
-import com.ssafy.commonpjt.enums.Authority;
-import com.ssafy.commonpjt.jwt.JwtTokenProvider;
-import com.ssafy.commonpjt.repository.UserRepository;
+import com.ssafy.commonpjt.api.dto.*;
+import com.ssafy.commonpjt.common.enums.Authority;
+import com.ssafy.commonpjt.common.jwt.JwtTokenProvider;
+import com.ssafy.commonpjt.db.entity.User;
+import com.ssafy.commonpjt.db.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -13,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;

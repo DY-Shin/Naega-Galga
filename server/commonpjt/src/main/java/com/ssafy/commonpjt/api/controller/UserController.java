@@ -1,11 +1,15 @@
-package com.ssafy.commonpjt.controller;
+package com.ssafy.commonpjt.api.controller;
 
-import com.ssafy.commonpjt.dto.*;
-import com.ssafy.commonpjt.jwt.JwtTokenProvider;
-import com.ssafy.commonpjt.lib.Helper;
-import com.ssafy.commonpjt.service.UserService;
+import com.ssafy.commonpjt.api.dto.ResponseDto;
+import com.ssafy.commonpjt.api.dto.UserDto;
+import com.ssafy.commonpjt.api.dto.UserLoginRequestDto;
+import com.ssafy.commonpjt.api.dto.UserLogoutRequestDto;
+import com.ssafy.commonpjt.api.service.UserService;
+import com.ssafy.commonpjt.common.jwt.JwtTokenProvider;
+import com.ssafy.commonpjt.common.lib.Helper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.validation.annotation.Validated;
@@ -44,5 +48,15 @@ public class UserController {
             return response.invalidFields(Helper.refineErrors(errors));
         }
         return userService.logout(logout);
+    }
+
+    @DeleteMapping("delete")
+    public ResponseEntity<?> delete(@Validated @RequestBody UserLogoutRequestDto logout, Errors errors) {
+        if (errors.hasErrors()) {
+            return response.invalidFields(Helper.refineErrors(errors));
+        }
+        userService.logout(logout);
+        userService.delete();
+        return new ResponseEntity<>("회원 탈퇴 성공", HttpStatus.OK);
     }
 }

@@ -1,4 +1,4 @@
-package com.ssafy.commonpjt.dto;
+package com.ssafy.commonpjt.api.dto;
 
 import lombok.Data;
 

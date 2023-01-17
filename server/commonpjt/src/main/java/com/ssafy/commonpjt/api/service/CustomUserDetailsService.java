@@ -1,7 +1,7 @@
-package com.ssafy.commonpjt.service;
+package com.ssafy.commonpjt.api.service;
 
-import com.ssafy.commonpjt.entity.User;
-import com.ssafy.commonpjt.repository.UserRepository;
+import com.ssafy.commonpjt.db.repository.UserRepository;
+import com.ssafy.commonpjt.db.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
