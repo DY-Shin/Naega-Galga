@@ -1,8 +1,6 @@
 server:
   address: localhost
   port: 8080
-  servlet:
-    context-path: /
 
 spring:
   datasource:
@@ -18,6 +16,10 @@ spring:
     hibernate:
       format_sql: true
       ddl-auto: update
+
+  redis:
+    host: localhost
+    port: 6379
 
 jwt:
   secret: VlwEyVBsYt9V7zq57TejMnVUyzblYcfPQye08f7MGVA9XkHa
