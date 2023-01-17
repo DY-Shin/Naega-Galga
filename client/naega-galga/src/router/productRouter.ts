@@ -6,5 +6,9 @@ export default {
       path: ":id",
       component: import("@/components/product/detail/ProductDetail.vue"),
     },
+    {
+      path: "add",
+      component: import("@/components/product/input/ProductInput.vue"),
+    },
   ],
 };
