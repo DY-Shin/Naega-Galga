@@ -1,55 +1,44 @@
 <template>
   <el-upload
-    v-model:file-list="fileList"
-    action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
     list-type="picture-card"
-    :on-preview="handlePictureCardPreview"
+    :auto-upload="false"
+    multiple
+    v-model="files"
+    :on-change="handleAdd"
     :on-remove="handleRemove"
+    :on-preview="handlePictureCardPreview"
   >
     <el-icon><Plus /></el-icon>
   </el-upload>
-
   <el-dialog v-model="dialogVisible">
     <img w-full :src="dialogImageUrl" alt="Preview Image" />
   </el-dialog>
 </template>
-
 <script lang="ts" setup>
-import { ref } from "vue";
 import { Plus } from "@element-plus/icons-vue";
 
-import type { UploadProps, UploadUserFile } from "element-plus";
+import type { UploadFile } from "element-plus";
+import { defineEmits, defineProps, ref } from "vue";
 
-const fileList = ref<UploadUserFile[]>([
-  {
-    name: "food.jpeg",
-    url: "https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100",
-  },
+const props = defineProps({
+  fileList: Array,
+});
+const files = ref(props.fileList);
 
-  {
-    name: "food.jpeg",
-    url: "https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100",
-  },
-  {
-    name: "food.jpeg",
-    url: "https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100",
-  },
-
-  {
-    name: "food.jpeg",
-    url: "https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100",
-  },
-]);
+const handleRemove = (file: UploadFile) => {
+  emit("fileDelete", file.name);
+};
+const handleAdd = (file: UploadFile): void => {
+  emit("fileAdd", file);
+};
+const emit = defineEmits(["fileAdd", "fileDelete"]);
 
 const dialogImageUrl = ref("");
 const dialogVisible = ref(false);
 
-const handleRemove: UploadProps["onRemove"] = (uploadFile, uploadFiles) => {
-  console.log(uploadFile, uploadFiles);
-};
-
-const handlePictureCardPreview: UploadProps["onPreview"] = uploadFile => {
-  dialogImageUrl.value = uploadFile.url!;
+const handlePictureCardPreview = (file: UploadFile) => {
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  dialogImageUrl.value = file.url!;
   dialogVisible.value = true;
 };
 </script>

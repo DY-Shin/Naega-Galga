@@ -1,12 +1,39 @@
 <template>
-  <product-image-input></product-image-input>
+  <product-image-input
+    @fileAdd="fileAdd"
+    @fileDelete="fileDelete"
+    :fileList="fileList"
+  ></product-image-input>
 </template>
 
 <script lang="ts">
-import { defineComponent } from "@vue/runtime-core";
+import { defineComponent, reactive } from "@vue/runtime-core";
 import ProductImageInput from "@/components/product/input/ProductImageInput.vue";
+import type { UploadFile } from "element-plus";
 
 export default defineComponent({
   components: { ProductImageInput },
+  setup() {
+    const fileList: Array<UploadFile> = reactive([]);
+
+    const fileAdd = (file: UploadFile): void => {
+      fileList.push(file);
+      console.log(fileList);
+    };
+    const fileDelete = (fileName: string): void => {
+      //파일 이름을 찾아서 삭제
+      fileList.forEach((file, index) => {
+        if (fileName === file.name) {
+          fileList.splice(index, 1);
+        }
+      });
+      console.log(fileList);
+    };
+    return {
+      fileList,
+      fileAdd,
+      fileDelete,
+    };
+  },
 });
 </script>
