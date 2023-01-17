@@ -52,21 +52,27 @@
 import { ref } from "vue";
 import { defineComponent } from "vue";
 export default defineComponent({
-  data() {
-    const input = ref("");
-    return {
-      input,
-      isFavorite: false,
-    };
-  },
-  methods: {
-    clickHeart(): void {
-      let tmp = document.querySelector("#heart-btn");
-      tmp?.setAttribute(
-        "src",
-        "https://cdn-icons-png.flaticon.com/512/833/833472.png"
-      );
+  props: {
+    summaryValue: {
+      type: Object,
+      value: {
+        type: String,
+        price: String,
+        floor: String,
+        managePrice: Number,
+        explanationDate: [String, null],
+        seller: String,
+        isFavorite: Boolean,
+      },
     },
+  },
+  setup() {
+    const input = ref("");
+    const isFavorite = ref(false);
+    const clickHeart = () => {
+      isFavorite.value = !isFavorite.value;
+    };
+    return { input, isFavorite, clickHeart };
   },
 });
 </script>
