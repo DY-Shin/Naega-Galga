@@ -4,15 +4,20 @@
     @fileDelete="fileDelete"
     :fileList="fileList"
   ></product-image-input>
+  <product-info-input />
 </template>
 
 <script lang="ts">
 import { defineComponent, reactive } from "@vue/runtime-core";
 import ProductImageInput from "@/components/product/input/ProductImageInput.vue";
+import ProductInfoInput from "@/components/product/input/ProductInfoInput.vue";
 import type { UploadFile } from "element-plus";
 
 export default defineComponent({
-  components: { ProductImageInput },
+  components: {
+    ProductImageInput,
+    ProductInfoInput,
+  },
   setup() {
     const fileList: Array<UploadFile> = reactive([]);
 
@@ -33,6 +38,8 @@ export default defineComponent({
       fileList,
       fileAdd,
       fileDelete,
+      ProductImageInput,
+      ProductInfoInput,
     };
   },
 });
