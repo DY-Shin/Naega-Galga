@@ -1,4 +1,4 @@
-import axios from "axios";
+import apiInstance from "@/api/apiInstance";
 import { createStore } from "vuex";
 
 export default createStore({
@@ -13,8 +13,8 @@ export default createStore({
   },
   actions: {
     join(context, joinform) {
-      axios
-        .post(``, {
+      apiInstance
+        .post(`/api/v1/join`, {
           data: {
             id: joinform.id,
             password1: joinform.password1,
