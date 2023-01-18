@@ -30,9 +30,9 @@ public class SecurityConfig {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/api/users", "/api/users/login", "/api/users/delete", "/api/users/logout").permitAll()
+                .antMatchers("/api/users", "/api/users/login", "/api/users/logout", "/api/users/delete").permitAll()
                 .antMatchers("/api/products").hasRole("USER")
-//                .anyRequest().authenticated()
+                .anyRequest().authenticated()
                 .and()
                 .addFilterBefore(new JwtTokenAuthenticationFilter(jwtTokenProvider, redisTemplate), UsernamePasswordAuthenticationFilter.class);
         return http.build();

@@ -7,10 +7,12 @@ import com.ssafy.commonpjt.api.dto.UserLogoutRequestDto;
 import com.ssafy.commonpjt.api.service.UserService;
 import com.ssafy.commonpjt.common.jwt.JwtTokenProvider;
 import com.ssafy.commonpjt.common.lib.Helper;
+import com.ssafy.commonpjt.db.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.Errors;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -51,12 +53,19 @@ public class UserController {
     }
 
     @DeleteMapping("delete")
+    @PreAuthorize("hasAnyRole('USER')")
     public ResponseEntity<?> delete(@Validated @RequestBody UserLogoutRequestDto logout, Errors errors) {
         if (errors.hasErrors()) {
             return response.invalidFields(Helper.refineErrors(errors));
         }
-        userService.logout(logout);
         userService.delete();
+        userService.logout(logout);
         return new ResponseEntity<>("회원 탈퇴 성공", HttpStatus.OK);
+    }
+
+    @GetMapping("me")
+    @PreAuthorize("hasAnyRole('USER')")
+    public ResponseEntity<User> getMyUserInfo() {
+        return ResponseEntity.ok(userService.getMyUser().get());
     }
 }
