@@ -6,7 +6,10 @@
   <el-row>
     <el-col :span="6">
       <div class="mb-2 flex items-center text-sm">
-        <el-radio-group v-model="productTypeRadio" class="ml-4">
+        <el-radio-group
+          v-model="productInfo.productContractTypeRadio"
+          class="ml-4"
+        >
           <el-radio :label="'월세'" size="large">월세</el-radio>
           <el-radio :label="'전세'" size="large">전세</el-radio>
         </el-radio-group>
@@ -16,11 +19,15 @@
   </el-row>
   <el-row>
     <div class="flex-vertical">
-      <el-input v-model="deposit" placeholder="보증금" type="number" />
+      <el-input
+        v-model="productInfo.deposit"
+        placeholder="보증금"
+        type="number"
+      />
       <span v-if="isMonth" class="slash"> / </span>
       <el-input
         v-if="isMonth"
-        v-model="price"
+        v-model="productInfo.price"
         placeholder="월세"
         type="number"
       />
@@ -31,7 +38,11 @@
   <el-row>
     <el-col :span="6" class="text-align"><span>방 크기</span></el-col>
     <el-col :span="18">
-      <el-input v-model="roomSize" type="number" class="margin-right-small">
+      <el-input
+        v-model="productInfo.roomSize"
+        type="number"
+        class="margin-right-small"
+      >
       </el-input>
       <span>m<sup>2</sup></span>
     </el-col>
@@ -42,7 +53,7 @@
     <el-col :span="6" class="text-align"><span>방 방향</span></el-col>
     <el-col :span="18">
       <el-select
-        v-model="selectedRoomDirection"
+        v-model="productInfo.selectedRoomDirection"
         class="m-2"
         placeholder="선택하기"
       >
@@ -60,11 +71,15 @@
     <el-col :span="6" class="text-align"><span>층수</span></el-col>
     <el-col :span="18">
       <div class="flex-vertical">
-        <el-input v-model="maxFloor" placeholder="전체 층수" type="number" />
+        <el-input
+          v-model="productInfo.maxFloor"
+          placeholder="전체 층수"
+          type="number"
+        />
         <span class="slash"> / </span>
         <el-input
           v-if="isMonth"
-          v-model="productFloor"
+          v-model="productInfo.productFloor"
           placeholder="매물의 층수"
           type="number"
         />
@@ -77,7 +92,7 @@
     <el-col :span="6" class="text-align"><span>매물 종류</span></el-col>
     <el-col :span="18">
       <el-select
-        v-model="selectedProductType"
+        v-model="productInfo.selectedProductType"
         class="m-2"
         placeholder="선택하기"
       >
@@ -95,7 +110,7 @@
     <el-col :span="6" class="text-align"><span>주차</span></el-col>
     <el-col :span="18">
       <el-input
-        v-model="parking"
+        v-model="productInfo.parking"
         class="margin-right-small"
         type="number"
         step="0.1"
@@ -109,7 +124,7 @@
     <el-col :span="6" class="text-align"><span>반려동물</span></el-col>
     <el-col :span="18">
       <div class="mb-2 flex items-center text-sm">
-        <el-radio-group v-model="canAnimalRadio" class="ml-4">
+        <el-radio-group v-model="productInfo.canAnimalRadio" class="ml-4">
           <el-radio :label="'가능'" size="large">가능</el-radio>
           <el-radio :label="'불가능'" size="large">불가능</el-radio>
           <el-radio :label="'확인필요'" size="large">확인필요</el-radio>
@@ -122,14 +137,15 @@
     <el-col :span="6" class="text-align"><span>주소</span></el-col>
     <el-col :span="18" class="text-align">
       <el-input
-        v-model="roadAddress"
+        v-model="productInfo.roadAddress"
         placeholder="주소"
         class="el-full-width margin-right-small"
       ></el-input>
       <el-input
-        v-model="detailAddress"
+        v-model="productInfo.detailAddress"
         placeholder="상세주소"
-        class="margin-right-small"
+        class="el-full-width margin-right-small"
+        type="info"
       ></el-input>
       <address-search-button
         @getRoadAddress="setRoadAddress"
@@ -141,7 +157,7 @@
   <el-row>
     <el-col :span="6" class="text-align"><span>옵션</span></el-col>
     <el-col :span="18">
-      <el-checkbox-group v-model="selectedOptionList">
+      <el-checkbox-group v-model="productInfo.selectedOptionList">
         <el-checkbox v-for="option in optionList" :key="option" :label="option">
         </el-checkbox>
       </el-checkbox-group>
@@ -149,27 +165,92 @@
   </el-row>
   <hr />
   <el-row>
-    <el-col :span="20"></el-col>
-    <el-col :span="4">
-      <el-button type="info" size="large" @click="addProduct"> 등록 </el-button>
+    <el-col :span="14"></el-col>
+    <el-col :span="10" class="align-right">
+      <div v-if="!isEditMode">
+        <el-button type="info" @click="addProduct">등록</el-button>
+      </div>
+      <div v-else>
+        <el-button type="info" @click="editProduct">수정</el-button>
+        <el-button type="warning" @click="cancelEditProduct">취소</el-button>
+      </div>
     </el-col>
   </el-row>
 </template>
 
 <script lang="ts">
-import { ref } from "vue";
-import { computed, defineComponent } from "@vue/runtime-core";
+import { computed, defineComponent, reactive } from "@vue/runtime-core";
 import AddressSearchButton from "@/components/common/AddressSearchButton.vue";
+import { useRoute } from "vue-router";
+import router from "@/router";
 
 export default defineComponent({
   components: {
     AddressSearchButton,
   },
   setup() {
+    interface Product {
+      productContractTypeRadio: string;
+      deposit: string;
+      price: string;
+      managePrice: string;
+      roomSize: number;
+      selectedRoomDirection: string;
+      maxFloor: string;
+      productFloor: string;
+      selectedProductType: string;
+      parking: number;
+      canAnimalRadio: string;
+      roadAddress: string;
+      detailAddress: string;
+      selectedOptionList: Array<string>;
+    }
+    //mode
+    const route = useRoute();
+    const isEditMode = route.params.id ? true : false;
+
     //월세, 전세 처리
-    const productContractTypeRadio = ref("월세");
-    const deposit = ref("");
-    const price = ref("");
+    const productInfo: Product = reactive({
+      productContractTypeRadio: "월세",
+      deposit: "",
+      price: "",
+      managePrice: "",
+      roomSize: 0,
+      selectedRoomDirection: "남향",
+      maxFloor: "",
+      productFloor: "",
+      selectedProductType: "원룸",
+      parking: 0,
+      canAnimalRadio: "가능",
+      roadAddress: "",
+      detailAddress: "",
+      selectedOptionList: [],
+    });
+
+    //id값이 있으면 서버에서 product값을 받아온다
+    if (isEditMode) {
+      productInfo.productContractTypeRadio = "월세";
+      const priceValue = "1000/50";
+      const priceArray = priceValue.split("/");
+      productInfo.deposit = priceArray[0];
+      productInfo.price = priceArray[1];
+      productInfo.managePrice = "5";
+      productInfo.roomSize = 20.5;
+      productInfo.selectedRoomDirection = "남향";
+      const floorValue = "10층/3층";
+      const floorArray = floorValue.split("/");
+      floorArray.forEach(item => item.replaceAll("층", ""));
+      productInfo.deposit = floorArray[0];
+      productInfo.price = floorArray[1];
+      productInfo.maxFloor = "10";
+      productInfo.productFloor = "3";
+      productInfo.selectedProductType = "원룸";
+      productInfo.parking = 1;
+      productInfo.canAnimalRadio = "가능";
+      productInfo.roadAddress = "구미시 진평동 13-3";
+      productInfo.detailAddress = "싸피빌라 302호";
+      productInfo.selectedOptionList = ["세탁기", "인덕션"];
+    }
     // const depositAndPrice = computed(() => `${deposit.value}/${price.value}`);
 
     const numberInputDefaultValue = computed(value => {
@@ -178,14 +259,8 @@ export default defineComponent({
 
     //월세면 true 전세면 false
     const isMonth = computed(() =>
-      productContractTypeRadio.value === "월세" ? true : false
+      productInfo.productContractTypeRadio === "월세" ? true : false
     );
-
-    //관리비
-    const managePrice = ref("");
-
-    //방 사이즈
-    const roomSize = ref("");
 
     //방 방향
     const roomDirectionOptions = [
@@ -198,11 +273,6 @@ export default defineComponent({
       "서",
       "북서",
     ];
-    const selectedRoomDirection = ref("");
-
-    //층수
-    const maxFloor = ref();
-    const productFloor = ref();
     // const computedFloor = computed(
     //   () => `${maxFloor.value}층/${productFloor.value}층`
     // );
@@ -216,23 +286,11 @@ export default defineComponent({
       "오피스텔",
       "미니투룸",
     ];
-    const selectedProductType = ref("");
-
-    //주차
-    const parking = ref(0);
-
-    //반려동물 여부
-    const canAnimalRadio = ref("불가능");
-
-    //주소
-    const roadAddress = ref("");
-    const detailAddress = ref("");
     const setRoadAddress = (address: string) => {
-      roadAddress.value = address;
+      productInfo.roadAddress = address;
     };
 
     //옵션
-    const selectedOptionList = ref([]);
     const optionList = [
       "냉장고",
       "에어컨",
@@ -251,39 +309,27 @@ export default defineComponent({
       //등록
     };
 
+    const editProduct = () => {
+      //수정 요청
+    };
+
+    const cancelEditProduct = () => {
+      router.back();
+    };
+
     return {
       //전, 월세
-      productTypeRadio: productContractTypeRadio,
-      deposit,
-      price,
+      productInfo,
       isMonth,
       numberInputDefaultValue,
-      //관리비
-      managePrice,
-      //방 크기
-      roomSize,
-      //방 방향
       roomDirectionOptions,
-      selectedRoomDirection,
-      //방 층수
-      maxFloor,
-      productFloor,
-      //방 종류
       productTypeList,
-      selectedProductType,
-      //주차
-      parking,
-      //반려동물
-      canAnimalRadio,
-      //주소
-      roadAddress,
-      detailAddress,
       setRoadAddress,
-      //옵션
       optionList,
-      selectedOptionList,
-      //등록 버튼
+      isEditMode,
       addProduct,
+      editProduct,
+      cancelEditProduct,
     };
   },
 });
@@ -334,5 +380,11 @@ span {
 
 .el-col > span {
   font-size: var(--el-font-size-small);
+}
+
+.align-right {
+  display: flex;
+  flex-direction: row;
+  justify-content: end;
 }
 </style>
