@@ -151,9 +151,7 @@
   <el-row>
     <el-col :span="20"></el-col>
     <el-col :span="4">
-      <el-button type="info" size="large" @click="registProduct">
-        등록
-      </el-button>
+      <el-button type="info" size="large" @click="addProduct"> 등록 </el-button>
     </el-col>
   </el-row>
 </template>
@@ -249,7 +247,7 @@ export default defineComponent({
       "침대",
     ];
 
-    const registProduct = () => {
+    const addProduct = () => {
       //등록
     };
 
@@ -285,7 +283,7 @@ export default defineComponent({
       optionList,
       selectedOptionList,
       //등록 버튼
-      registProduct,
+      addProduct,
     };
   },
 });
