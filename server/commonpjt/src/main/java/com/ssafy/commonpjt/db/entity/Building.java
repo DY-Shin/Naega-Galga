@@ -23,6 +23,9 @@ public class Building {
     private String buildingAddress;
 
     @Column(nullable = false)
+    private String buildingRoadAddress;
+
+    @Column(nullable = false)
     private String buildingName;
 
     @Column(nullable = false)
