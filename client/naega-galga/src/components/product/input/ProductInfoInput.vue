@@ -136,19 +136,27 @@
   <el-row>
     <el-col :span="6" class="text-align"><span>주소</span></el-col>
     <el-col :span="18" class="text-align">
-      <el-input
-        v-model="productInfo.roadAddress"
-        placeholder="주소"
-        class="el-full-width margin-right-small"
-      ></el-input>
-      <el-input
-        v-model="productInfo.detailAddress"
-        placeholder="상세주소"
-        class="el-full-width margin-right-small"
-        type="info"
-      ></el-input>
+      <div>
+        <el-input
+          v-model="productInfo.roadAddress"
+          placeholder="도로명 주소"
+          class="el-full-width margin-right-small margin-bottom-small"
+        ></el-input>
+        <el-input
+          v-model="productInfo.jibunAddress"
+          placeholder="지번 주소"
+          class="el-full-width margin-right-small margin-bottom-small"
+        ></el-input>
+        <el-input
+          v-model="productInfo.detailAddress"
+          placeholder="상세주소"
+          class="el-full-width margin-right-small"
+          type="info"
+        ></el-input>
+      </div>
       <address-search-button
         @getRoadAddress="setRoadAddress"
+        @getJibunAddress="setJibunAddress"
       ></address-search-button>
     </el-col>
   </el-row>
@@ -202,6 +210,7 @@ export default defineComponent({
       parking: number;
       canAnimalRadio: string;
       roadAddress: string;
+      jibunAddress: string;
       detailAddress: string;
       selectedOptionList: Array<string>;
     }
@@ -223,6 +232,7 @@ export default defineComponent({
       parking: 0,
       canAnimalRadio: "가능",
       roadAddress: "",
+      jibunAddress: "",
       detailAddress: "",
       selectedOptionList: [],
     });
@@ -247,7 +257,8 @@ export default defineComponent({
       productInfo.selectedProductType = "원룸";
       productInfo.parking = 1;
       productInfo.canAnimalRadio = "가능";
-      productInfo.roadAddress = "구미시 진평동 13-3";
+      productInfo.roadAddress = "구미시 진평길 13-3";
+      productInfo.jibunAddress = "구미시 진평동 182";
       productInfo.detailAddress = "싸피빌라 302호";
       productInfo.selectedOptionList = ["세탁기", "인덕션"];
     }
@@ -289,6 +300,9 @@ export default defineComponent({
     const setRoadAddress = (address: string) => {
       productInfo.roadAddress = address;
     };
+    const setJibunAddress = (address: string) => {
+      productInfo.jibunAddress = address;
+    };
 
     //옵션
     const optionList = [
@@ -325,6 +339,7 @@ export default defineComponent({
       roomDirectionOptions,
       productTypeList,
       setRoadAddress,
+      setJibunAddress,
       optionList,
       isEditMode,
       addProduct,
@@ -367,6 +382,10 @@ hr {
 
 .margin-right-small {
   margin-right: 10px;
+}
+
+.margin-bottom-small {
+  margin-bottom: 10px;
 }
 
 .el-col.text-align {
