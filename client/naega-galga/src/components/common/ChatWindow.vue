@@ -33,23 +33,39 @@
       @click="closeChat"
       :size="40"
       color="#FF4444"
-      style="cursor: pointer; left: 400px; position: absolute; top: -30px"
+      style="
+        cursor: pointer;
+        position: absolute;
+        left: 400px;
+        top: -30px;
+        z-index: 2021;
+      "
       ><CircleCloseFilled
     /></el-icon>
-    <el-scrollbar height="400px">
-      <div class="chat-item" v-for="item in chatHistory" :key="item.time">
-        <div class="send-box common-box" v-if="item.type == 'send'">
-          <div class="box">{{ item.time }}{{ item.content }}</div>
+    <div>
+      <el-scrollbar class="inner">
+        <div v-for="item in chatHistory" :key="item.time">
+          <div class="item" v-if="item.type == 'get'">
+            <div class="box">
+              <p class="msg">{{ item.content }}</p>
+              <span class="time">{{ item.time }}</span>
+            </div>
+          </div>
+
+          <div class="item mymsg" v-if="item.type == 'send'">
+            <div class="box">
+              <p class="msg">{{ item.content }}</p>
+              <span class="time">{{ item.time }}</span>
+            </div>
+          </div>
         </div>
-        <div class="get-box common-box" v-else-if="item.type == 'get'">
-          <div class="box">{{ item.time }}{{ item.content }}</div>
-        </div>
-      </div>
-    </el-scrollbar>
+      </el-scrollbar>
+    </div>
+
     <div class="message-input" style="display: inline-flex">
       <el-input v-model="input" />
       <el-icon
-        style="z-index: 1012; left: 15px; top: 5px"
+        style="z-index: 1012; left: 15px; top: 5px; cursor: pointer"
         :size="25"
         color="rgb(121, 121, 121)"
         ><Promotion
@@ -75,25 +91,24 @@ export default defineComponent({
     chatHistory.push({
       time: "오전 1월 1일 13시 13분",
       type: "send",
-      content: "hi",
+      content:
+        "hisdfsdfddsfdfsdsdsfsfsfddsfsddsfdfhisdfsdfddhisdfsdfddsfdfsd<br/>sdsfsfsfddsfsddsfdfhisdfsdfddsfdfsdsdsfsfsfddsfsddsfdfsdsdsfsfsfddsfsfsdsdsfsfsfddsfsfsfdfsdsdsfsfsfddsfsddsfdfsdsdsfsfsfddsfsfsdsdsfsfsfddsfsf",
     });
     chatHistory.push({
       time: "오전 2월 2일 15시 15분",
+      type: "get",
+      content: "hellosfsdfsfffsdffsdff",
+    });
+    chatHistory.push({
+      time: "오전 3월 3일 17시 17분",
       type: "send",
-      content: "hello",
+      content: "nice to meet you",
     });
     chatHistory.push({
       time: "오전 3월 3일 17시 17분",
       type: "get",
-      content: "nice to meet you",
+      content: "nice to meet youzdfgfdgzfgzgfzfgf",
     });
-    for (let i = 0; i < 20; i++) {
-      chatHistory.push({
-        time: "오전 3월 3일 17시 17분",
-        type: "get",
-        content: "nice to meet you",
-      });
-    }
 
     // const list = ["싸피부동산"];
     const list: string[] = [
@@ -120,6 +135,7 @@ export default defineComponent({
     const OpenChat = (index: number) => {
       list_idx.value = index;
       isOpenChat.value = true;
+      window.scrollTo(0, 0);
     };
 
     const closeChat = () => {
@@ -142,42 +158,79 @@ export default defineComponent({
   },
 });
 </script>
-
 <style scoped>
+.chat-room {
+  margin: 100px;
+  z-index: 101;
+  position: fixed;
+  top: calc(50vh - 350px);
+  left: calc(50vw - 200px);
+  width: 400px;
+  height: 500px;
+  background: rgb(255, 255, 255);
+  border: 1px solid rgb(184, 184, 184);
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+  border-radius: 15px;
+}
+.chat-room .inner {
+  display: flex;
+  flex-direction: column-reverse;
+  overflow-y: auto;
+  border-radius: 5px;
+  padding: 10px;
+  height: 400px;
+}
+.chat-room .item {
+  margin-top: 15px;
+}
+.chat-room .item:first-child {
+  margin-top: 0px;
+}
+.chat-room .item .box {
+  display: inline-block;
+  max-width: 180px;
+  position: relative;
+}
+.chat-room .item .box .msg {
+  background: rgb(196, 196, 196);
+  border-radius: 25px;
+  padding: 8px 15px;
+  text-align: left;
+  word-break: break-word;
+  box-shadow: 2px 2px 2px 2px rgba(203, 203, 203, 0.2);
+}
+.chat-room .item .box .time {
+  font-size: 11px;
+  color: #999;
+  position: absolute;
+  right: -75px;
+  bottom: 5px;
+  width: 70px;
+}
+.chat-room .item.mymsg {
+  text-align: right;
+}
+.chat-room .item.mymsg .box .msg {
+  background: #d9ff71;
+}
+.chat-room .item.mymsg .box .time {
+  right: auto;
+  left: -75px;
+}
+.chat-room .item.on .box {
+  /* margin: 0; */
+  opacity: 1;
+}
 .message-input {
   z-index: 101;
   position: fixed;
-  top: calc(50vh + 160px);
+  top: calc(50vh + 170px);
   left: calc(50vw - 100px);
   padding-left: 10px;
   width: 360px;
   height: 40px;
 }
-.el-scrollbar__view {
-  height: 0px;
-}
-.chat-item {
-  text-align: right;
-}
-.common-box {
-  margin: 15px;
 
-  text-align: right;
-  border-radius: 25px;
-}
-.box {
-  padding: 10px 15px;
-  border-radius: 20px;
-  width: fit-content;
-}
-.get-box {
-  float: left;
-  background-color: rgb(185, 185, 185);
-}
-.send-box {
-  float: right;
-  background-color: rgb(212, 255, 155);
-}
 .chat-list-item {
   cursor: pointer;
   font-weight: 700;
@@ -190,20 +243,8 @@ export default defineComponent({
   padding: 20px 30px;
   border-bottom: 1px solid rgb(163, 163, 163);
 }
-.chat-room {
-  margin: 100px;
-  z-index: 101;
-  position: fixed;
-  top: calc(50vh - 350px);
-  left: calc(50vw - 200px);
-  width: 400px;
-  height: 500px;
-  background: rgb(255, 255, 255);
-  border: 1px solid rgb(184, 184, 184);
-  border-radius: 15px;
-}
 .chat-list {
-  box-shadow: 2px 2px 2px 2px rgb(175, 175, 175);
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
   position: fixed;
   z-index: 100;
   bottom: 140px;
@@ -227,13 +268,4 @@ export default defineComponent({
   height: 70px;
   float: right;
 }
-
-/* #chat-window {
-  position: fixed;
-  bottom: 50px;
-  z-index: 11;
-  right: 50px;
-  width: 200px;
-  height: 300px;
-} */
 </style>
