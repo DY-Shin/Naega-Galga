@@ -1,5 +1,5 @@
 <template>
-  <div id="nav">
+  <div id="nav" v-if="isHeaderShow">
     <router-link to="/" id="title">내가갈가[家]</router-link>
     <div class="home-btn" v-if="isLog == false">
       <!-- 로그인 안 했을 때 -->
@@ -89,6 +89,7 @@ export default defineComponent({
       isLog: true,
       isMenu: false,
       showButton: true,
+      isHeaderShow: true,
     };
   },
   methods: {
@@ -108,12 +109,20 @@ export default defineComponent({
       icon2?.setAttribute("src", "/icon-heart.png");
     },
   },
+  watch: {
+    $route(to) {
+      if (to.path === "/join" || to.path === "/login") {
+        this.isHeaderShow = false;
+        return;
+      }
+      this.isHeaderShow = true;
+    },
+  },
 });
 </script>
 
 <style scoped>
 .el-dropdown {
-  margin: 10px;
   float: right;
   right: 20px;
 }
@@ -179,9 +188,8 @@ export default defineComponent({
 }
 
 #nav {
-  padding: 30px 50px 0 50px;
-  height: 100px;
-  font-size: 50px;
+  padding: 30px 50px 30px 50px;
+  font-size: 40px;
   text-decoration: none;
 }
 
@@ -200,8 +208,8 @@ export default defineComponent({
 }
 
 #my-btn {
-  width: 70px;
-  height: 70px;
+  width: 60px;
+  height: 60px;
   /* float: right; */
 }
 
