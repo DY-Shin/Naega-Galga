@@ -17,9 +17,6 @@ import KaKaoMap from "@/components/home/login/KaKaoMap.vue";
 import ChatIcon from "@/components/common/ChatWindow.vue";
 
 export default defineComponent({
-  data() {
-    return {};
-  },
   components: { MainSide, KaKaoMap, ChatIcon },
   setup() {
     interface Product {

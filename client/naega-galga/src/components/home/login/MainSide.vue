@@ -18,30 +18,31 @@
       />
     </div>
     <el-scrollbar :style="{ height: 'calc(100vh - 225px)' }">
-      <div v-for="item in 10" :key="item" class="scrollbar-demo-item">
+      <div
+        v-for="item in productList"
+        :key="item.floor"
+        class="scrollbar-demo-item"
+        @click="$emit('addressIdx, index')"
+      >
         <div class="img-content">
           <div class="list-img"></div>
-          <div class="list-online-icon">
+          <div class="list-online-icon" v-if="item.explanationDate > 0">
             <div class="text">온라인 설명회</div>
           </div>
         </div>
         <div>
-          <div class="home-area">경상북도 구미시</div>
-          <div class="home-price">월세 30</div>
+          <div class="home-area">{{ item.address }}</div>
+          <div class="home-price">{{ item.type }} {{ item.price }}</div>
           <div class="home-info"># 주방 분리 # 풀 옵션</div>
         </div>
-        <button v-if="isFavorite" id="heart-btn" @click="clickHeart()">
-          <img
-            src="@/assets/image/icon-heart.png"
-            width="20"
-            height="20"
-          /></button
-        ><button v-else id="heart-btn" @click="clickHeart()">
+        <button v-if="item.isFavorite" id="heart-btn" @click="clickHeart()">
           <img
             src="@/assets/image/icon-heart-filled.png"
             width="20"
             height="20"
-          />
+          /></button
+        ><button v-else id="heart-btn" @click="clickHeart()">
+          <img src="@/assets/image/icon-heart.png" width="20" height="20" />
         </button>
       </div>
     </el-scrollbar>
@@ -53,18 +54,7 @@ import { ref } from "vue";
 import { defineComponent } from "vue";
 export default defineComponent({
   props: {
-    summaryValue: {
-      type: Object,
-      value: {
-        type: String,
-        price: String,
-        floor: String,
-        managePrice: Number,
-        explanationDate: [String, null],
-        seller: String,
-        isFavorite: Boolean,
-      },
-    },
+    addressIdx: Number,
   },
   setup() {
     const input = ref("");
@@ -72,7 +62,49 @@ export default defineComponent({
     const clickHeart = () => {
       isFavorite.value = !isFavorite.value;
     };
-    return { input, isFavorite, clickHeart };
+    interface Product {
+      type: string;
+      price: string;
+      floor: string;
+      address: string;
+      managePrice: number;
+      explanationDate: number;
+      seller: string;
+      isFavorite: boolean;
+    }
+    const productList: Product[] = [];
+    productList.push({
+      type: "월세",
+      price: "30",
+      floor: "2층",
+      address: "경상북도 구미시",
+      managePrice: 50000,
+      explanationDate: 0,
+      seller: "싸피",
+      isFavorite: true,
+    });
+    productList.push({
+      type: "월세",
+      price: "40",
+      floor: "1층",
+      address: "경상북도 구미시2",
+      managePrice: 60000,
+      explanationDate: 1,
+      seller: "싸피2",
+      isFavorite: false,
+    });
+    productList.push({
+      type: "월세",
+      price: "35",
+      floor: "3층",
+      address: "경상북도 구미시3",
+      managePrice: 40000,
+      explanationDate: 0,
+      seller: "싸피3",
+      isFavorite: true,
+    });
+
+    return { input, isFavorite, clickHeart, productList };
   },
 });
 </script>
@@ -99,7 +131,6 @@ export default defineComponent({
 }
 
 #heart-btn {
-  /* margin-right: 10px; */
   margin-left: 35px;
   margin-top: 85px;
   border: none;
