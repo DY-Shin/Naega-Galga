@@ -10,5 +10,9 @@ export default {
       path: "add",
       component: import("@/components/product/input/ProductInput.vue"),
     },
+    {
+      path: "edit/:id",
+      component: import("@/components/product/input/ProductInput.vue"),
+    },
   ],
 };
