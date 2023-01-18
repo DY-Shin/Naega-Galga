@@ -13,4 +13,8 @@ export default [
     path: "/join",
     component: import("@/views/JoinView.vue"),
   },
+  {
+    path: "/login",
+    component: import("@/views/LoginView.vue"),
+  },
 ];
