@@ -15,9 +15,11 @@ export default defineComponent({
       new daum.Postcode({
         oncomplete: function (data) {
           // 팝업에서 검색결과 클릭시 data를 input에 넣음
-          const roadAddr = data.roadAddress; // 도로명 주소 변수
+          const { roadAddress, jibunAddress } = data; // 도로명 주소 변수
+          console.log(roadAddress, jibunAddress);
           //emit roadAddr
-          emit("getRoadAddress", roadAddr);
+          emit("getRoadAddress", roadAddress);
+          emit("getJibunAddress", jibunAddress);
         },
       }).open();
     }
