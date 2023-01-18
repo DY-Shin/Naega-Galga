@@ -1,16 +1,17 @@
 <template>
-  <el-button type="button" @click="addressSearch">상세주소 찾기</el-button>
+  <el-button type="info" @click="addressSearch"> 주소 찾기 </el-button>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "@vue/runtime-core";
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+declare const daum: any;
 
 export default defineComponent({
   setup(_, context) {
     const { emit } = context;
 
     function addressSearch(): void {
-      // eslint-disable-next-line no-undef
       new daum.Postcode({
         oncomplete: function (data) {
           // 팝업에서 검색결과 클릭시 data를 input에 넣음
