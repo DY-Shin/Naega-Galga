@@ -1,5 +1,5 @@
 <template>
-  <el-button type="button" @click="addressSearch">상세주소 찾기</el-button>
+  <el-button type="button" @click="addressSearch">주소 찾기</el-button>
 </template>
 
 <script lang="ts">

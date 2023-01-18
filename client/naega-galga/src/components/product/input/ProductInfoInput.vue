@@ -119,12 +119,17 @@
   </el-row>
   <hr />
   <el-row>
-    <el-col :span="6" class="text-align"><span>상세주소</span></el-col>
+    <el-col :span="6" class="text-align"><span>주소</span></el-col>
     <el-col :span="18" class="text-align">
       <el-input
         v-model="roadAddress"
         placeholder="주소"
         class="el-full-width margin-right-small"
+      ></el-input>
+      <el-input
+        v-model="detailAddress"
+        placeholder="상세주소"
+        class="margin-right-small"
       ></el-input>
       <address-search-button
         @getRoadAddress="setRoadAddress"
@@ -143,6 +148,14 @@
     </el-col>
   </el-row>
   <hr />
+  <el-row>
+    <el-col :span="20"></el-col>
+    <el-col :span="4">
+      <el-button type="info" size="large" @click="registProduct">
+        등록
+      </el-button>
+    </el-col>
+  </el-row>
 </template>
 
 <script lang="ts">
@@ -213,8 +226,9 @@ export default defineComponent({
     //반려동물 여부
     const canAnimalRadio = ref("불가능");
 
-    //상세주소
+    //주소
     const roadAddress = ref("");
+    const detailAddress = ref("");
     const setRoadAddress = (address: string) => {
       roadAddress.value = address;
     };
@@ -234,6 +248,10 @@ export default defineComponent({
       "싱크대",
       "침대",
     ];
+
+    const registProduct = () => {
+      //등록
+    };
 
     return {
       //전, 월세
@@ -261,10 +279,13 @@ export default defineComponent({
       canAnimalRadio,
       //주소
       roadAddress,
+      detailAddress,
       setRoadAddress,
       //옵션
       optionList,
       selectedOptionList,
+      //등록 버튼
+      registProduct,
     };
   },
 });
