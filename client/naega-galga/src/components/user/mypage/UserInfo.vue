@@ -5,53 +5,32 @@
   <div id="mypagedetail">
     <h1>내 정보</h1>
     <hr />
-    <div v-show="alpha">
-      <div>
-        <div class="title">이름</div>
-        <div class="content">{{ info.user_name }}</div>
-      </div>
-      <div>
-        <div class="title">아이디</div>
-        <div class="content">{{ info.user_id }}</div>
-      </div>
-      <div>
-        <div class="title">핸드폰 번호</div>
-        <div class="content">{{ info.user_phone }}</div>
-      </div>
-      <div>
-        <div class="title">주소</div>
-        <div class="content">{{ info.user_address }}</div>
-      </div>
+    <div>
+      <div class="title">이름</div>
+      <div class="content">{{ info.user_name }}</div>
     </div>
-
-    <div v-show="false">
-      <div>
-        <div class="title">이름</div>
-        <div class="content">{{ info.user_name }}</div>
-      </div>
-      <div>
-        <div class="title">아이디</div>
-        <div class="content">{{ info.user_id }}</div>
-      </div>
-      <div>
-        <div class="title">핸드폰 번호</div>
-        <div class="content">{{ info.user_phone }}</div>
-      </div>
-      <div>
-        <div class="title">주소</div>
-        <div class="content">{{ info.user_address }}</div>
-      </div>
+    <div>
+      <div class="title">아이디</div>
+      <div class="content">{{ info.user_id }}</div>
     </div>
-
-    <button>수정하기</button>
-    <button>저장하기</button>
-    <hr />
-    <h1>비밀번호 변경</h1>
-    <hr />
-    <password-change />
-    <hr />
-    <button>회원탈퇴</button>
+    <div>
+      <div class="title">핸드폰 번호</div>
+      <div class="content">{{ info.user_phone }}</div>
+    </div>
+    <div>
+      <div class="title">주소</div>
+      <div class="content">{{ info.user_address }}</div>
+    </div>
   </div>
+
+  <button>수정하기</button>
+  <button>저장하기</button>
+  <hr />
+  <h1>비밀번호 변경</h1>
+  <hr />
+  <password-change />
+  <hr />
+  <button>회원탈퇴</button>
 </template>
 
 <script lang="ts">
@@ -65,10 +44,8 @@ export default defineComponent({
     PasswordChange,
   },
   setup() {
-    const { state } = useStore();
+    const { state } = useStore("userStore");
     const info = computed(() => state.user_info);
-
-    const alpha = 
 
     return { info };
   },
