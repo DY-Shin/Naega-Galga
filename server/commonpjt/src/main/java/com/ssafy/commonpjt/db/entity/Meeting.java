@@ -26,4 +26,8 @@ public class Meeting {
 
     @CreationTimestamp
     private Timestamp createdAt;
+
+    @ManyToOne
+    @JoinColumn(name = "reserve_index", referencedColumnName = "reserve_index")
+    private Reserve reserve;
 }

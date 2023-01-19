@@ -7,8 +7,11 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.boot.model.naming.ImplicitNameSource;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "product")
@@ -53,4 +56,19 @@ public class Product {
 
     @Column(nullable = false)
     private String productAnimal;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "building_index", referencedColumnName = "building_index")
+    private Building building;
+
+    @OneToOne
+    @JoinColumn(name = "option_index", referencedColumnName = "option_index")
+    private Options options;
+
+    @OneToMany(mappedBy = "product")
+    private List<WishList> wishList = new ArrayList<>();
+
+    @ManyToOne
+    @JoinColumn(name = "seller_index", referencedColumnName = "user_index")
+    private User user;
 }

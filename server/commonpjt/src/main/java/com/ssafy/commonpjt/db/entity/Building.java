@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "building")
@@ -33,4 +35,7 @@ public class Building {
 
     @Column(nullable = false)
     private boolean buildingParking;
+
+    @OneToMany(mappedBy = "building")
+    private List<Product> product = new ArrayList<>();
 }

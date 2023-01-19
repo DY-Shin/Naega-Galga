@@ -19,6 +19,7 @@ public class SearchServiceImpl implements SearchService{
 
     @Override
     public List<?> searchProduct(String address) {
+
         Mono<String> mono = WebClient.builder().baseUrl("http://dapi.kakao.com")
                 .build()
                 .get()

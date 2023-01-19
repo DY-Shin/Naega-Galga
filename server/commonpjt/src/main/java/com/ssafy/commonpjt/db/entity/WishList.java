@@ -19,4 +19,11 @@ public class WishList {
     @Column(name = "wish_list_index", nullable = false)
     private Integer wishListIndex;
 
+    @ManyToOne
+    @JoinColumn(name = "user_index", referencedColumnName = "user_index")
+    private User user;
+
+    @ManyToOne
+    @JoinColumn(name = "product_index", referencedColumnName = "product_index")
+    private Product product;
 }

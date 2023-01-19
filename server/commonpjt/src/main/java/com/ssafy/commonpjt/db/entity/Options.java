@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "options")
@@ -49,4 +51,7 @@ public class Options {
 
     @ColumnDefault("false")
     private boolean optionBed;
+
+    @OneToOne(mappedBy = "options")
+    private Product product;
 }

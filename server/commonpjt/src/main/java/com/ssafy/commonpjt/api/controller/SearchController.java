@@ -22,6 +22,12 @@ public class SearchController {
 
     private static final String API_SERVER_HOST = "https://dapi.kakao.com/v2/local/search/address.json";
 
+    /**
+     * 기능설명 부탁
+     * @param address
+     * @return
+     */
+
     @GetMapping("/{address}")
     public ResponseEntity<?> searchProduct(@PathVariable("address") String address) {
         log.info(address);
