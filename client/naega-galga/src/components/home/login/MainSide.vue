@@ -15,14 +15,15 @@
         v-model="input"
         placeholder=" 검색"
         clearable
+        @keyup.enter="getList()"
       />
     </div>
     <el-scrollbar :style="{ height: 'calc(100vh - 225px)' }">
       <div
-        v-for="item in productList"
+        v-for="(item, index) in productList"
         :key="item.floor"
         class="scrollbar-demo-item"
-        @click="$emit('addressIdx, index')"
+        @click="whereIs(index)"
       >
         <div class="img-content">
           <div class="list-img"></div>
@@ -30,7 +31,7 @@
             <div class="text">온라인 설명회</div>
           </div>
         </div>
-        <div>
+        <div class="home-info-box">
           <div class="home-area">{{ item.address }}</div>
           <div class="home-price">{{ item.type }} {{ item.price }}</div>
           <div class="home-info"># 주방 분리 # 풀 옵션</div>
@@ -56,12 +57,21 @@ export default defineComponent({
   props: {
     addressIdx: Number,
   },
-  setup() {
+  setup(_, context) {
     const input = ref("");
     const isFavorite = ref(false);
     const clickHeart = () => {
       isFavorite.value = !isFavorite.value;
     };
+    const getList = () => {
+      //검색 ->  목록 가져오기
+    };
+    const { emit } = context;
+    const whereIs = index => {
+      emit("address", productList[index].address);
+      emit("productList", productList);
+    };
+
     interface Product {
       type: string;
       price: string;
@@ -77,7 +87,7 @@ export default defineComponent({
       type: "월세",
       price: "30",
       floor: "2층",
-      address: "경상북도 구미시",
+      address: "제주특별자치도 제주시 첨단로 242",
       managePrice: 50000,
       explanationDate: 0,
       seller: "싸피",
@@ -87,7 +97,7 @@ export default defineComponent({
       type: "월세",
       price: "40",
       floor: "1층",
-      address: "경상북도 구미시2",
+      address: "경상북도 구미시 인동6길 26-2",
       managePrice: 60000,
       explanationDate: 1,
       seller: "싸피2",
@@ -97,14 +107,14 @@ export default defineComponent({
       type: "월세",
       price: "35",
       floor: "3층",
-      address: "경상북도 구미시3",
+      address: "제주특별자치도 제주시 첨단로 242",
       managePrice: 40000,
       explanationDate: 0,
       seller: "싸피3",
       isFavorite: true,
     });
 
-    return { input, isFavorite, clickHeart, productList };
+    return { input, isFavorite, clickHeart, productList, getList, whereIs };
   },
 });
 </script>
@@ -131,15 +141,20 @@ export default defineComponent({
 }
 
 #heart-btn {
-  margin-left: 35px;
+  /* margin-left: 35px; */
   margin-top: 85px;
+  margin-right: 10px;
   border: none;
   background: none;
+}
+.home-info-box {
+  width: 200px;
+  /* padding-left: 10px; */
 }
 .home-area {
   color: black;
   text-align: left;
-  margin: 20px 0;
+  /* margin: 20px 0; */
 }
 .home-price {
   color: black;
@@ -149,7 +164,7 @@ export default defineComponent({
 .home-info {
   color: black;
   text-align: left;
-  margin: 20px 0;
+  /* margin: 20px 0; */
 }
 .text {
   padding: 5px;
