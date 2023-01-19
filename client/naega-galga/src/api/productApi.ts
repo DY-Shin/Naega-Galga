@@ -23,4 +23,11 @@ async function editProduct(product, id: number): Promise<number> {
   return response.status;
 }
 
-export { addProduct, editProduct };
+async function deleteProduct(productId: number): Promise<number> {
+  const response: AxiosResponse = await apiTokenInstance.delete(
+    `/api/product/${productId}`
+  );
+  return response.status;
+}
+
+export { addProduct, editProduct, deleteProduct };
