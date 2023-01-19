@@ -2,7 +2,7 @@
 // import ResponseStatus from "./responseStatus";
 // import localStorageManager from "@/utils/localStorageManager";
 
-//토큰 쓰는 객체
+// 토큰 쓰는 객체
 // const apiTokenInstance: AxiosInstance = axios.create({
 //   baseURL: process.env.VUE_APP_API_BASE_URL,
 //   headers: {
@@ -29,7 +29,7 @@
 //   return null;
 // }
 
-////여기서 타입 에러
+// //여기서 타입 에러
 // apiTokenInstance.interceptors.request.use(request => {
 //   if (!request.headers) {
 //     return request;

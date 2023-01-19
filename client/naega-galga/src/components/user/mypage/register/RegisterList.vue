@@ -1,16 +1,12 @@
 <template>
   <h1>등록된 매물</h1>
   <hr />
-  <el-row>
-    <el-col
-      id="product"
-      v-for="(o, index) in 10"
-      :key="o"
-      :span="8"
-      :offset="index > 10 ? 2 : 0"
-    >
-      <register-list-item :regist="regist" />
-    </el-col>
+  <el-row :gutter="20">
+    <register-list-item
+      v-for="regist in registList"
+      :key="regist.id"
+      :regist="regist"
+    />
   </el-row>
 </template>
 
@@ -24,15 +20,37 @@ export default defineComponent({
     RegisterListItem,
   },
   setup() {
-    interface Regist {
-      rent: string;
-    }
-    const regist: Regist = {
-      rent: "월세 500/30",
-    };
+    const registList: any = [
+      {
+        id: 1,
+        rent: "월세 500/30",
+      },
+      {
+        id: 2,
+        rent: "2번",
+      },
+      {
+        id: 3,
+        rent: "33333",
+      },
+      {
+        id: 4,
+        rent: "4번",
+      },
+    ];
     return {
-      regist,
+      registList,
     };
   },
 });
 </script>
+
+<style>
+#product_set {
+  padding-top: 20px;
+  padding-bottom: 10px;
+
+  padding-left: 15px;
+  padding-right: 15px;
+}
+</style>

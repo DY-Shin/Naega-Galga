@@ -1,5 +1,9 @@
 <template>
-  <reservation-date-list />
+  <reservation-date-list
+    v-for="reservation in reservationDate"
+    :key="reservation.id"
+    :reservation="reservation"
+  />
 </template>
 
 <script lang="ts">
@@ -12,17 +16,22 @@ export default defineComponent({
     ReservationDateList,
   },
   setup() {
-    interface Reservation {
-      seller: string;
-      time: string;
-    }
-
-    const reservation: Reservation = {
-      seller: "부동부동산",
-      time: "비밀입니다.",
-    };
+    const reservationDate: any = [
+      {
+        id: 1,
+        reserve_date: "1월 18일",
+      },
+      {
+        id: 2,
+        reserve_date: "1월 19일",
+      },
+      {
+        id: 3,
+        reserve_date: "1월 20일",
+      },
+    ];
     return {
-      reservation,
+      reservationDate,
     };
   },
 });
