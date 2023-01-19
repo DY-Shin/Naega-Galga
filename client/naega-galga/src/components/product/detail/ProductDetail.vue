@@ -91,6 +91,7 @@ export default {
     });
 
     const summaryValue = computed(() => ({
+      productId: product.productId,
       productType: product.productType,
       price: product.price,
       floor: product.floor,

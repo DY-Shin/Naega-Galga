@@ -46,12 +46,15 @@
 <script lang="ts">
 import { computed, defineComponent, reactive } from "vue";
 import { Plus } from "@element-plus/icons-vue";
+import { addProductWish } from "@/api/productApi";
+import ResponseStatus from "@/api/responseStatus";
 
 export default defineComponent({
   props: {
     summaryValue: {
       type: Object,
       value: {
+        productId: Number,
         type: String,
         price: String,
         floor: String,
@@ -64,9 +67,23 @@ export default defineComponent({
   },
   setup(props) {
     const isWish = reactive({ value: props.summaryValue?.isWish });
+    const userIndex = 1;
 
-    const toggleLike = () => {
+    const toggleLike = async () => {
       isWish.value = !isWish.value;
+      let response;
+      //관심 등록
+      if (!isWish) {
+        response = await addProductWish(
+          props.summaryValue?.productId,
+          userIndex
+        );
+
+        if ((response.status = ResponseStatus.InternalServerError)) {
+          alert("서버 오류로 요청을 처리할 수 없습니다.");
+        }
+        return;
+      }
     };
 
     const dateSplit = (divider: string, value: string): string[] =>
