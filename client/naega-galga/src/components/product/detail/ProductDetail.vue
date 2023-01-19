@@ -2,6 +2,15 @@
   <div class="image-list">
     <product-image-list></product-image-list>
   </div>
+  <el-row>
+    <el-col :span="16"></el-col>
+    <el-col :span="8" class="align-right">
+      <el-button type="info" size="large" @click="moveToEdit">수정</el-button>
+      <el-button type="danger" size="large" @click="onClickDeleteProduct">
+        삭제
+      </el-button>
+    </el-col>
+  </el-row>
   <div>
     <right-summary-box :summary-value="summaryValue"></right-summary-box>
     <h1 class="margin-bottom-large">매물 정보</h1>
@@ -19,7 +28,10 @@ import ProductImageList from "@/components/product/detail/ProductImageList.vue";
 import ProductOptionList from "@/components/product/detail/ProductOptionList.vue";
 import RightSummaryBox from "@/components/product/detail/RightSummaryBox.vue";
 import ProductInfo from "@/components/product/detail/ProductInfo.vue";
-import { computed } from "@vue/runtime-core";
+import { computed, onMounted } from "@vue/runtime-core";
+import { useRoute, useRouter } from "vue-router";
+import { deleteProduct, getProduct } from "@/api/productApi";
+import ResponseStatus from "@/api/responseStatus";
 
 export default {
   components: {
@@ -30,6 +42,7 @@ export default {
   },
   setup() {
     interface Product {
+      productId: number;
       productType: string;
       productName: string;
       price: string;
@@ -44,7 +57,11 @@ export default {
       parking: number;
       options: Array<string>;
     }
+    const router = useRouter();
+    const route = useRoute();
+
     const product: Product = {
+      productId: 1,
       productType: "월세",
       productName: "싸피빌라",
       price: "1000/30",
@@ -60,6 +77,17 @@ export default {
       options: ["에어컨", "냉장고"],
     };
 
+    onMounted(async () => {
+      const productId = parseInt(route.params.id[0]);
+      const response = await getProduct(productId);
+      if (response.status === ResponseStatus.Ok) {
+        //product 값 갱신
+      }
+      if (response.status === ResponseStatus.InternalServerError) {
+        alert("서버 오류로 실행할 수 없습니다");
+      }
+    });
+
     const summaryValue = computed(() => ({
       productType: product.productType,
       price: product.price,
@@ -69,9 +97,28 @@ export default {
       explanationDate: product.explanationDate,
     }));
 
+    const moveToEdit = () => {
+      router.push(`/product/edit/${product.productId}`);
+    };
+    const onClickDeleteProduct = async () => {
+      if (!confirm("정말 삭제하시겠습니까?")) {
+        return;
+      }
+      const status = await deleteProduct(product.productId);
+      if (status === ResponseStatus.Ok) {
+        alert("삭제되었습니다");
+        router.back();
+      }
+      if (status === ResponseStatus.InternalServerError) {
+        alert("서버 오류로 실행할 수 없습니다");
+      }
+    };
+
     return {
       product,
       summaryValue,
+      moveToEdit,
+      onClickDeleteProduct,
     };
   },
 };
@@ -95,5 +142,10 @@ div > h2:nth-child(2) {
 .image-list {
   display: flex;
   justify-content: center;
+}
+.align-right {
+  display: flex;
+  flex-direction: row;
+  justify-content: end;
 }
 </style>
