@@ -13,7 +13,7 @@
       >
         <img
           class="heart-icon"
-          v-if="isLike.value"
+          v-if="isWish.value"
           src="@/assets/image/icon-heart-filled.png"
         />
         <img class="heart-icon" v-else src="@/assets/image/icon-heart.png" />
@@ -58,14 +58,15 @@ export default defineComponent({
         managePrice: Number,
         explanationDate: [String, null],
         seller: String,
+        isWish: Boolean,
       },
     },
   },
   setup(props) {
-    const isLike = reactive({ value: false });
+    const isWish = reactive({ value: props.summaryValue?.isWish });
 
     const toggleLike = () => {
-      isLike.value = !isLike.value;
+      isWish.value = !isWish.value;
     };
 
     const dateSplit = (divider: string, value: string): string[] =>
@@ -93,7 +94,7 @@ export default defineComponent({
 
     return {
       summary,
-      isLike,
+      isWish,
       toggleLike,
       Plus,
     };

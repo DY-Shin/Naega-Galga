@@ -56,6 +56,7 @@ export default {
       explanationDate: string | null;
       parking: number;
       options: Array<string>;
+      isWish: boolean;
     }
     const router = useRouter();
     const route = useRoute();
@@ -75,6 +76,7 @@ export default {
       explanationDate: "2023.1.30",
       parking: 0,
       options: ["에어컨", "냉장고"],
+      isWish: false,
     };
 
     onMounted(async () => {
@@ -95,6 +97,7 @@ export default {
       managePrice: product.managePrice,
       seller: product.seller,
       explanationDate: product.explanationDate,
+      isWish: product.isWish,
     }));
 
     const moveToEdit = () => {
