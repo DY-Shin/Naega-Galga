@@ -189,6 +189,8 @@ import AddressSearchButton from "@/components/common/AddressSearchButton.vue";
 import { useRoute } from "vue-router";
 import router from "@/router";
 import type { UploadFile } from "element-plus";
+import { addProduct } from "@/api/productApi";
+import ResponseStatus from "@/api/responseStatus";
 
 export default defineComponent({
   components: {
@@ -328,7 +330,7 @@ export default defineComponent({
       "침대",
     ];
 
-    const onClickAdd = () => {
+    const onClickAdd = async () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const formData: any = new FormData();
 
@@ -369,7 +371,15 @@ export default defineComponent({
       //   jibunAddress: productInfo.jibunAddress,
       //   options: productInfo.selectedOptionList,
       // };
+
       //등록
+      const status = await addProduct(formData);
+      if (status === ResponseStatus.Ok) {
+        router.back();
+      }
+      if (status === ResponseStatus.InternalServerError) {
+        alert("서버 오류로 처리할 수 없습니다");
+      }
     };
 
     const onClickEdit = () => {
