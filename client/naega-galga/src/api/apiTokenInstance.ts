@@ -1,35 +1,35 @@
-// import axios, { AxiosInstance } from "axios";
-// import ResponseStatus from "./responseStatus";
-// import localStorageManager from "@/utils/localStorageManager";
+import axios, { AxiosInstance } from "axios";
+import ResponseStatus from "./responseStatus";
+import localStorageManager from "@/utils/localStorageManager";
 
-//토큰 쓰는 객체
-// const apiTokenInstance: AxiosInstance = axios.create({
-//   baseURL: process.env.VUE_APP_API_BASE_URL,
-//   headers: {
-//     "Content-Type": "application/json;charset=utf-8",
-//     "X-ACCESS-TOKEN": `${localStorageManager.getAccessToken()}`,
-//   },
-// });
+// 토큰 쓰는 객체
+const apiTokenInstance: AxiosInstance = axios.create({
+  baseURL: process.env.VUE_APP_API_BASE_URL,
+  headers: {
+    "Content-Type": "application/json;charset=utf-8",
+    "X-ACCESS-TOKEN": `${localStorageManager.getAccessToken()}`,
+  },
+});
 
-// async function getRefreshToken(): Promise<string | null> {
-//   try {
-//     const {
-//       data: { accessToken, refreshToken },
-//     } = await apiTokenInstance.get("/refresh");
+async function getRefreshToken(): Promise<string | null> {
+  try {
+    const {
+      data: { accessToken, refreshToken },
+    } = await apiTokenInstance.get("/refresh");
 
-//     localStorageManager.setAccessToken(accessToken);
+    localStorageManager.setAccessToken(accessToken);
 
-//     if (refreshToken !== null) {
-//       localStorageManager.setRefreshToken(refreshToken);
-//     }
-//     return accessToken;
-//   } catch (e) {
-//     localStorageManager.removeTokens();
-//   }
-//   return null;
-// }
+    if (refreshToken !== null) {
+      localStorageManager.setRefreshToken(refreshToken);
+    }
+    return accessToken;
+  } catch (e) {
+    localStorageManager.removeTokens();
+  }
+  return null;
+}
 
-////여기서 타입 에러
+//여기서 타입 에러
 // apiTokenInstance.interceptors.request.use(request => {
 //   if (!request.headers) {
 //     return request;
@@ -49,21 +49,23 @@
 //   }
 // });
 
-// apiTokenInstance.interceptors.response.use(
-//   res => res,
-//   async function (error) {
-//     const {
-//       config,
-//       response: { status },
-//     } = error;
+apiTokenInstance.interceptors.response.use(
+  res => res,
+  async function (error) {
+    const {
+      config,
+      response: { status },
+    } = error;
 
-//     //토큰 만료나 토큰이 없을시 리프레쉬 하도록
-//     if (status === ResponseStatus.Unauthorized) {
-//       const accessToken = await getRefreshToken();
-//       if (accessToken) {
-//         config.headers.Authorization = `${accessToken}`;
-//       }
-//       return apiTokenInstance(config);
-//     }
-//   }
-// );
+    //토큰 만료나 토큰이 없을시 리프레쉬 하도록
+    if (status === ResponseStatus.Unauthorized) {
+      const accessToken = await getRefreshToken();
+      if (accessToken) {
+        config.headers.Authorization = `${accessToken}`;
+      }
+      return apiTokenInstance(config);
+    }
+  }
+);
+
+export default apiTokenInstance;
