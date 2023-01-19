@@ -1,4 +1,4 @@
-package com.ssafy.commonpjt.enums;
+package com.ssafy.commonpjt.common.enums;
 
 public enum Authority {
     USER

@@ -1,7 +1,7 @@
-package com.ssafy.commonpjt.config;
+package com.ssafy.commonpjt.common.config;
 
-import com.ssafy.commonpjt.jwt.JwtTokenAuthenticationFilter;
-import com.ssafy.commonpjt.jwt.JwtTokenProvider;
+import com.ssafy.commonpjt.common.jwt.JwtTokenAuthenticationFilter;
+import com.ssafy.commonpjt.common.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;

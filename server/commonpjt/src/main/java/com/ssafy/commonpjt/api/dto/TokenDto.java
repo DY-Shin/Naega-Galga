@@ -1,11 +1,11 @@
-package com.ssafy.commonpjt.dto;
+package com.ssafy.commonpjt.api.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 
 @Builder
-@Data
+@Getter
 @AllArgsConstructor
 public class TokenDto {
 

@@ -1,4 +1,4 @@
-package com.ssafy.commonpjt.config;
+package com.ssafy.commonpjt.common.config;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
