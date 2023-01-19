@@ -1,12 +1,11 @@
-package com.ssafy.commonpjt.service;
+package com.ssafy.commonpjt.api.service;
 
-import com.ssafy.commonpjt.entity.User;
-import com.ssafy.commonpjt.repository.UserRepository;
+import com.ssafy.commonpjt.db.repository.UserRepository;
+import com.ssafy.commonpjt.db.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -14,7 +13,6 @@ import org.springframework.stereotype.Service;
 public class CustomUserDetailsService implements UserDetailsService {
 
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -26,7 +24,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     private UserDetails createUserDetails(User user) {
         return org.springframework.security.core.userdetails.User.builder()
                 .username(user.getUserId())
-                .password(passwordEncoder.encode(user.getUserPassword()))
+                .password(user.getUserPassword())
                 .roles(user.getRoles().toArray(new String[0]))
                 .build();
     }

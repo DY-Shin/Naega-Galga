@@ -1,4 +1,4 @@
-package com.ssafy.commonpjt.jwt;
+package com.ssafy.commonpjt.common.jwt;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;

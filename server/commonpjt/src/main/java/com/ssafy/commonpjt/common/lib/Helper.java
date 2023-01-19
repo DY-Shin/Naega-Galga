@@ -1,4 +1,4 @@
-package com.ssafy.commonpjt.lib;
+package com.ssafy.commonpjt.common.lib;
 
 import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;

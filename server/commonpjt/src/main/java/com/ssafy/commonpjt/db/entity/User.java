@@ -1,6 +1,5 @@
-package com.ssafy.commonpjt.entity;
+package com.ssafy.commonpjt.db.entity;
 
-import com.ssafy.commonpjt.dto.UserDto;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
