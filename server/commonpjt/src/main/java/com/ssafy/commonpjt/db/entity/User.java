@@ -37,7 +37,7 @@ public class User implements UserDetails {
     private String userPhone;
 
     @Column(nullable = false, length = 50)
-    private String userNick;
+    private String userName;
 
 //    @ColumnDefault("'TEST'")
     @Column(length = 50, unique = true)

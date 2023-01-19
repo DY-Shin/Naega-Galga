@@ -9,6 +9,7 @@ import com.ssafy.commonpjt.db.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -18,6 +19,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -42,7 +44,7 @@ public class UserService {
                 .userId(userDto.getUserId())
                 .userPassword(passwordEncoder.encode(userDto.getUserPassword()))
                 .userPhone(userDto.getUserPhone())
-                .userNick(userDto.getUserNick())
+                .userName(userDto.getUserName())
                 .userCorporateRegistrationNumber(userDto.getCorporateRegistrationNumber())
                 .userAddress(userDto.getUserAddress())
                 .roles(Collections.singletonList(Authority.USER.name()))
@@ -65,7 +67,7 @@ public class UserService {
     }
 
     public ResponseEntity<?> logout(UserLogoutRequestDto logout) {
-        if (!jwtTokenProvider.validateToken(logout. getAccessToken())) {
+        if (!jwtTokenProvider.validateToken(logout.getAccessToken())) {
             return response.fail("잘못된 요청입니다.", HttpStatus.BAD_REQUEST);
         }
         Authentication authentication = jwtTokenProvider.getAuthentication(logout.getAccessToken());
@@ -88,11 +90,11 @@ public class UserService {
         return SecurityUtil.getCurrentUsername().flatMap(userRepository::findByUserId);
     }
 
-    @Transactional
-    public void delete() {
-        User loginId = getMyUser().get();
-        System.out.println(loginId);
+//    @Transactional
+//    public void delete() {
+//        Long loginId = SecurityUtil.getLoginUserId();
+//        //        System.out.println(loginId);
 //        userRepository.deleteById(loginId);
-    }
+//    }
 }
 

@@ -7,7 +7,9 @@ import com.ssafy.commonpjt.api.dto.UserLogoutRequestDto;
 import com.ssafy.commonpjt.api.service.UserService;
 import com.ssafy.commonpjt.common.jwt.JwtTokenProvider;
 import com.ssafy.commonpjt.common.lib.Helper;
+import com.ssafy.commonpjt.common.security.SecurityUtil;
 import com.ssafy.commonpjt.db.entity.User;
+import com.ssafy.commonpjt.db.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -17,12 +19,16 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.Optional;
+
 
 @Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/users")
 public class UserController {
+    private final UserRepository userRepository;
     private final UserService userService;
     private final JwtTokenProvider jwtTokenProvider;
     private final ResponseDto response;
@@ -45,6 +51,7 @@ public class UserController {
     }
 
     @PostMapping("logout")
+    @PreAuthorize("hasAnyRole('USER')")
     public ResponseEntity<?> logout(@Validated @RequestBody UserLogoutRequestDto logout, Errors errors) {
         if (errors.hasErrors()) {
             return response.invalidFields(Helper.refineErrors(errors));
@@ -58,7 +65,10 @@ public class UserController {
         if (errors.hasErrors()) {
             return response.invalidFields(Helper.refineErrors(errors));
         }
-        userService.delete();
+        System.out.println(SecurityUtil.getCurrentUsername());
+        System.out.println(Optional.empty());
+        System.out.println(getMyUserInfo());
+        userRepository.delete(SecurityUtil.getCurrentUsername().orElse("no name"));
         userService.logout(logout);
         return new ResponseEntity<>("회원 탈퇴 성공", HttpStatus.OK);
     }
