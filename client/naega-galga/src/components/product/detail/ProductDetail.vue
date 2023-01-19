@@ -28,9 +28,9 @@ import ProductImageList from "@/components/product/detail/ProductImageList.vue";
 import ProductOptionList from "@/components/product/detail/ProductOptionList.vue";
 import RightSummaryBox from "@/components/product/detail/RightSummaryBox.vue";
 import ProductInfo from "@/components/product/detail/ProductInfo.vue";
-import { computed } from "@vue/runtime-core";
-import { useRouter } from "vue-router";
-import { deleteProduct } from "@/api/productApi";
+import { computed, onMounted } from "@vue/runtime-core";
+import { useRoute, useRouter } from "vue-router";
+import { deleteProduct, getProduct } from "@/api/productApi";
 import ResponseStatus from "@/api/responseStatus";
 
 export default {
@@ -57,6 +57,9 @@ export default {
       parking: number;
       options: Array<string>;
     }
+    const router = useRouter();
+    const route = useRoute();
+
     const product: Product = {
       productId: 1,
       productType: "월세",
@@ -74,6 +77,17 @@ export default {
       options: ["에어컨", "냉장고"],
     };
 
+    onMounted(async () => {
+      const productId = parseInt(route.params.id[0]);
+      const response = await getProduct(productId);
+      if (response.status === ResponseStatus.Ok) {
+        //product 값 갱신
+      }
+      if (response.status === ResponseStatus.InternalServerError) {
+        alert("서버 오류로 실행할 수 없습니다");
+      }
+    });
+
     const summaryValue = computed(() => ({
       productType: product.productType,
       price: product.price,
@@ -83,7 +97,6 @@ export default {
       explanationDate: product.explanationDate,
     }));
 
-    const router = useRouter();
     const moveToEdit = () => {
       router.push(`/product/edit/${product.productId}`);
     };

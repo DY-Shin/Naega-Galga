@@ -30,4 +30,11 @@ async function deleteProduct(productId: number): Promise<number> {
   return response.status;
 }
 
-export { addProduct, editProduct, deleteProduct };
+async function getProduct(productId: number) {
+  const response: AxiosResponse = await apiTokenInstance.get(
+    `/api/product/${productId}`
+  );
+  return response;
+}
+
+export { addProduct, editProduct, deleteProduct, getProduct };
