@@ -13,7 +13,7 @@
       >
         <img
           class="heart-icon"
-          v-if="isLike.value"
+          v-if="isWish.value"
           src="@/assets/image/icon-heart-filled.png"
         />
         <img class="heart-icon" v-else src="@/assets/image/icon-heart.png" />
@@ -46,26 +46,47 @@
 <script lang="ts">
 import { computed, defineComponent, reactive } from "vue";
 import { Plus } from "@element-plus/icons-vue";
+import { addProductWish, deleteProductWish } from "@/api/productApi";
+import ResponseStatus from "@/api/responseStatus";
 
 export default defineComponent({
   props: {
     summaryValue: {
       type: Object,
       value: {
+        productIndex: Number,
         type: String,
         price: String,
         floor: String,
         managePrice: Number,
         explanationDate: [String, null],
         seller: String,
+        isWish: Boolean,
       },
     },
   },
   setup(props) {
-    const isLike = reactive({ value: false });
+    const isWish = reactive({ value: props.summaryValue?.isWish });
+    const userIndex = 1;
 
-    const toggleLike = () => {
-      isLike.value = !isLike.value;
+    const toggleLike = async () => {
+      isWish.value = !isWish.value;
+      let response;
+      //관심 등록
+      if (!isWish) {
+        response = await addProductWish(
+          props.summaryValue?.productIndex,
+          userIndex
+        );
+      } else {
+        response = await deleteProductWish(
+          props.summaryValue?.productIndex,
+          userIndex
+        );
+      }
+      if ((response.status = ResponseStatus.InternalServerError)) {
+        alert("서버 오류로 요청을 처리할 수 없습니다.");
+      }
     };
 
     const dateSplit = (divider: string, value: string): string[] =>
@@ -93,7 +114,7 @@ export default defineComponent({
 
     return {
       summary,
-      isLike,
+      isWish,
       toggleLike,
       Plus,
     };
