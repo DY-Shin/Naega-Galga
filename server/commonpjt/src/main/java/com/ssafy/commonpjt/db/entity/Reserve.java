@@ -1,20 +1,27 @@
 package com.ssafy.commonpjt.db.entity;
 
-import org.springframework.data.annotation.CreatedDate;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.sql.Date;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 @Entity
 @Table(name = "reserve")
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Reserve {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "reserve_index")
+    @Column(name = "reserve_index", nullable = false)
     private Integer reserveIndex;
 
-    @CreatedDate
-    private Date reserveDate;
+    private LocalDate reserveDate;
 
-    private DateTime
+    private LocalTime reserveTime;
 }

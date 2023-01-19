@@ -29,8 +29,8 @@ public class Building {
     private String buildingName;
 
     @Column(nullable = false)
-    private String buildingElevator;
+    private boolean buildingElevator;
 
     @Column(nullable = false)
-    private String buildingParking;
+    private boolean buildingParking;
 }
