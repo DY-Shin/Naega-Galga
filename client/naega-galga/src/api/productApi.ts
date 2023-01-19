@@ -37,4 +37,29 @@ async function getProduct(productId: number) {
   return response;
 }
 
-export { addProduct, editProduct, deleteProduct, getProduct };
+async function addProductWish(productid: number, userId: number) {
+  const response: AxiosResponse = await apiTokenInstance.post(
+    `/api/product/wish`,
+    {
+      userIndex: userId,
+      productIndex: userId,
+    }
+  );
+  return response;
+}
+
+async function deleteProductWish(productIndex: number, userIndex: number) {
+  const response: AxiosResponse = await apiTokenInstance.delete(
+    `/api/product/wish/${productIndex}/${userIndex}`
+  );
+  return response;
+}
+
+export {
+  addProduct,
+  editProduct,
+  deleteProduct,
+  getProduct,
+  addProductWish,
+  deleteProductWish,
+};
