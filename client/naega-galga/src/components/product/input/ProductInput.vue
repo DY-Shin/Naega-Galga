@@ -189,6 +189,8 @@ import AddressSearchButton from "@/components/common/AddressSearchButton.vue";
 import { useRoute } from "vue-router";
 import router from "@/router";
 import type { UploadFile } from "element-plus";
+import { addProduct, editProduct } from "@/api/productApi";
+import ResponseStatus from "@/api/responseStatus";
 
 export default defineComponent({
   components: {
@@ -328,7 +330,7 @@ export default defineComponent({
       "침대",
     ];
 
-    const onClickAdd = () => {
+    const makeObjForRequest = (): FormData => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const formData: any = new FormData();
 
@@ -353,27 +355,32 @@ export default defineComponent({
       formData.append("roadAddress", productInfo.roadAddress);
       formData.append("jibunAddress", productInfo.jibunAddress);
       formData.append("options", options);
-
-      // const requestObb = {
-      //   imageFiles: files,
-      //   contractType: productInfo.productContractTypeRadio,
-      //   price: depositAndPrice,
-      //   managePrice: productInfo.managePrice,
-      //   roomSize: productInfo.roomSize,
-      //   roomDirection: productInfo.selectedRoomDirection,
-      //   floor: `${productInfo.maxFloor}층/${productInfo.productFloor}층`,
-      //   productType: productInfo.selectedProductType,
-      //   parking: productInfo.parking,
-      //   animal: productInfo.canAnimalRadio,
-      //   roadAddress: productInfo.roadAddress,
-      //   jibunAddress: productInfo.jibunAddress,
-      //   options: productInfo.selectedOptionList,
-      // };
-      //등록
+      return formData;
     };
 
-    const onClickEdit = () => {
+    const onClickAdd = async () => {
+      const data = makeObjForRequest();
+      //등록
+      const status = await addProduct(data);
+      if (status === ResponseStatus.Ok) {
+        router.back();
+      }
+      if (status === ResponseStatus.InternalServerError) {
+        alert("서버 오류로 처리할 수 없습니다");
+      }
+    };
+
+    const onClickEdit = async () => {
       //수정 요청
+      const data = makeObjForRequest();
+      const productId: number = parseInt(route.params.id[0]);
+      const status = await editProduct(data, productId);
+      if (status === ResponseStatus.Ok) {
+        router.back();
+      }
+      if (status === ResponseStatus.InternalServerError) {
+        alert("서버 오류로 처리할 수 없습니다");
+      }
     };
 
     const cancelEditProduct = () => {
