@@ -9,7 +9,6 @@ import com.ssafy.commonpjt.db.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,7 +18,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -90,11 +88,17 @@ public class UserService {
         return SecurityUtil.getCurrentUsername().flatMap(userRepository::findByUserId);
     }
 
-//    @Transactional
-//    public void delete() {
-//        Long loginId = SecurityUtil.getLoginUserId();
-//        //        System.out.println(loginId);
-//        userRepository.deleteById(loginId);
-//    }
+    @Transactional
+    public ResponseEntity<?> delete(UserLogoutRequestDto logout) {
+        if (!jwtTokenProvider.validateToken(logout.getAccessToken())) {
+            return response.fail("잘못된 요청입니다.", HttpStatus.BAD_REQUEST);
+        }
+        Authentication authentication = jwtTokenProvider.getAuthentication(logout.getAccessToken());
+        String userId = authentication.getName();
+        userRepository.foreignKeyDelete();
+        userRepository.delete(userId);
+        userRepository.foreignKeyCheck();
+        return response.success();
+    }
 }
 

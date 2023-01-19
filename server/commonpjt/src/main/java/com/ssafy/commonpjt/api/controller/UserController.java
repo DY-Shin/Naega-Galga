@@ -65,12 +65,9 @@ public class UserController {
         if (errors.hasErrors()) {
             return response.invalidFields(Helper.refineErrors(errors));
         }
-        System.out.println(SecurityUtil.getCurrentUsername());
-        System.out.println(Optional.empty());
-        System.out.println(getMyUserInfo());
-        userRepository.delete(SecurityUtil.getCurrentUsername().orElse("no name"));
+        userService.delete(logout);
         userService.logout(logout);
-        return new ResponseEntity<>("회원 탈퇴 성공", HttpStatus.OK);
+        return new ResponseEntity<>("회원 탈퇴되었습니다.", HttpStatus.OK);
     }
 
     @GetMapping("me")

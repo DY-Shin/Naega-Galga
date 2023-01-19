@@ -28,7 +28,7 @@ public class SecurityUtil {
             username = springSecurityUser.getUsername();
         } else if (authentication.getPrincipal() instanceof String) {
             username = (String) authentication.getPrincipal();
-            System.out.println("after " + username.toString());
+//            System.out.println("after " + username.toString());
         }
         return Optional.ofNullable(username);
     }
