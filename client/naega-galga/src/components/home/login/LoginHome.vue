@@ -1,7 +1,7 @@
 <template>
   <div class="common-layout">
     <el-container>
-      <main-side @address="sendAddress" @productList="sendList"></main-side>
+      <main-side @address="sendAddress"></main-side>
       <el-container :style="{ height: 'calc(100vh - 150px)' }">
         <ka-kao-map :GetAddress="addressProxy"></ka-kao-map>
       </el-container>
@@ -25,10 +25,7 @@ export default defineComponent({
     const sendAddress = (address: string) => {
       addressProxy.value = address;
     };
-    const listProxy = ref([]);
-    const sendList = (productList: []) => {
-      listProxy.value = productList;
-    };
+
     interface Product {
       productType: string;
       productName: string;
@@ -75,7 +72,8 @@ export default defineComponent({
       summaryValue,
       sendAddress,
       addressProxy,
-      sendList,
+      // sendList,
+      // check,
     };
   },
 });

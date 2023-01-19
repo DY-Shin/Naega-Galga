@@ -27,13 +27,13 @@
       >
         <div class="img-content">
           <div class="list-img"></div>
-          <div class="list-online-icon" v-if="item.explanationDate > 0">
+          <div class="list-online-icon" v-if="item.explanationDate != null">
             <div class="text">온라인 설명회</div>
           </div>
         </div>
         <div class="home-info-box">
           <div class="home-area">{{ item.address }}</div>
-          <div class="home-price">{{ item.type }} {{ item.price }}</div>
+          <div class="home-price">{{ item.productType }} {{ item.price }}</div>
           <div class="home-info"># 주방 분리 # 풀 옵션</div>
         </div>
         <button v-if="item.isFavorite" id="heart-btn" @click="clickHeart()">
@@ -73,44 +73,68 @@ export default defineComponent({
     };
 
     interface Product {
-      type: string;
+      productType: string;
+      productName: string;
       price: string;
-      floor: string;
-      address: string;
       managePrice: number;
-      explanationDate: number;
-      seller: string;
+      floor: string;
+      roomSize: number;
+      address: string;
+      roomDirection: string;
+      animal: boolean;
+      seller?: string;
+      explanationDate: string | null;
+      parking: number;
+      options: Array<string>;
       isFavorite: boolean;
     }
     const productList: Product[] = [];
     productList.push({
-      type: "월세",
+      productType: "월세",
+      productName: "싸피빌라",
       price: "30",
-      floor: "2층",
-      address: "제주특별자치도 제주시 첨단로 242",
       managePrice: 50000,
-      explanationDate: 0,
+      floor: "2층",
+      roomSize: 30,
+      address: "제주특별자치도 제주시 첨단로 242",
+      roomDirection: "남향",
+      animal: true,
       seller: "싸피",
+      explanationDate: "2023.1.30",
+      parking: 0,
+      options: ["에어컨", "냉장고"],
       isFavorite: true,
     });
     productList.push({
-      type: "월세",
-      price: "40",
-      floor: "1층",
+      productType: "월세",
+      productName: "싸피빌라",
+      price: "30",
+      managePrice: 50000,
+      floor: "2층",
+      roomSize: 30,
       address: "경상북도 구미시 인동6길 26-2",
-      managePrice: 60000,
-      explanationDate: 1,
-      seller: "싸피2",
-      isFavorite: false,
+      roomDirection: "남향",
+      animal: true,
+      seller: "싸피",
+      explanationDate: "2023.1.30",
+      parking: 0,
+      options: ["에어컨", "냉장고"],
+      isFavorite: true,
     });
     productList.push({
-      type: "월세",
-      price: "35",
-      floor: "3층",
-      address: "제주특별자치도 제주시 첨단로 242",
-      managePrice: 40000,
-      explanationDate: 0,
-      seller: "싸피3",
+      productType: "월세",
+      productName: "싸피빌라",
+      price: "30",
+      managePrice: 50000,
+      floor: "2층",
+      roomSize: 30,
+      address: "제주 제주시 첨단로 241",
+      roomDirection: "남향",
+      animal: true,
+      seller: "싸피",
+      explanationDate: "2023.1.30",
+      parking: 0,
+      options: ["에어컨", "냉장고"],
       isFavorite: true,
     });
 
