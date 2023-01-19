@@ -15,9 +15,12 @@ spring:
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
     open-in-view: false
     hibernate:
-      show_sql: true
-      format_sql: true
       ddl-auto: update
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+
   profiles:
     include: key
 
