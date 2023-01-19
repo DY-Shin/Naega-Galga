@@ -48,4 +48,18 @@ async function addProductWish(productid: number, userId: number) {
   return response;
 }
 
-export { addProduct, editProduct, deleteProduct, getProduct, addProductWish };
+async function deleteProductWish(productIndex: number, userIndex: number) {
+  const response: AxiosResponse = await apiTokenInstance.delete(
+    `/api/product/wish/${productIndex}/${userIndex}`
+  );
+  return response;
+}
+
+export {
+  addProduct,
+  editProduct,
+  deleteProduct,
+  getProduct,
+  addProductWish,
+  deleteProductWish,
+};
