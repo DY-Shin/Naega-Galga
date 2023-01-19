@@ -12,4 +12,15 @@ async function addProduct(product): Promise<number> {
   return response.status;
 }
 
-export { addProduct };
+async function editProduct(product, id: number): Promise<number> {
+  const response: AxiosResponse = await apiTokenInstance.put(
+    `/api/product/${id}`,
+    product,
+    {
+      headers: { "Content-Type": "multipart/form-data" },
+    }
+  );
+  return response.status;
+}
+
+export { addProduct, editProduct };
