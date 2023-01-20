@@ -10,8 +10,8 @@
         </el-button>
         <el-button
           class="dialogbutton"
+          @click="goToDelete"
           type="primary"
-          @click="userDelete"
           style="width: 70px"
           >예
         </el-button>
@@ -22,18 +22,19 @@
 
 <script lang="ts">
 import { defineComponent, ref } from "vue";
-import { useStore } from "vuex";
+import { useRouter } from "vue-router";
 
 export default defineComponent({
   name: "UserDeleteDialog",
   setup() {
-    const store = useStore();
     const centerDialogVisible = ref(false);
-    const userDelete = () => {
-      store.dispatch("userDelete");
+    const router = useRouter();
+
+    const goToDelete = () => {
+      router.push({ path: "/delete" });
     };
 
-    return { centerDialogVisible, userDelete };
+    return { centerDialogVisible, goToDelete };
   },
 });
 </script>

@@ -5,6 +5,7 @@ import productRouter from "@/router/productRouter";
 const usersRouter = userRouter[0];
 const joinRouter = userRouter[1];
 const loginRouter = userRouter[2];
+const userDeleteRouter = userRouter[3];
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -14,6 +15,7 @@ const routes: Array<RouteRecordRaw> = [
   usersRouter,
   joinRouter,
   loginRouter,
+  userDeleteRouter,
   productRouter,
 ];
 
