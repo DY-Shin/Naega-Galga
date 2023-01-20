@@ -1,27 +1,31 @@
 <template>
   <div class="common-layout">
     <el-container>
-      <main-side></main-side>
+      <main-side @address="sendAddress"></main-side>
       <el-container :style="{ height: 'calc(100vh - 150px)' }">
-        <ka-kao-map></ka-kao-map>
+        <ka-kao-map :GetAddress="addressProxy"></ka-kao-map>
       </el-container>
     </el-container>
     <chat-icon></chat-icon>
   </div>
 </template>
+
 <script lang="ts">
-import { defineComponent } from "vue";
-import { computed } from "@vue/runtime-core";
+import { defineComponent, ref } from "vue";
 import MainSide from "@/components/home/login/MainSide.vue";
 import KaKaoMap from "@/components/home/login/KaKaoMap.vue";
 import ChatIcon from "@/components/common/ChatWindow.vue";
 
 export default defineComponent({
-  data() {
-    return {};
-  },
+  name: "addressInfo",
   components: { MainSide, KaKaoMap, ChatIcon },
+
   setup() {
+    const addressProxy = ref("");
+    const sendAddress = (address: string) => {
+      addressProxy.value = address;
+    };
+
     interface Product {
       productType: string;
       productName: string;
@@ -54,20 +58,25 @@ export default defineComponent({
       options: ["에어컨", "냉장고"],
       isFavorite: false,
     };
-    const summaryValue = computed(() => ({
+    const summaryValue = () => ({
       productType: product.productType,
       price: product.price,
       floor: product.floor,
       managePrice: product.managePrice,
       seller: product.seller,
       explanationDate: product.explanationDate,
-    }));
+    });
 
     return {
       product,
       summaryValue,
+      sendAddress,
+      addressProxy,
+      // sendList,
+      // check,
     };
   },
 });
 </script>
+
 <style scoped></style>
