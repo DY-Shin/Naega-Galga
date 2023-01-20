@@ -1,10 +1,11 @@
 <template>
+  <h1>매물 사진 등록</h1>
   <product-image-input
     @fileAdd="fileAdd"
     @fileDelete="fileDelete"
     :fileList="fileList"
   ></product-image-input>
-  <h1>매물 정보 입력</h1>
+  <h1 style="margin-top: 50px">매물 정보 입력</h1>
   <div class="guid-text">가격은 만원 단위로 입력해주세요</div>
   <!-- 월세 전세 라디오 -->
   <hr />
@@ -47,6 +48,7 @@
         v-model="productInfo.roomSize"
         type="number"
         class="margin-right-small"
+        step="0.1"
       >
       </el-input>
       <span>m<sup>2</sup></span>
@@ -151,21 +153,42 @@
   <hr />
   <el-row>
     <el-col :span="6" class="text-align"><span>주소</span></el-col>
-    <el-col :span="18" class="text-align">
-      <el-input
-        v-model="productInfo.roadAddress"
-        placeholder="주소"
-        class="el-full-width margin-right-small"
-      ></el-input>
-      <el-input
-        v-model="productInfo.detailAddress"
-        placeholder="상세주소"
-        class="el-full-width margin-right-small"
-        type="info"
-      ></el-input>
-      <address-search-button
-        @getRoadAddress="setRoadAddress"
-      ></address-search-button>
+    <el-col :span="18">
+      <el-row>
+        <el-col :span="10">
+          <el-input
+            v-model="productInfo.roadAddress"
+            placeholder="도로명 주소"
+            class="padding-right-small el-width-100"
+          ></el-input>
+        </el-col>
+        <el-col :span="10">
+          <el-input
+            v-model="productInfo.jibunAddress"
+            placeholder="지번 주소"
+            class="padding-right-small el-width-100"
+          ></el-input>
+        </el-col>
+        <el-col :span="4">
+          <address-search-button
+            @getRoadAddress="setRoadAddress"
+          ></address-search-button>
+        </el-col>
+      </el-row>
+      <el-row style="margin-top: 10px">
+        <el-input
+          v-model="productInfo.buildingName"
+          placeholder="건물 이름"
+          class="margin-right-small"
+          type="info"
+        ></el-input>
+        <el-input
+          v-model="productInfo.productHo"
+          placeholder="방 호수"
+          class="margin-right-small"
+          type="info"
+        ></el-input>
+      </el-row>
     </el-col>
   </el-row>
   <hr />
@@ -183,19 +206,17 @@
   <el-row>
     <el-col :span="14"></el-col>
     <el-col :span="10" class="align-right">
-      <div v-if="!isEditMode">
-        <el-button type="info" @click="onClickAdd">등록</el-button>
-      </div>
-      <div v-else>
-        <el-button type="info" @click="onClickEdit">수정</el-button>
-        <el-button type="warning" @click="cancelEditProduct">취소</el-button>
-      </div>
+      <el-button v-if="!isEditMode" type="primary" @click="onClickAdd">
+        등록
+      </el-button>
+      <el-button v-else type="primary" @click="onClickEdit">수정</el-button>
+      <el-button type="warning" @click="cancelEditProduct">취소</el-button>
     </el-col>
   </el-row>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, reactive } from "@vue/runtime-core";
+import { computed, defineComponent, reactive } from "vue";
 import ProductImageInput from "@/components/product/input/ProductImageInput.vue";
 import AddressSearchButton from "@/components/common/AddressSearchButton.vue";
 import { useRoute } from "vue-router";
@@ -240,7 +261,8 @@ export default defineComponent({
       elevatorRadio: string;
       roadAddress: string;
       jibunAddress: string;
-      detailAddress: string;
+      buildingName: string;
+      productHo: string;
       selectedOptionList: Array<string>;
     }
     //mode
@@ -264,7 +286,8 @@ export default defineComponent({
       elevatorRadio: "있음",
       roadAddress: "",
       jibunAddress: "",
-      detailAddress: "",
+      buildingName: "싸피빌라",
+      productHo: "302",
       selectedOptionList: [],
     });
 
@@ -289,16 +312,17 @@ export default defineComponent({
       productInfo.elevatorRadio = "있음";
       productInfo.roadAddress = "구미시 진평길 13-3";
       productInfo.jibunAddress = "구미시 진평동 182";
-      productInfo.detailAddress = "싸피빌라 302호";
+      productInfo.buildingName = "싸피빌라";
+      productInfo.productHo = "302";
       productInfo.selectedOptionList = ["세탁기", "인덕션"];
     }
     const depositAndPrice = computed(
       () => `${productInfo.deposit}/${productInfo.price}`
     );
 
-    const numberInputDefaultValue = computed(value => {
-      value === 0 ? "" : value;
-    });
+    const numberInputDefaultValue = computed(value =>
+      value === 0 ? "" : value
+    );
 
     const stringToBooleanInt = (trueValue, value): number =>
       value === trueValue ? 1 : 0;
@@ -344,10 +368,8 @@ export default defineComponent({
       "와이파이",
       "책상",
       "옷장",
-      "싱크대",
       "침대",
     ];
-
     const makeObjForRequest = (): FormData => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const formData: any = new FormData();
@@ -358,7 +380,6 @@ export default defineComponent({
       fileList.forEach((item: UploadFile) => files.push(item));
 
       const floor = `${productInfo.maxFloor}층/${productInfo.productFloor}층`;
-      const detailArray = productInfo.detailAddress.split("/");
 
       const product = {
         productPhoto: files,
@@ -370,7 +391,7 @@ export default defineComponent({
         productFloor: floor,
         productRooms: productInfo.selectedProductType,
         productAnimal: productInfo.canAnimalRadio,
-        productDetail: productInfo.detailAddress[1],
+        productDetail: productInfo.productHo,
       };
       formData.append("product", product);
 
@@ -378,10 +399,13 @@ export default defineComponent({
         buildingParking: productInfo.parking,
         buildingRoadAddress: productInfo.roadAddress,
         buildingJibunAddress: productInfo.jibunAddress,
-        buildingName: detailArray[0],
+        buildingName: productInfo.buildingName,
         buildingElevator: stringToBooleanInt("있음", productInfo.elevatorRadio),
       };
       formData.append("building", building);
+
+      const checkOption = (option: string) =>
+        optionList.some(item => item === option);
 
       const option = {
         optionAirConditioner: 0,
@@ -395,6 +419,44 @@ export default defineComponent({
         optionCloset: 0,
         optionBed: 0,
       };
+
+      //전체 옵션과 비교해서 선택된 옵션이면 1로 변경
+      productInfo.selectedOptionList.forEach(item => {
+        if (checkOption(item)) {
+          switch (item) {
+            case "냉장고":
+              option.optionFridge = 1;
+              break;
+            case "에어컨":
+              option.optionFridge = 1;
+              break;
+            case "세탁기":
+              option.optionWashingMachine = 1;
+              break;
+            case "가스레인지":
+              option.optionGasStove = 1;
+              break;
+            case "인덕션":
+              option.optionInduction = 1;
+              break;
+            case "전자레인지":
+              option.optionMicrowave = 1;
+              break;
+            case "와이파이":
+              option.optionWifi = 1;
+              break;
+            case "책상":
+              option.optionDesk = 1;
+              break;
+            case "옷장":
+              option.optionCloset = 1;
+              break;
+            case "침대":
+              option.optionBed = 1;
+              break;
+          }
+        }
+      });
       formData.append("option", option);
 
       return formData;
@@ -407,6 +469,9 @@ export default defineComponent({
       const status = await addProduct(data);
       if (status === ResponseStatus.Ok) {
         router.back();
+      }
+      if (status === ResponseStatus.Conflict) {
+        alert("이미 등록된 매물입니다");
       }
       if (status === ResponseStatus.InternalServerError) {
         alert("서버 오류로 처리할 수 없습니다");
@@ -464,6 +529,10 @@ export default defineComponent({
   width: 300px;
 }
 
+.el-width-100 {
+  width: 100%;
+}
+
 .slash {
   padding: 0 10px;
   font-size: var(--el-font-size-large);
@@ -484,9 +553,19 @@ hr {
   margin-right: 10px;
 }
 
+.padding-right-small {
+  padding-right: 10px;
+}
+
 .el-col.text-align {
   display: flex;
   flex-direction: row;
+  align-items: center;
+}
+
+.flex-column {
+  display: flex;
+  flex-direction: column;
   align-items: center;
 }
 span {
