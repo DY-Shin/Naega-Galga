@@ -320,9 +320,9 @@ export default defineComponent({
       () => `${productInfo.deposit}/${productInfo.price}`
     );
 
-    const numberInputDefaultValue = computed(value => {
-      value === 0 ? "" : value;
-    });
+    const numberInputDefaultValue = computed(value =>
+      value === 0 ? "" : value
+    );
 
     const stringToBooleanInt = (trueValue, value): number =>
       value === trueValue ? 1 : 0;
@@ -370,7 +370,6 @@ export default defineComponent({
       "옷장",
       "침대",
     ];
-
     const makeObjForRequest = (): FormData => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const formData: any = new FormData();
@@ -408,18 +407,6 @@ export default defineComponent({
       const checkOption = (option: string) =>
         optionList.some(item => item === option);
 
-      enum optionEng {
-        "냉장고" = "optionFridge",
-        "에어컨" = "optionAirConditioner",
-        "세탁기" = "optionWashingMachine",
-        "가스레인지" = "optionGasStove",
-        "인덕션" = "optionInduction",
-        "전자레인지" = "optionMicrowave",
-        "책상" = "optionDesk",
-        "와이파이" = "optionWifi",
-        "옷장" = "optionCloset",
-        "침대" = "optionBed",
-      }
       const option = {
         optionAirConditioner: 0,
         optionFridge: 0,
@@ -436,7 +423,38 @@ export default defineComponent({
       //전체 옵션과 비교해서 선택된 옵션이면 1로 변경
       productInfo.selectedOptionList.forEach(item => {
         if (checkOption(item)) {
-          option[optionEng[item]] = 1;
+          switch (item) {
+            case "냉장고":
+              option.optionFridge = 1;
+              break;
+            case "에어컨":
+              option.optionFridge = 1;
+              break;
+            case "세탁기":
+              option.optionWashingMachine = 1;
+              break;
+            case "가스레인지":
+              option.optionGasStove = 1;
+              break;
+            case "인덕션":
+              option.optionInduction = 1;
+              break;
+            case "전자레인지":
+              option.optionMicrowave = 1;
+              break;
+            case "와이파이":
+              option.optionWifi = 1;
+              break;
+            case "책상":
+              option.optionDesk = 1;
+              break;
+            case "옷장":
+              option.optionCloset = 1;
+              break;
+            case "침대":
+              option.optionBed = 1;
+              break;
+          }
         }
       });
       formData.append("option", option);
