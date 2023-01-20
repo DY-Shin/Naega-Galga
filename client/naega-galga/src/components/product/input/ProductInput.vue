@@ -151,21 +151,42 @@
   <hr />
   <el-row>
     <el-col :span="6" class="text-align"><span>주소</span></el-col>
-    <el-col :span="18" class="text-align">
-      <el-input
-        v-model="productInfo.roadAddress"
-        placeholder="주소"
-        class="el-full-width margin-right-small"
-      ></el-input>
-      <el-input
-        v-model="productInfo.detailAddress"
-        placeholder="상세주소"
-        class="el-full-width margin-right-small"
-        type="info"
-      ></el-input>
-      <address-search-button
-        @getRoadAddress="setRoadAddress"
-      ></address-search-button>
+    <el-col :span="18">
+      <el-row>
+        <el-col :span="10">
+          <el-input
+            v-model="productInfo.roadAddress"
+            placeholder="도로명 주소"
+            class="padding-right-small el-width-100"
+          ></el-input>
+        </el-col>
+        <el-col :span="10">
+          <el-input
+            v-model="productInfo.jibunAddress"
+            placeholder="지번 주소"
+            class="padding-right-small el-width-100"
+          ></el-input>
+        </el-col>
+        <el-col :span="4">
+          <address-search-button
+            @getRoadAddress="setRoadAddress"
+          ></address-search-button>
+        </el-col>
+      </el-row>
+      <el-row style="margin-top: 10px">
+        <el-input
+          v-model="productInfo.buildingName"
+          placeholder="건물 이름"
+          class="margin-right-small"
+          type="info"
+        ></el-input>
+        <el-input
+          v-model="productInfo.productHo"
+          placeholder="방 호수"
+          class="margin-right-small"
+          type="info"
+        ></el-input>
+      </el-row>
     </el-col>
   </el-row>
   <hr />
@@ -240,7 +261,8 @@ export default defineComponent({
       elevatorRadio: string;
       roadAddress: string;
       jibunAddress: string;
-      detailAddress: string;
+      buildingName: string;
+      productHo: string;
       selectedOptionList: Array<string>;
     }
     //mode
@@ -264,7 +286,8 @@ export default defineComponent({
       elevatorRadio: "있음",
       roadAddress: "",
       jibunAddress: "",
-      detailAddress: "",
+      buildingName: "싸피빌라",
+      productHo: "302",
       selectedOptionList: [],
     });
 
@@ -289,7 +312,8 @@ export default defineComponent({
       productInfo.elevatorRadio = "있음";
       productInfo.roadAddress = "구미시 진평길 13-3";
       productInfo.jibunAddress = "구미시 진평동 182";
-      productInfo.detailAddress = "싸피빌라 302호";
+      productInfo.buildingName = "싸피빌라";
+      productInfo.productHo = "302";
       productInfo.selectedOptionList = ["세탁기", "인덕션"];
     }
     const depositAndPrice = computed(
@@ -358,7 +382,6 @@ export default defineComponent({
       fileList.forEach((item: UploadFile) => files.push(item));
 
       const floor = `${productInfo.maxFloor}층/${productInfo.productFloor}층`;
-      const detailArray = productInfo.detailAddress.split("/");
 
       const product = {
         productPhoto: files,
@@ -370,7 +393,7 @@ export default defineComponent({
         productFloor: floor,
         productRooms: productInfo.selectedProductType,
         productAnimal: productInfo.canAnimalRadio,
-        productDetail: productInfo.detailAddress[1],
+        productDetail: productInfo.productHo,
       };
       formData.append("product", product);
 
@@ -378,7 +401,7 @@ export default defineComponent({
         buildingParking: productInfo.parking,
         buildingRoadAddress: productInfo.roadAddress,
         buildingJibunAddress: productInfo.jibunAddress,
-        buildingName: detailArray[0],
+        buildingName: productInfo.buildingName,
         buildingElevator: stringToBooleanInt("있음", productInfo.elevatorRadio),
       };
       formData.append("building", building);
@@ -464,6 +487,10 @@ export default defineComponent({
   width: 300px;
 }
 
+.el-width-100 {
+  width: 100%;
+}
+
 .slash {
   padding: 0 10px;
   font-size: var(--el-font-size-large);
@@ -484,9 +511,19 @@ hr {
   margin-right: 10px;
 }
 
+.padding-right-small {
+  padding-right: 10px;
+}
+
 .el-col.text-align {
   display: flex;
   flex-direction: row;
+  align-items: center;
+}
+
+.flex-column {
+  display: flex;
+  flex-direction: column;
   align-items: center;
 }
 span {
