@@ -15,33 +15,35 @@
         v-model="input"
         placeholder=" 검색"
         clearable
+        @keyup.enter="getList()"
       />
     </div>
     <el-scrollbar :style="{ height: 'calc(100vh - 225px)' }">
-      <div v-for="item in 10" :key="item" class="scrollbar-demo-item">
+      <div
+        v-for="(item, index) in productList"
+        :key="item.floor"
+        class="scrollbar-demo-item"
+        @click="whereIs(index)"
+      >
         <div class="img-content">
           <div class="list-img"></div>
-          <div class="list-online-icon">
+          <div class="list-online-icon" v-if="item.explanationDate != null">
             <div class="text">온라인 설명회</div>
           </div>
         </div>
-        <div>
-          <div class="home-area">경상북도 구미시</div>
-          <div class="home-price">월세 30</div>
+        <div class="home-info-box">
+          <div class="home-area">{{ item.address }}</div>
+          <div class="home-price">{{ item.productType }} {{ item.price }}</div>
           <div class="home-info"># 주방 분리 # 풀 옵션</div>
         </div>
-        <button v-if="isFavorite" id="heart-btn" @click="clickHeart()">
-          <img
-            src="@/assets/image/icon-heart.png"
-            width="20"
-            height="20"
-          /></button
-        ><button v-else id="heart-btn" @click="clickHeart()">
+        <button v-if="item.isFavorite" id="heart-btn" @click="clickHeart()">
           <img
             src="@/assets/image/icon-heart-filled.png"
             width="20"
             height="20"
-          />
+          /></button
+        ><button v-else id="heart-btn" @click="clickHeart()">
+          <img src="@/assets/image/icon-heart.png" width="20" height="20" />
         </button>
       </div>
     </el-scrollbar>
@@ -53,26 +55,90 @@ import { ref } from "vue";
 import { defineComponent } from "vue";
 export default defineComponent({
   props: {
-    summaryValue: {
-      type: Object,
-      value: {
-        type: String,
-        price: String,
-        floor: String,
-        managePrice: Number,
-        explanationDate: [String, null],
-        seller: String,
-        isFavorite: Boolean,
-      },
-    },
+    addressIdx: Number,
   },
-  setup() {
+  setup(_, context) {
     const input = ref("");
     const isFavorite = ref(false);
     const clickHeart = () => {
       isFavorite.value = !isFavorite.value;
     };
-    return { input, isFavorite, clickHeart };
+    const getList = () => {
+      //검색 ->  목록 가져오기
+    };
+    const { emit } = context;
+    const whereIs = index => {
+      emit("address", productList[index].address);
+      emit("productList", productList);
+    };
+
+    interface Product {
+      productType: string;
+      productName: string;
+      price: string;
+      managePrice: number;
+      floor: string;
+      roomSize: number;
+      address: string;
+      roomDirection: string;
+      animal: boolean;
+      seller?: string;
+      explanationDate: string | null;
+      parking: number;
+      options: Array<string>;
+      isFavorite: boolean;
+    }
+    const productList: Product[] = [];
+    productList.push({
+      productType: "월세",
+      productName: "싸피빌라",
+      price: "30",
+      managePrice: 50000,
+      floor: "2층",
+      roomSize: 30,
+      address: "제주특별자치도 제주시 첨단로 242",
+      roomDirection: "남향",
+      animal: true,
+      seller: "싸피",
+      explanationDate: "2023.1.30",
+      parking: 0,
+      options: ["에어컨", "냉장고"],
+      isFavorite: true,
+    });
+    productList.push({
+      productType: "월세",
+      productName: "싸피빌라",
+      price: "30",
+      managePrice: 50000,
+      floor: "2층",
+      roomSize: 30,
+      address: "경상북도 구미시 인동6길 26-2",
+      roomDirection: "남향",
+      animal: true,
+      seller: "싸피",
+      explanationDate: "2023.1.30",
+      parking: 0,
+      options: ["에어컨", "냉장고"],
+      isFavorite: true,
+    });
+    productList.push({
+      productType: "월세",
+      productName: "싸피빌라",
+      price: "30",
+      managePrice: 50000,
+      floor: "2층",
+      roomSize: 30,
+      address: "제주 제주시 첨단로 241",
+      roomDirection: "남향",
+      animal: true,
+      seller: "싸피",
+      explanationDate: "2023.1.30",
+      parking: 0,
+      options: ["에어컨", "냉장고"],
+      isFavorite: true,
+    });
+
+    return { input, isFavorite, clickHeart, productList, getList, whereIs };
   },
 });
 </script>
@@ -99,16 +165,20 @@ export default defineComponent({
 }
 
 #heart-btn {
-  /* margin-right: 10px; */
-  margin-left: 35px;
+  /* margin-left: 35px; */
   margin-top: 85px;
+  margin-right: 10px;
   border: none;
   background: none;
+}
+.home-info-box {
+  width: 200px;
+  /* padding-left: 10px; */
 }
 .home-area {
   color: black;
   text-align: left;
-  margin: 20px 0;
+  /* margin: 20px 0; */
 }
 .home-price {
   color: black;
@@ -118,7 +188,7 @@ export default defineComponent({
 .home-info {
   color: black;
   text-align: left;
-  margin: 20px 0;
+  /* margin: 20px 0; */
 }
 .text {
   padding: 5px;
