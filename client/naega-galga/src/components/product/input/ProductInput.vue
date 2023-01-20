@@ -172,6 +172,7 @@
         <el-col :span="4">
           <address-search-button
             @getRoadAddress="setRoadAddress"
+            @getJibunAddress="setJibunAddress"
           ></address-search-button>
         </el-col>
       </el-row>
@@ -356,6 +357,9 @@ export default defineComponent({
     const setRoadAddress = (address: string) => {
       productInfo.roadAddress = address;
     };
+    const setJibunAddress = (address: string) => {
+      productInfo.jibunAddress = address;
+    };
 
     //옵션
     const optionList = [
@@ -505,6 +509,7 @@ export default defineComponent({
       roomDirectionOptions,
       productTypeList,
       setRoadAddress,
+      setJibunAddress,
       optionList,
       isEditMode,
       onClickAdd,
