@@ -52,18 +52,20 @@
   <hr />
   <password-change />
   <hr />
-  <button>회원탈퇴</button>
+  <user-delete-dialog />
 </template>
 
 <script lang="ts">
 import { defineComponent, computed, reactive, ref } from "vue";
 import { useStore } from "vuex";
 import PasswordChange from "./PasswordChange.vue";
+import UserDeleteDialog from "./UserDeleteDialog.vue";
 
 export default defineComponent({
   name: "UserInfo",
   components: {
     PasswordChange,
+    UserDeleteDialog,
   },
   setup() {
     const store = useStore();
