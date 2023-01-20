@@ -10,26 +10,25 @@ const state = {
 
   token: null,
 };
+
 const getters = {};
+
 const mutations = {
-  GET_USER_INFO(state, user_info) {
-    state.user_info = user_info;
-  },
   SAVE_TOKEN(state, token) {
     state.token = token;
   },
-};
-const actions = {
-  get_user_info(context) {
-    apiInstance
-      .get(`api/v1/user`)
-      .then(res => {
-        context.commit("GET_USER_INFO", res.data.key);
-      })
-      .catch(err => {
-        console.log(err);
-      });
+  GET_USER_INFO(state, user_info) {
+    state.user_info = user_info;
   },
+  USER_INFO_CHANGE(state, changeform) {
+    state.user_name = changeform.name;
+    state.user_id = changeform.user_id;
+    state.user_phone_number = changeform.user_phone_number;
+    state.user_address = changeform.user_address;
+  },
+};
+
+const actions = {
   join(context, joinform) {
     apiInstance
       .post(`/api/v1/join`, {
@@ -47,9 +46,22 @@ const actions = {
       })
       .catch(err => {
         console.log(err);
+        console.log(context);
+      });
+  },
+
+  get_user_info(context) {
+    apiInstance
+      .get(`api/v1/user`)
+      .then(res => {
+        context.commit("GET_USER_INFO", res.data.key);
+      })
+      .catch(err => {
+        console.log(err);
       });
   },
 };
+
 export default {
   namespaced: true,
   state,
