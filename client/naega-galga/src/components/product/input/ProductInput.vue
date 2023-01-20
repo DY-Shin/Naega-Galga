@@ -138,6 +138,18 @@
   </el-row>
   <hr />
   <el-row>
+    <el-col :span="6" class="text-align"><span>엘리베이터</span></el-col>
+    <el-col :span="18">
+      <div class="mb-2 flex items-center text-sm">
+        <el-radio-group v-model="productInfo.elevatorRadio" class="ml-4">
+          <el-radio :label="'있음'" size="large">있음</el-radio>
+          <el-radio :label="'없음'" size="large">없음</el-radio>
+        </el-radio-group>
+      </div>
+    </el-col>
+  </el-row>
+  <hr />
+  <el-row>
     <el-col :span="6" class="text-align"><span>주소</span></el-col>
     <el-col :span="18" class="text-align">
       <el-input
@@ -225,6 +237,7 @@ export default defineComponent({
       selectedProductType: string;
       parking: number;
       canAnimalRadio: string;
+      elevatorRadio: string;
       roadAddress: string;
       jibunAddress: string;
       detailAddress: string;
@@ -248,6 +261,7 @@ export default defineComponent({
       selectedProductType: "원룸",
       parking: 0,
       canAnimalRadio: "가능",
+      elevatorRadio: "있음",
       roadAddress: "",
       jibunAddress: "",
       detailAddress: "",
@@ -272,6 +286,7 @@ export default defineComponent({
       productInfo.selectedProductType = "원룸";
       productInfo.parking = 1;
       productInfo.canAnimalRadio = "가능";
+      productInfo.elevatorRadio = "있음";
       productInfo.roadAddress = "구미시 진평길 13-3";
       productInfo.jibunAddress = "구미시 진평동 182";
       productInfo.detailAddress = "싸피빌라 302호";
@@ -284,6 +299,9 @@ export default defineComponent({
     const numberInputDefaultValue = computed(value => {
       value === 0 ? "" : value;
     });
+
+    const stringToBooleanInt = (trueValue, value): number =>
+      value === trueValue ? 1 : 0;
 
     //월세면 true 전세면 false
     const isMonth = computed(() =>
@@ -336,30 +354,55 @@ export default defineComponent({
 
       const options: string[] = [];
       productInfo.selectedOptionList.forEach(item => options.push(item));
-
       const files: Array<UploadFile> = [];
       fileList.forEach((item: UploadFile) => files.push(item));
-      formData.append("imageFiles", files);
-      formData.append("contractType", productInfo.productContractTypeRadio);
-      formData.append("price", depositAndPrice);
-      formData.append("managePrice", productInfo.managePrice);
-      formData.append("roomSize", productInfo.roomSize);
-      formData.append("roomDirection", productInfo.selectedRoomDirection);
-      formData.append(
-        "floor",
-        `${productInfo.maxFloor}층/${productInfo.productFloor}층`
-      );
-      formData.append("productType", productInfo.selectedProductType);
-      formData.append("parking", productInfo.parking);
-      formData.append("animal", productInfo.canAnimalRadio);
-      formData.append("roadAddress", productInfo.roadAddress);
-      formData.append("jibunAddress", productInfo.jibunAddress);
-      formData.append("options", options);
+
+      const floor = `${productInfo.maxFloor}층/${productInfo.productFloor}층`;
+      const detailArray = productInfo.detailAddress.split("/");
+
+      const product = {
+        productPhoto: files,
+        productType: productInfo.productContractTypeRadio,
+        productPrice: depositAndPrice,
+        productManageCost: productInfo.managePrice,
+        productSize: productInfo.roomSize,
+        productDirection: productInfo.selectedRoomDirection,
+        productFloor: floor,
+        productRooms: productInfo.selectedProductType,
+        productAnimal: productInfo.canAnimalRadio,
+        productDetail: productInfo.detailAddress[1],
+      };
+      formData.append("product", product);
+
+      const building = {
+        buildingParking: productInfo.parking,
+        buildingRoadAddress: productInfo.roadAddress,
+        buildingJibunAddress: productInfo.jibunAddress,
+        buildingName: detailArray[0],
+        buildingElevator: stringToBooleanInt("있음", productInfo.elevatorRadio),
+      };
+      formData.append("building", building);
+
+      const option = {
+        optionAirConditioner: 0,
+        optionFridge: 0,
+        optionWashingMachine: 0,
+        optionGasStove: 0,
+        optionInduction: 0,
+        optionMicrowave: 0,
+        optionDesk: 0,
+        optionWifi: 0,
+        optionCloset: 0,
+        optionBed: 0,
+      };
+      formData.append("option", option);
+
       return formData;
     };
 
     const onClickAdd = async () => {
       const data = makeObjForRequest();
+      data.append("userIndex", "1");
       //등록
       const status = await addProduct(data);
       if (status === ResponseStatus.Ok) {
