@@ -1,4 +1,5 @@
 import apiInstance from "@/api/apiInstance";
+import apiTokenInstance from "@/api/apiTokenInstance";
 
 const state = {
   user_info: {
@@ -7,7 +8,6 @@ const state = {
     user_phone: "010-9169-5671",
     user_address: "그레이빌 206호",
   },
-
   token: null,
 };
 
@@ -16,6 +16,9 @@ const getters = {};
 const mutations = {
   SAVE_TOKEN(state, token) {
     state.token = token;
+  },
+  LOGOUT(state) {
+    state.token = null;
   },
   GET_USER_INFO(state, user_info) {
     state.user_info = user_info;
@@ -46,8 +49,14 @@ const actions = {
       })
       .catch(err => {
         console.log(err);
-        console.log(context);
       });
+  },
+  logout(context) {
+    apiTokenInstance.post(`api/v1/logout`).then(res => {
+      context.commit("LOGOUT", res.data.key).catch(err => {
+        console.log(err);
+      });
+    });
   },
 
   get_user_info(context) {
