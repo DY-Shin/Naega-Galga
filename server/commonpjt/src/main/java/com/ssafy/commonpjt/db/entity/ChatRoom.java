@@ -8,6 +8,8 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "chat_room")
@@ -24,4 +26,15 @@ public class ChatRoom {
 
     @CreationTimestamp
     private Timestamp createdAt;
+
+    @ManyToOne
+    @JoinColumn(name = "seller_index", referencedColumnName = "user_index")
+    private User seller;
+
+    @ManyToOne
+    @JoinColumn(name = "buyer_index", referencedColumnName = "user_index")
+    private User buyer;
+
+    @OneToMany(mappedBy = "chatRoom")
+    private List<Reserve> reserve = new ArrayList<>();
 }

@@ -31,4 +31,12 @@ public class ChatMessage {
 
     @ColumnDefault("false")
     private boolean isRead;
+
+    @ManyToOne
+    @JoinColumn(name = "chat_index", referencedColumnName = "chat_index")
+    private ChatRoom chatRoom;
+
+    @ManyToOne
+    @JoinColumn(name = "sender_index", referencedColumnName = "user_index")
+    private User sender;
 }

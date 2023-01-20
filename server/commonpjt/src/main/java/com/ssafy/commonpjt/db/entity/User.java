@@ -28,8 +28,11 @@ public class User {
     private List<Product> product = new ArrayList<>();
 
     @OneToMany(mappedBy = "seller")
-    private List<Reserve> seller = new ArrayList<>();
+    private List<ChatRoom> seller = new ArrayList<>();
 
     @OneToMany(mappedBy = "buyer")
-    private List<Reserve> buyer = new ArrayList<>();
+    private List<ChatRoom> buyer = new ArrayList<>();
+
+    @OneToMany(mappedBy = "sender")
+    private List<ChatMessage> sender = new ArrayList<>();
 }

@@ -28,12 +28,8 @@ public class Reserve {
     private LocalTime reserveTime;
 
     @ManyToOne
-    @JoinColumn(name = "seller_index", referencedColumnName = "user_index")
-    private User seller;
-
-    @ManyToOne
-    @JoinColumn(name = "buyer_index", referencedColumnName = "user_index")
-    private User buyer;
+    @JoinColumn(name = "chat_index", referencedColumnName = "chat_index")
+    private ChatRoom chatRoom;
 
     @OneToMany(mappedBy = "reserve")
     private List<Meeting> meeting = new ArrayList<>();
