@@ -34,4 +34,8 @@ export default [
     path: "/login",
     component: import("@/views/LoginView.vue"),
   },
+  {
+    path: "/delete",
+    component: import("@/views/UserDeleteView.vue"),
+  },
 ];
