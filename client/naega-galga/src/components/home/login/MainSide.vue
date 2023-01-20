@@ -34,9 +34,13 @@
         <div class="home-info-box">
           <div class="home-area">{{ item.address }}</div>
           <div class="home-price">{{ item.productType }} {{ item.price }}</div>
-          <div class="home-info"># 주방 분리 # 풀 옵션</div>
+          <div class="home-info">
+            <div v-for="opt in item.options" :key="opt" style="display: inline">
+              # {{ opt }}
+            </div>
+          </div>
         </div>
-        <button v-if="item.isFavorite" id="heart-btn" @click="clickHeart()">
+        <button v-if="item.isWish" id="heart-btn" @click="clickHeart()">
           <img
             src="@/assets/image/icon-heart-filled.png"
             width="20"
@@ -54,9 +58,6 @@
 import { ref } from "vue";
 import { defineComponent } from "vue";
 export default defineComponent({
-  props: {
-    addressIdx: Number,
-  },
   setup(_, context) {
     const input = ref("");
     const isFavorite = ref(false);
@@ -86,7 +87,7 @@ export default defineComponent({
       explanationDate: string | null;
       parking: number;
       options: Array<string>;
-      isFavorite: boolean;
+      isWish: boolean;
     }
     const productList: Product[] = [];
     productList.push({
@@ -102,8 +103,8 @@ export default defineComponent({
       seller: "싸피",
       explanationDate: "2023.1.30",
       parking: 0,
-      options: ["에어컨", "냉장고"],
-      isFavorite: true,
+      options: ["주방분리", "풀 옵션"],
+      isWish: true,
     });
     productList.push({
       productType: "월세",
@@ -119,7 +120,7 @@ export default defineComponent({
       explanationDate: "2023.1.30",
       parking: 0,
       options: ["에어컨", "냉장고"],
-      isFavorite: true,
+      isWish: true,
     });
     productList.push({
       productType: "월세",
@@ -134,8 +135,8 @@ export default defineComponent({
       seller: "싸피",
       explanationDate: "2023.1.30",
       parking: 0,
-      options: ["에어컨", "냉장고"],
-      isFavorite: true,
+      options: ["베란다", "주방분리", "에어컨", "냉장고"],
+      isWish: true,
     });
 
     return { input, isFavorite, clickHeart, productList, getList, whereIs };

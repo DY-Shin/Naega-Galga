@@ -1,7 +1,7 @@
 <template>
   <div class="common-layout">
     <el-container>
-      <main-side @address="sendAddress"></main-side>
+      <main-side @address="sendAddress" @productList="sendList"></main-side>
       <el-container :style="{ height: 'calc(100vh - 150px)' }">
         <ka-kao-map :GetAddress="addressProxy"></ka-kao-map>
       </el-container>
@@ -19,11 +19,22 @@ import ChatIcon from "@/components/common/ChatWindow.vue";
 export default defineComponent({
   name: "addressInfo",
   components: { MainSide, KaKaoMap, ChatIcon },
-
+  watch: {
+    GetAddress() {
+      console.log("change");
+    },
+  },
   setup() {
     const addressProxy = ref("");
     const sendAddress = (address: string) => {
       addressProxy.value = address;
+    };
+
+    let listProxy: Product[] = [];
+    const sendList = (list: Product[]) => {
+      for (let i = 0; i < list.length; i++) {
+        listProxy.push(list[i]);
+      }
     };
 
     interface Product {
@@ -42,38 +53,12 @@ export default defineComponent({
       options: Array<string>;
       isFavorite: boolean;
     }
-    const product: Product = {
-      productType: "월세",
-      productName: "싸피빌라",
-      price: "1000/30",
-      managePrice: 5,
-      floor: "10층/3층",
-      roomSize: 29.5,
-      address: "경상북도 구미시 진평동 13",
-      roomDirection: "남향",
-      animal: false,
-      seller: "싸피부동산",
-      explanationDate: "2023.1.30",
-      parking: 0,
-      options: ["에어컨", "냉장고"],
-      isFavorite: false,
-    };
-    const summaryValue = () => ({
-      productType: product.productType,
-      price: product.price,
-      floor: product.floor,
-      managePrice: product.managePrice,
-      seller: product.seller,
-      explanationDate: product.explanationDate,
-    });
 
     return {
-      product,
-      summaryValue,
       sendAddress,
       addressProxy,
-      // sendList,
-      // check,
+      sendList,
+      listProxy,
     };
   },
 });
