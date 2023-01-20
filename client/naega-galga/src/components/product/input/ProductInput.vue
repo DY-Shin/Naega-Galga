@@ -1,10 +1,11 @@
 <template>
+  <h1>매물 사진 등록</h1>
   <product-image-input
     @fileAdd="fileAdd"
     @fileDelete="fileDelete"
     :fileList="fileList"
   ></product-image-input>
-  <h1>매물 정보 입력</h1>
+  <h1 style="margin-top: 50px">매물 정보 입력</h1>
   <div class="guid-text">가격은 만원 단위로 입력해주세요</div>
   <!-- 월세 전세 라디오 -->
   <hr />
@@ -47,6 +48,7 @@
         v-model="productInfo.roomSize"
         type="number"
         class="margin-right-small"
+        step="0.1"
       >
       </el-input>
       <span>m<sup>2</sup></span>
@@ -204,19 +206,17 @@
   <el-row>
     <el-col :span="14"></el-col>
     <el-col :span="10" class="align-right">
-      <div v-if="!isEditMode">
-        <el-button type="info" @click="onClickAdd">등록</el-button>
-      </div>
-      <div v-else>
-        <el-button type="info" @click="onClickEdit">수정</el-button>
-        <el-button type="warning" @click="cancelEditProduct">취소</el-button>
-      </div>
+      <el-button v-if="!isEditMode" type="primary" @click="onClickAdd">
+        등록
+      </el-button>
+      <el-button v-else type="primary" @click="onClickEdit">수정</el-button>
+      <el-button type="warning" @click="cancelEditProduct">취소</el-button>
     </el-col>
   </el-row>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, reactive } from "@vue/runtime-core";
+import { computed, defineComponent, reactive } from "vue";
 import ProductImageInput from "@/components/product/input/ProductImageInput.vue";
 import AddressSearchButton from "@/components/common/AddressSearchButton.vue";
 import { useRoute } from "vue-router";
@@ -368,7 +368,6 @@ export default defineComponent({
       "와이파이",
       "책상",
       "옷장",
-      "싱크대",
       "침대",
     ];
 
@@ -406,6 +405,21 @@ export default defineComponent({
       };
       formData.append("building", building);
 
+      const checkOption = (option: string) =>
+        optionList.some(item => item === option);
+
+      enum optionEng {
+        "냉장고" = "optionFridge",
+        "에어컨" = "optionAirConditioner",
+        "세탁기" = "optionWashingMachine",
+        "가스레인지" = "optionGasStove",
+        "인덕션" = "optionInduction",
+        "전자레인지" = "optionMicrowave",
+        "책상" = "optionDesk",
+        "와이파이" = "optionWifi",
+        "옷장" = "optionCloset",
+        "침대" = "optionBed",
+      }
       const option = {
         optionAirConditioner: 0,
         optionFridge: 0,
@@ -418,6 +432,13 @@ export default defineComponent({
         optionCloset: 0,
         optionBed: 0,
       };
+
+      //전체 옵션과 비교해서 선택된 옵션이면 1로 변경
+      productInfo.selectedOptionList.forEach(item => {
+        if (checkOption(item)) {
+          option[optionEng[item]] = 1;
+        }
+      });
       formData.append("option", option);
 
       return formData;
@@ -430,6 +451,9 @@ export default defineComponent({
       const status = await addProduct(data);
       if (status === ResponseStatus.Ok) {
         router.back();
+      }
+      if (status === ResponseStatus.Conflict) {
+        alert("이미 등록된 매물입니다");
       }
       if (status === ResponseStatus.InternalServerError) {
         alert("서버 오류로 처리할 수 없습니다");
