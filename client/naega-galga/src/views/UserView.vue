@@ -1,5 +1,6 @@
 <template>
   <div id="mypage">
+    <div />
     <user-side-bar />
     <main>
       <div id="mainpage">
@@ -21,16 +22,16 @@ export default defineComponent({
 });
 </script>
 
-<style>
+<style scoped>
 #mypage {
   height: flex;
 
   margin-top: 1rem;
-  margin-left: 15rem;
-  margin-right: 15rem;
+  /* margin-left: 15rem;
+  margin-right: 15rem; */
 
   display: grid;
-  grid-template-columns: 1fr 3fr;
+  grid-template-columns: 1fr 1fr 3fr 1fr;
   column-gap: 1rem;
 }
 

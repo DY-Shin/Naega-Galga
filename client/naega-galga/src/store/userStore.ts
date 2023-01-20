@@ -18,13 +18,13 @@ const mutations = {
     state.token = token;
   },
   LOGOUT(state) {
-    state.user_info = null;
     state.token = null;
   },
 
   GET_USER_INFO(state, user_info) {
     state.user_info = user_info;
   },
+
   USER_INFO_CHANGE(state, changeform) {
     state.user_name = changeform.name;
     state.user_id = changeform.user_id;
@@ -54,7 +54,19 @@ const actions = {
       });
   },
   logout(context) {
-    apiTokenInstance.post(`/api/logout`).then(res => {
+    apiTokenInstance.post(`api/v1/logout`).then(res => {
+      context.commit("LOGOUT", res.data.key).catch(err => {
+        console.log(err);
+      });
+    });
+  },
+
+  passwordCheck() {
+    apiTokenInstance.post(`/api/users/checkpassword`);
+  },
+
+  userDelete(context) {
+    apiInstance.delete(`/api/users/delete`).then(res => {
       context.commit("LOGOUT", res.data.key).catch(err => {
         console.log(err);
       });
@@ -63,7 +75,7 @@ const actions = {
 
   get_user_info(context) {
     apiInstance
-      .get(`api/users/me`)
+      .get(`api/v1/user`)
       .then(res => {
         context.commit("GET_USER_INFO", res.data.key);
       })
