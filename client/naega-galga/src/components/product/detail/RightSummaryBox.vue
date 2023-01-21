@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="title-box">
-      <span class="font-large font-bold">
+      <span class="font-large font-semi-bold">
         {{ summary.title }}
       </span>
       <el-button
@@ -26,7 +26,7 @@
       {{ summary.managePrice }}
     </div>
     <div class="font-medium margin-top">
-      {{ summary.seller }}
+      {{ summary.sellerId }}
     </div>
     <div class="margin-top">
       <span
@@ -35,10 +35,10 @@
       >
         {{ summary.explanationDate }}
       </span>
-      <el-button type="info" circle :icon="Plus"></el-button>
+      <el-button type="primary" circle :icon="Plus"></el-button>
     </div>
     <div class="margin-top width-full">
-      <el-button type="info" class="width-full">문의하기</el-button>
+      <el-button type="primary" class="width-full">문의하기</el-button>
     </div>
   </div>
 </template>
@@ -55,12 +55,13 @@ export default defineComponent({
       type: Object,
       value: {
         productIndex: Number,
-        type: String,
+        productType: String,
         price: String,
         floor: String,
         managePrice: Number,
-        explanationDate: [String, null],
-        seller: String,
+        sellerId: String,
+        sellerIndex: Number,
+        explanationDate: String,
         isWish: Boolean,
       },
     },
@@ -107,7 +108,7 @@ export default defineComponent({
         title: `${obj?.productType} ${obj?.price}`,
         floor: obj?.floor,
         managePrice: `관리비 월 ${obj?.managePrice}만`,
-        seller: obj?.seller,
+        sellerId: obj?.sellerId,
         explanationDate: dateString,
       };
     });
@@ -131,10 +132,11 @@ export default defineComponent({
   float: right;
   top: 50px;
   padding: 20px;
+  width: 250px;
 }
 
-.font-bold {
-  font-weight: bold;
+.font-semi-bold {
+  font-weight: 600;
 }
 
 .font-large {
@@ -169,7 +171,7 @@ export default defineComponent({
 
 .heart-btn {
   position: relative;
-  right: -80px;
+  right: -90px;
 }
 
 .width-full {
@@ -177,7 +179,7 @@ export default defineComponent({
 }
 
 .explanation-text {
-  background-color: #ff4444;
+  background-color: var(--el-color-error);
   color: #f4f4f5;
   padding: 8px 15px;
   margin-right: 10px;
