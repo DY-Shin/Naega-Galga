@@ -42,6 +42,19 @@
   <hr />
   <!-- 방 크기 -->
   <el-row>
+    <el-col :span="6" class="text-align"><span>관리비</span></el-col>
+    <el-col :span="18">
+      <el-input
+        v-model="productInfo.managePrice"
+        type="number"
+        placeholder="월 00만원"
+      >
+      </el-input>
+    </el-col>
+  </el-row>
+  <hr />
+  <!-- 방 크기 -->
+  <el-row>
     <el-col :span="6" class="text-align"><span>방 크기</span></el-col>
     <el-col :span="18">
       <el-input
@@ -287,8 +300,8 @@ export default defineComponent({
       elevatorRadio: "있음",
       roadAddress: "",
       jibunAddress: "",
-      buildingName: "싸피빌라",
-      productHo: "302",
+      buildingName: "",
+      productHo: "",
       selectedOptionList: [],
     });
 
