@@ -1,13 +1,15 @@
 <template>
+  <alert-box></alert-box>
   <main-header></main-header>
   <router-view></router-view>
 </template>
 
 <script lang="ts">
 import MainHeader from "@/components/common/MainHeader.vue";
+import AlertBox from "@/components/common/AlertComponent.vue";
 export default {
   name: "app",
-  components: { MainHeader },
+  components: { MainHeader, AlertBox },
 };
 </script>
 
