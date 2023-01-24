@@ -63,6 +63,11 @@ export default defineComponent({
     };
 
     const searchWord = ref("");
+    const { emit } = context;
+    const whereIs = index => {
+      emit("address", productList[index].address);
+      emit("addr_idx", index);
+    };
     let productList: Product[] = reactive([]);
 
     const getList = () => {
@@ -72,61 +77,122 @@ export default defineComponent({
         return;
       }
 
-      productList.splice(0);
-      productList.push({
-        productType: "월세",
-        productName: "싸피빌라",
-        price: "30",
-        managePrice: 50000,
-        floor: "2층",
-        roomSize: 30,
-        address: "부산 동래구 충렬대로 255",
-        roomDirection: "남향",
-        animal: true,
-        seller: "싸피",
-        explanationDate: null,
-        parking: 0,
-        options: ["주방분리", "풀 옵션"],
-        isWish: false,
-      });
-      productList.push({
-        productType: "월세",
-        productName: "싸피빌라",
-        price: "30",
-        managePrice: 50000,
-        floor: "2층",
-        roomSize: 30,
-        address: "경상북도 구미시 인동6길 26-2",
-        roomDirection: "남향",
-        animal: true,
-        seller: "싸피",
-        explanationDate: "2023.1.30",
-        parking: 0,
-        options: ["에어컨", "냉장고"],
-        isWish: true,
-      });
-      productList.push({
-        productType: "월세",
-        productName: "싸피빌라",
-        price: "30",
-        managePrice: 50000,
-        floor: "2층",
-        roomSize: 30,
-        address: "경북 안동시 경동로 1375 안동대학교",
-        roomDirection: "남향",
-        animal: true,
-        seller: "싸피",
-        explanationDate: null,
-        parking: 0,
-        options: ["베란다", "주방분리", "에어컨", "냉장고"],
-        isWish: true,
-      });
-      emit("productList", productList);
+      if (input.value == "1") {
+        productList.splice(0);
+        productList.push({
+          productType: "월세",
+          productName: "싸피빌라",
+          price: "30",
+          managePrice: 50000,
+          floor: "2층",
+          roomSize: 30,
+          address: "부산 동래구 충렬대로 255",
+          roomDirection: "남향",
+          animal: true,
+          seller: "싸피",
+          explanationDate: null,
+          parking: 1,
+          options: ["주방분리", "풀 옵션"],
+          isWish: false,
+        });
+        productList.push({
+          productType: "월세",
+          productName: "싸피빌라",
+          price: "30",
+          managePrice: 50000,
+          floor: "2층",
+          roomSize: 30,
+          address: "경상북도 구미시 인동6길 26-2",
+          roomDirection: "남향",
+          animal: true,
+          seller: "싸피",
+          explanationDate: "2023.1.30",
+          parking: 2,
+          options: ["에어컨", "냉장고"],
+          isWish: true,
+        });
+        productList.push({
+          productType: "월세",
+          productName: "싸피빌라",
+          price: "30",
+          managePrice: 50000,
+          floor: "2층",
+          roomSize: 30,
+          address: "경북 안동시 경동로 1375 안동대학교",
+          roomDirection: "남향",
+          animal: true,
+          seller: "싸피",
+          explanationDate: null,
+          parking: 3,
+          options: ["베란다", "주방분리", "에어컨", "냉장고"],
+          isWish: true,
+        });
+        emit("productList", productList);
+      } else if (input.value == "2") {
+        productList.splice(0);
+
+        productList.push({
+          productType: "월세",
+          productName: "싸피빌라",
+          price: "30",
+          managePrice: 50000,
+          floor: "2층",
+          roomSize: 30,
+          address: "경상북도 구미시 인동6길 26-2",
+          roomDirection: "남향",
+          animal: true,
+          seller: "싸피",
+          explanationDate: "2023.1.30",
+          parking: 0,
+          options: ["에어컨", "냉장고"],
+          isWish: true,
+        });
+        productList.push({
+          productType: "월세",
+          productName: "싸피빌라",
+          price: "30",
+          managePrice: 50000,
+          floor: "2층",
+          roomSize: 30,
+          address: "경북 안동시 경동로 1375 안동대학교",
+          roomDirection: "남향",
+          animal: true,
+          seller: "싸피",
+          explanationDate: null,
+          parking: 0,
+          options: ["베란다", "주방분리", "에어컨", "냉장고"],
+          isWish: true,
+        });
+        console.log("emit " + productList.length);
+
+        emit("productList", productList);
+      } else if (input.value == "3") {
+        productList.splice(0);
+
+        productList.push({
+          productType: "월세",
+          productName: "싸피빌라",
+          price: "30",
+          managePrice: 50000,
+          floor: "2층",
+          roomSize: 30,
+          address: "경상북도 구미시 인동6길 26-2",
+          roomDirection: "남향",
+          animal: true,
+          seller: "싸피",
+          explanationDate: "2023.1.30",
+          parking: 0,
+          options: ["에어컨", "냉장고"],
+          isWish: true,
+        });
+        console.log("emit " + productList.length);
+
+        emit("productList", productList);
+      } else {
+        productList.splice(0);
+      }
+
       searchWord.value = input.value;
-    };
-    const { emit } = context;
-    const whereIs = index => {
-      emit("address", productList[index].address);
     };
 
     interface Product {

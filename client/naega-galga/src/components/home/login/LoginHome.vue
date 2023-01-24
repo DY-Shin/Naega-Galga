@@ -3,7 +3,10 @@
     <el-container>
       <main-side @address="sendAddress" @productList="sendList"></main-side>
       <el-container :style="{ height: 'calc(100vh - 150px)' }">
-        <ka-kao-map :GetAddress="addressProxy"></ka-kao-map>
+        <ka-kao-map
+          :GetAddress="addressProxy"
+          :GetList="listProxy"
+        ></ka-kao-map>
       </el-container>
     </el-container>
     <chat-icon></chat-icon>
@@ -19,11 +22,7 @@ import ChatIcon from "@/components/common/ChatWindow.vue";
 export default defineComponent({
   name: "addressInfo",
   components: { MainSide, KaKaoMap, ChatIcon },
-  watch: {
-    GetAddress() {
-      console.log("change");
-    },
-  },
+
   setup() {
     const addressProxy = ref("");
     const sendAddress = (address: string) => {
@@ -32,8 +31,12 @@ export default defineComponent({
 
     let listProxy: Product[] = [];
     const sendList = (list: Product[]) => {
+      listProxy.splice(0);
       for (let i = 0; i < list.length; i++) {
         listProxy.push(list[i]);
+      }
+      for (let i = 0; i < list.length; i++) {
+        console.log("listProxy length! " + listProxy.length);
       }
     };
 

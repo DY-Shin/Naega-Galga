@@ -9,8 +9,7 @@
 </style>
 
 <script lang="ts">
-import { defineComponent, onMounted, watch } from "@vue/runtime-core";
-["GetAddress"];
+import { defineComponent, onMounted, watch, PropType } from "@vue/runtime-core";
 
 declare global {
   interface Window {
@@ -20,7 +19,10 @@ declare global {
 }
 
 export default defineComponent({
-  props: { GetAddress: { type: String } },
+  props: {
+    GetAddress: { type: String },
+    GetList: { type: Array as PropType<Array<object>> },
+  },
 
   setup(props) {
     watch(
@@ -28,6 +30,17 @@ export default defineComponent({
       () => {
         console.log("getAddress!!");
         changeCenter(props.GetAddress);
+      }
+    );
+
+    watch(
+      () => props.GetList,
+      () => {
+        console.log("getList!! " + props.GetList?.length);
+        displayMarker(props.GetList);
+        // window.map.setCenter(
+        //   new window.kakao.maps.LatLng(33.450705, 126.570677)
+        // );
       }
     );
 
@@ -51,8 +64,7 @@ export default defineComponent({
     onMounted(() => {
       const mapScript = document.createElement("script");
       mapScript.async = true;
-      mapScript.src = `//dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=eca171c688a86c3acc3456ba72a34e6b
-&libraries=services`;
+      mapScript.src = `//dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=eca171c688a86c3acc3456ba72a34e6b&libraries=services`;
 
       document.head.appendChild(mapScript);
 
@@ -66,48 +78,50 @@ export default defineComponent({
           center: new window.kakao.maps.LatLng(latitude, longitude),
         };
         window.map = new window.kakao.maps.Map(container, options);
-        displayMarker(window.map, markerPositions1);
       });
+      console.log(changeCenter("경상북도 구미시 인동6길 26 - 2"));
     };
-    const displayMarker = (map, markerList) => {
-      console.log(markerList.length + "!!!");
+
+    const displayMarker = markerList => {
+      let geocoder = new window.kakao.maps.services.Geocoder();
+
       if (markerList.length > 0) {
         // markers.forEach(marker => marker.setMap(null));
       }
       let bounds = new window.kakao.maps.LatLngBounds();
       if (markerList.length > 0) {
         for (let i = 0; i < markerList.length; i++) {
-          let marker = new window.kakao.maps.Marker({
-            position: new window.kakao.maps.LatLng(
-              markerList[i].latlng[0],
-              markerList[i].latlng[1]
-            ),
-          });
-          marker.setMap(map);
-          bounds.extend(
-            new window.kakao.maps.LatLng(
-              markerList[i].latlng[0],
-              markerList[i].latlng[1]
-            )
-          );
-
-          let infowindow = new window.kakao.maps.InfoWindow({
-            content:
-              '<div class="" style="width: 150px; height: 100px; text- align: center; padding: 10px 0; border: 1px solid red"> asd < /div>',
-            removable: true,
-          });
-          window.kakao.maps.event.addListener(
-            marker,
-            "mouseover",
-            makeOverListener(map, marker, infowindow)
-          );
-          window.kakao.maps.event.addListener(
-            marker,
-            "mouseout",
-            makeOutListener(infowindow)
+          geocoder.addressSearch(
+            markerList[i].address,
+            function (result, status) {
+              if (status === window.kakao.maps.services.Status.OK) {
+                let coords = new window.kakao.maps.LatLng(
+                  result[0].y,
+                  result[0].x
+                );
+                let marker = new window.kakao.maps.Marker({ position: coords });
+                marker.setMap(window.map);
+                bounds.extend(coords);
+                let infowindow = new window.kakao.maps.InfoWindow({
+                  content:
+                    '<div class="" style="width: 150px; height: 100px; text- align: center; padding: 10px 0; border: 1px solid red"> asd < /div>',
+                  removable: true,
+                });
+                window.kakao.maps.event.addListener(
+                  marker,
+                  "mouseover",
+                  makeOverListener(window.map, marker, infowindow)
+                );
+                window.kakao.maps.event.addListener(
+                  marker,
+                  "mouseout",
+                  makeOutListener(infowindow)
+                );
+              }
+            }
           );
         }
-        map.setBounds(bounds);
+        window.map.setBounds(bounds);
       }
     };
     const changeCenter = address => {
@@ -124,6 +138,21 @@ export default defineComponent({
             position: coords,
           });
           marker.setMap(window.map);
+          let infowindow = new window.kakao.maps.InfoWindow({
+            content:
+              '<div class="" style="width: 150px; height: 100px; text- align: center; padding: 10px 0; border: 1px solid red"> asd < /div>',
+            removable: true,
+          });
+          window.kakao.maps.event.addListener(
+            marker,
+            "mouseover",
+            makeOverListener(window.map, marker, infowindow)
+          );
+          window.kakao.maps.event.addListener(
+            marker,
+            "mouseout",
+            makeOutListener(infowindow)
+          );
         }
       });
     };
