@@ -1,8 +1,12 @@
 package com.ssafy.commonpjt.api.service;
 
 import com.ssafy.commonpjt.api.dto.KakaoAddressDTO;
+import com.ssafy.commonpjt.db.repository.BuildingRepository;
+import com.ssafy.commonpjt.db.repository.OptionsRepository;
+import com.ssafy.commonpjt.db.repository.ProductRepository;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -17,9 +21,20 @@ public class SearchServiceImpl implements SearchService{
     @Value("${kakao.restapi.key}")
     private String restApiKey;
 
+    @Autowired
+    private BuildingRepository buildingRepository;
+    @Autowired
+    private ProductRepository productRepository;
+    @Autowired
+    private OptionsRepository optionsRepository;
+
     @Override
     public List<?> searchProduct(String address) {
-
+        System.out.println(address);
+        if(address==null) {
+            System.out.println("Empty");
+            return null;
+        }
         Mono<String> mono = WebClient.builder().baseUrl("http://dapi.kakao.com")
                 .build()
                 .get()
@@ -60,6 +75,18 @@ public class SearchServiceImpl implements SearchService{
 
             addressList.add(dto);
         }
+
+        int addressCount = addressList.size();
+
+//
+//
+//        for(KakaoAddressDTO KakaoAddress : addressList) {
+//            String roadAddr = KakaoAddress.getRoadAddress();
+//            String addr = KakaoAddress.getAddress();
+//
+//            buildingRepository.findBuildingIndexByBuildingAddressStartingWithOrBuildingRoadAddressStartingWith(addr, roadAddr);
+//
+//        }
 
         return addressList;
     }

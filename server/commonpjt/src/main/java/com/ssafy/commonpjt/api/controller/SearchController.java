@@ -5,10 +5,7 @@ import com.ssafy.commonpjt.api.service.SearchServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -28,15 +25,29 @@ public class SearchController {
      * @return
      */
 
-    @GetMapping("/{address}")
-    public ResponseEntity<?> searchProduct(@PathVariable("address") String address) {
+    @GetMapping("")
+    public ResponseEntity<?> searchProduct(@RequestParam("address") String address) {
         log.info(address);
-        if(address.equals("")) {
-        }
+        System.out.println(address);
+//        if(address == null) {
+//            return ResponseEntity.ok("Empty");
+//        }
+//        // 아무것도 없을 시 404 에러 - 카카오에서는 400 에러
+//        if(address.equals("")) {
+//            return ResponseEntity.ok("Empty");
+//        }
         List<?> list = searchService.searchProduct(address);
 
         return ResponseEntity.ok(list);
     }
+
+//    @GetMapping("/{address}")
+//    public String searchProduct(@PathVariable("address") String address) {
+//        log.info(address);
+//        if(address.equals("")) {
+//        }
+//        return searchService.searchProduct(address);
+//    }
 
 //    @GetMapping("/search/detail")
 //    public ResponseEntity<?> detailProduct() {
