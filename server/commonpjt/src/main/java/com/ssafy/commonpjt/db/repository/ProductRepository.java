@@ -8,6 +8,5 @@ import org.springframework.data.repository.Repository;
 import java.util.List;
 
 public interface ProductRepository extends JpaRepository<Product, Integer> {
-    @Query("select '*' from product")
     List<Product> findProductBy();
 }
