@@ -2,21 +2,16 @@
   <el-aside style="height: 100%">
     <!-- search bar start -->
     <div class="search-bar" style="display: inline-flex">
-      <div class="search-icon">
-        <img
-          class="search-icon"
-          src="https://cdn.pixabay.com/photo/2017/01/13/01/22/magnifying-glass-1976105_960_720.png"
-          width="30"
-          height="30"
-        />
-      </div>
       <el-input
         class="search-input"
         v-model="input"
-        placeholder=" 검색"
-        clearable
+        placeholder="검색"
         @keyup.enter="getList()"
-      />
+      >
+        <template #append>
+          <el-button :icon="Search" @click="getList()" />
+        </template>
+      </el-input>
     </div>
     <el-scrollbar :style="{ height: 'calc(100vh - 225px)' }">
       <div
@@ -34,9 +29,13 @@
         <div class="home-info-box">
           <div class="home-area">{{ item.address }}</div>
           <div class="home-price">{{ item.productType }} {{ item.price }}</div>
-          <div class="home-info"># 주방 분리 # 풀 옵션</div>
+          <div class="home-info">
+            <div v-for="opt in item.options" :key="opt" style="display: inline">
+              # {{ opt }}
+            </div>
+          </div>
         </div>
-        <button v-if="item.isFavorite" id="heart-btn" @click="clickHeart()">
+        <button v-if="item.isWish" id="heart-btn" @click="clickHeart()">
           <img
             src="@/assets/image/icon-heart-filled.png"
             width="20"
@@ -51,25 +50,150 @@
 </template>
 
 <script lang="ts">
-import { ref } from "vue";
-import { defineComponent } from "vue";
+import { reactive, ref, defineComponent, onBeforeUpdate } from "vue";
+import { Search } from "@element-plus/icons-vue";
+
 export default defineComponent({
-  props: {
-    addressIdx: Number,
-  },
   setup(_, context) {
-    const input = ref("");
+    let input = ref("");
+
     const isFavorite = ref(false);
     const clickHeart = () => {
       isFavorite.value = !isFavorite.value;
     };
-    const getList = () => {
-      //검색 ->  목록 가져오기
-    };
+
+    const searchWord = ref("");
     const { emit } = context;
     const whereIs = index => {
       emit("address", productList[index].address);
-      emit("productList", productList);
+      emit("addr_idx", index);
+    };
+    let productList: Product[] = reactive([]);
+
+    const getList = () => {
+      //검색 ->  목록 가져오기
+      if (input.value === searchWord.value) {
+        searchWord.value = input.value;
+        return;
+      }
+
+      if (input.value == "1") {
+        productList.splice(0);
+        productList.push({
+          productType: "월세",
+          productName: "싸피빌라",
+          price: "30",
+          managePrice: 50000,
+          floor: "2층",
+          roomSize: 30,
+          address: "부산 동래구 충렬대로 255",
+          roomDirection: "남향",
+          animal: true,
+          seller: "싸피",
+          explanationDate: null,
+          parking: 1,
+          options: ["주방분리", "풀 옵션"],
+          isWish: false,
+        });
+        productList.push({
+          productType: "월세",
+          productName: "싸피빌라",
+          price: "30",
+          managePrice: 50000,
+          floor: "2층",
+          roomSize: 30,
+          address: "경상북도 구미시 인동6길 26-2",
+          roomDirection: "남향",
+          animal: true,
+          seller: "싸피",
+          explanationDate: "2023.1.30",
+          parking: 2,
+          options: ["에어컨", "냉장고"],
+          isWish: true,
+        });
+        productList.push({
+          productType: "월세",
+          productName: "싸피빌라",
+          price: "30",
+          managePrice: 50000,
+          floor: "2층",
+          roomSize: 30,
+          address: "경북 안동시 경동로 1375 안동대학교",
+          roomDirection: "남향",
+          animal: true,
+          seller: "싸피",
+          explanationDate: null,
+          parking: 3,
+          options: ["베란다", "주방분리", "에어컨", "냉장고"],
+          isWish: true,
+        });
+        console.log("emit " + productList.length);
+        emit("productList", productList);
+      } else if (input.value == "2") {
+        productList.splice(0);
+
+        productList.push({
+          productType: "월세",
+          productName: "싸피빌라",
+          price: "30",
+          managePrice: 50000,
+          floor: "2층",
+          roomSize: 30,
+          address: "경상북도 구미시 인동6길 26-2",
+          roomDirection: "남향",
+          animal: true,
+          seller: "싸피",
+          explanationDate: "2023.1.30",
+          parking: 0,
+          options: ["에어컨", "냉장고"],
+          isWish: true,
+        });
+        productList.push({
+          productType: "월세",
+          productName: "싸피빌라",
+          price: "30",
+          managePrice: 50000,
+          floor: "2층",
+          roomSize: 30,
+          address: "경북 안동시 경동로 1375 안동대학교",
+          roomDirection: "남향",
+          animal: true,
+          seller: "싸피",
+          explanationDate: null,
+          parking: 0,
+          options: ["베란다", "주방분리", "에어컨", "냉장고"],
+          isWish: true,
+        });
+        console.log("emit " + productList.length);
+
+        emit("productList", productList);
+      } else if (input.value == "3") {
+        productList.splice(0);
+
+        productList.push({
+          productType: "월세",
+          productName: "싸피빌라",
+          price: "30",
+          managePrice: 50000,
+          floor: "2층",
+          roomSize: 30,
+          address: "경상북도 구미시 인동6길 26-2",
+          roomDirection: "남향",
+          animal: true,
+          seller: "싸피",
+          explanationDate: "2023.1.30",
+          parking: 0,
+          options: ["에어컨", "냉장고"],
+          isWish: true,
+        });
+        console.log("emit " + productList.length);
+
+        emit("productList", productList);
+      } else {
+        productList.splice(0);
+      }
+
+      searchWord.value = input.value;
     };
 
     interface Product {
@@ -86,82 +210,34 @@ export default defineComponent({
       explanationDate: string | null;
       parking: number;
       options: Array<string>;
-      isFavorite: boolean;
+      isWish: boolean;
     }
-    const productList: Product[] = [];
-    productList.push({
-      productType: "월세",
-      productName: "싸피빌라",
-      price: "30",
-      managePrice: 50000,
-      floor: "2층",
-      roomSize: 30,
-      address: "제주특별자치도 제주시 첨단로 242",
-      roomDirection: "남향",
-      animal: true,
-      seller: "싸피",
-      explanationDate: "2023.1.30",
-      parking: 0,
-      options: ["에어컨", "냉장고"],
-      isFavorite: true,
-    });
-    productList.push({
-      productType: "월세",
-      productName: "싸피빌라",
-      price: "30",
-      managePrice: 50000,
-      floor: "2층",
-      roomSize: 30,
-      address: "경상북도 구미시 인동6길 26-2",
-      roomDirection: "남향",
-      animal: true,
-      seller: "싸피",
-      explanationDate: "2023.1.30",
-      parking: 0,
-      options: ["에어컨", "냉장고"],
-      isFavorite: true,
-    });
-    productList.push({
-      productType: "월세",
-      productName: "싸피빌라",
-      price: "30",
-      managePrice: 50000,
-      floor: "2층",
-      roomSize: 30,
-      address: "제주 제주시 첨단로 241",
-      roomDirection: "남향",
-      animal: true,
-      seller: "싸피",
-      explanationDate: "2023.1.30",
-      parking: 0,
-      options: ["에어컨", "냉장고"],
-      isFavorite: true,
-    });
 
-    return { input, isFavorite, clickHeart, productList, getList, whereIs };
+    return {
+      input,
+      isFavorite,
+      clickHeart,
+      productList,
+      getList,
+      whereIs,
+      Search,
+      searchWord,
+      onBeforeUpdate,
+    };
   },
 });
 </script>
 
 <style scoped>
-.el-input {
-  --el-input-text-color: var(--el-text-color-regular);
-  --el-input-border: var(--el-border);
-  --el-input-hover-border: var(--el-border-color-hover);
-  --el-input-focus-border: var(--el-text-color-regular);
-  --el-input-transparent-border: 0 0 0 1px transparent inset;
-  --el-input-border-color: var(--el-border-color);
-  --el-input-border-radius: var(--el-border-radius-base);
-  --el-input-bg-color: var(--el-fill-color-blank);
-  --el-input-icon-color: var(--el-text-color-placeholder);
-  --el-input-placeholder-color: var(--el-text-color-placeholder);
-  --el-input-hover-border-color: var(--el-border-color-hover);
-  --el-input-clear-hover-color: var(--el-text-color-secondary);
-  --el-input-focus-border-color: var(--el-text-color-regular);
+.search-bar {
+  width: 100%;
+  height: 80px;
+  border-bottom: 2px solid #73767a;
 }
+
 .search-input {
   width: 450px;
-  padding: 10px;
+  padding: 20px;
 }
 
 #heart-btn {
@@ -199,9 +275,7 @@ export default defineComponent({
   height: 100%;
   width: 50%;
 }
-.home-name {
-  float: right;
-}
+
 .list-img {
   position: relative;
   left: 20px;
@@ -233,18 +307,6 @@ export default defineComponent({
   height: 200px;
   text-align: center;
   color: var(--el-color-primary);
-}
-.search-bar::-webkit-scrollbar-track {
-  background-color: #575757;
-}
-.search-bar {
-  width: 100%;
-  /* height: 360px; */
-  border-bottom: 2px solid #73767a;
-}
-.search-icon {
-  /* display: inline; */
-  padding: 5px 0 5px 5px;
 }
 
 .el-aside {

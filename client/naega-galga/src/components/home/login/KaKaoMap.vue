@@ -5,146 +5,138 @@
 <style scoped>
 #map {
   width: 400px;
-  /* height: 800px; /
-  border-top: 1px solid #73767a;
-  / border: 1px solid #73767a;
-  border-radius: 0 7px 7px 0; */
 }
 </style>
 
-<script>
-export default {
-  name: "KakaoMap",
-  props: {
-    GetAddress: String,
-    GetList: Array,
-  },
-  data() {
-    return {
-      markersOpen: [],
-      markerPositions1: [
-        {
-          title: "카카오",
-          latlng: [33.450705, 126.570677],
-        },
-        {
-          title: "생태연못",
-          latlng: [33.450936, 126.569477],
-        },
-      ],
+<script lang="ts">
+import { defineComponent, onMounted, watch } from "@vue/runtime-core";
+["GetAddress"];
 
-      markers: [],
-    };
-  },
-  watch: {
-    GetAddress() {
-      this.changeCenter(this.GetAddress, this.map);
-    },
-  },
+declare global {
+  interface Window {
+    kakao: any;
+    map: any;
+  }
+}
 
-  mounted() {
-    if (window.kakao && window.kakao.maps) {
-      this.initMap();
-    } else {
-      this.initMap;
-    }
+export default defineComponent({
+  props: { GetAddress: { type: String } },
 
-    const script = document.createElement("script");
-    script.onload = () => kakao.maps.load(this.initMap);
-    script.src = `//dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=eca171c688a86c3acc3456ba72a34e6b
-&libraries=services`;
+  setup(props) {
+    watch(
+      () => props.GetAddress,
+      () => {
+        console.log("getAddress!!");
+        changeCenter(props.GetAddress);
+      }
+    );
 
-    document.head.appendChild(script);
-  },
-  methods: {
-    makeOverListener(map, marker, infowindow) {
-      return function () {
+    // let markers: [number[]];
+    const makeOverListener = (map, marker, infowindow) =>
+      function () {
         infowindow.open(map, marker);
       };
-    },
-
-    makeOutListener(infowindow) {
-      return function () {
+    const makeOutListener = infowindow =>
+      function () {
         infowindow.close();
       };
-    },
-    initMap() {
-      const container = document.getElementById("map");
-      const options = {
-        center: new kakao.maps.LatLng(33.450701, 126.570667),
-        level: 5,
-      };
 
-      /*global kakao*/
-      this.map = new kakao.maps.Map(container, options);
-      this.displayMarker();
-    },
+    const markerPositions1: object[] = [
+      { title: "카카오", latlng: [33.450705, 126.570677] },
+      { title: "생태연못", latlng: [33.450936, 126.569477] },
+    ];
 
-    displayMarker() {
-      // let mapContainer = document.getElementById("map"), // 지도를 표시할 div
-      //   mapOption = {
-      //     center: new kakao.maps.LatLng(33.450701, 126.570667), // 지도의 중심좌표
-      //     level: 3, // 지도의 확대 레벨
-      //   };
+    const latitude = 33.450705;
+    const longitude = 126.570677;
+    onMounted(() => {
+      const mapScript = document.createElement("script");
+      mapScript.async = true;
+      mapScript.src = `//dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=eca171c688a86c3acc3456ba72a34e6b
+&libraries=services`;
 
-      // let map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
+      document.head.appendChild(mapScript);
 
-      if (this.markers.length > 0) {
-        this.markers.forEach(marker => marker.setMap(null));
+      mapScript.addEventListener("load", initMap);
+      return () => mapScript.removeEventListener("load", initMap);
+    });
+    const initMap = () => {
+      window.kakao.maps.load(() => {
+        const container = document.getElementById("map");
+        const options = {
+          center: new window.kakao.maps.LatLng(latitude, longitude),
+        };
+        window.map = new window.kakao.maps.Map(container, options);
+        displayMarker(window.map, markerPositions1);
+      });
+    };
+    const displayMarker = (map, markerList) => {
+      console.log(markerList.length + "!!!");
+      if (markerList.length > 0) {
+        // markers.forEach(marker => marker.setMap(null));
       }
-      let bounds = new kakao.maps.LatLngBounds();
-      if (this.markerPositions1.length > 0) {
-        for (let i = 0; i < this.markerPositions1.length; i++) {
-          let marker = new kakao.maps.Marker({
-            position: new kakao.maps.LatLng(
-              this.markerPositions1[i].latlng[0],
-              this.markerPositions1[i].latlng[1]
+      let bounds = new window.kakao.maps.LatLngBounds();
+      if (markerList.length > 0) {
+        for (let i = 0; i < markerList.length; i++) {
+          let marker = new window.kakao.maps.Marker({
+            position: new window.kakao.maps.LatLng(
+              markerList[i].latlng[0],
+              markerList[i].latlng[1]
             ),
-            // image: icon,
           });
-          marker.setMap(this.map);
-          this.markers.push(marker);
+          marker.setMap(map);
           bounds.extend(
-            new kakao.maps.LatLng(
-              this.markerPositions1[i].latlng[0],
-              this.markerPositions1[i].latlng[1]
+            new window.kakao.maps.LatLng(
+              markerList[i].latlng[0],
+              markerList[i].latlng[1]
             )
           );
 
-          let infowindow = new kakao.maps.InfoWindow({
+          let infowindow = new window.kakao.maps.InfoWindow({
             content:
-              '<div class="" style="width: 150px; height: 100px; text- align: center; padding: 10px 0; border: 1px solid red">asd</div>',
+              '<div class="" style="width: 150px; height: 100px; text- align: center; padding: 10px 0; border: 1px solid red"> asd < /div>',
             removable: true,
           });
-          kakao.maps.event.addListener(
+          window.kakao.maps.event.addListener(
             marker,
             "mouseover",
-            this.makeOverListener(this.map, marker, infowindow)
+            makeOverListener(map, marker, infowindow)
           );
-          kakao.maps.event.addListener(
+          window.kakao.maps.event.addListener(
             marker,
             "mouseout",
-            this.makeOutListener(infowindow)
+            makeOutListener(infowindow)
           );
         }
-        this.map.setBounds(bounds);
+        map.setBounds(bounds);
       }
-    },
-
-    changeCenter(address, map) {
-      let geocoder = new kakao.maps.services.Geocoder();
+    };
+    const changeCenter = address => {
+      let geocoder = new window.kakao.maps.services.Geocoder();
       geocoder.addressSearch(address, function (result, status) {
-        // 정상적으로 검색이 완료됐으면
-        if (status === kakao.maps.services.Status.OK) {
-          let coords = new kakao.maps.LatLng(result[0].y, result[0].x);
-          console.log(coords);
-          map.setCenter(coords);
-          map.setLevel(1);
+        if (status === window.kakao.maps.services.Status.OK) {
+          let coords = new window.kakao.maps.LatLng(
+            Number(result[0].y),
+            Number(result[0].x)
+          );
+          window.map.setCenter(coords);
+          window.map.setLevel(1);
+          let marker = new window.kakao.maps.Marker({
+            position: coords,
+          });
+          marker.setMap(window.map);
         }
       });
-    },
+    };
+
+    return {
+      markerPositions1,
+      makeOverListener,
+      makeOutListener,
+      changeCenter,
+      props,
+    };
   },
-};
+});
 </script>
 <style scoped>
 .info-window {
