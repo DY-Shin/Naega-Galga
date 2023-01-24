@@ -28,14 +28,7 @@ public class SearchController {
     @GetMapping("")
     public ResponseEntity<?> searchProduct(@RequestParam("address") String address) {
         log.info(address);
-        System.out.println(address);
-//        if(address == null) {
-//            return ResponseEntity.ok("Empty");
-//        }
-//        // 아무것도 없을 시 404 에러 - 카카오에서는 400 에러
-//        if(address.equals("")) {
-//            return ResponseEntity.ok("Empty");
-//        }
+
         List<?> list = searchService.searchProduct(address);
 
         return ResponseEntity.ok(list);

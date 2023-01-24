@@ -1,6 +1,7 @@
 package com.ssafy.commonpjt.api.service;
 
 import com.ssafy.commonpjt.api.dto.KakaoAddressDTO;
+import com.ssafy.commonpjt.db.entity.Building;
 import com.ssafy.commonpjt.db.repository.BuildingRepository;
 import com.ssafy.commonpjt.db.repository.OptionsRepository;
 import com.ssafy.commonpjt.db.repository.ProductRepository;
@@ -31,10 +32,6 @@ public class SearchServiceImpl implements SearchService{
     @Override
     public List<?> searchProduct(String address) {
         System.out.println(address);
-        if(address==null) {
-            System.out.println("Empty");
-            return null;
-        }
         Mono<String> mono = WebClient.builder().baseUrl("http://dapi.kakao.com")
                 .build()
                 .get()
@@ -49,12 +46,13 @@ public class SearchServiceImpl implements SearchService{
                 });
 
         JSONObject addressObject = new JSONObject(mono.block());
-        JSONArray addressArray = addressObject.getJSONArray("documents");
-
-        int addressArrayLength = addressArray.length();
-
         List<KakaoAddressDTO> addressList = new ArrayList<KakaoAddressDTO>();
-        for(int i = 0; i<addressArrayLength; i++) {
+        if(addressObject.has("errorType")) {
+            return addressList;
+        }
+
+        JSONArray addressArray = addressObject.getJSONArray("documents");
+        for(int i = 0, addressArrayLength = addressArray.length(); i<addressArrayLength; i++) {
             KakaoAddressDTO dto = KakaoAddressDTO.builder()
                     .address("")
                     .roadAddress("")
@@ -78,15 +76,16 @@ public class SearchServiceImpl implements SearchService{
 
         int addressCount = addressList.size();
 
-//
-//
-//        for(KakaoAddressDTO KakaoAddress : addressList) {
-//            String roadAddr = KakaoAddress.getRoadAddress();
-//            String addr = KakaoAddress.getAddress();
-//
-//            buildingRepository.findBuildingIndexByBuildingAddressStartingWithOrBuildingRoadAddressStartingWith(addr, roadAddr);
-//
-//        }
+        for(KakaoAddressDTO KakaoAddress : addressList) {
+            String roadAddr = KakaoAddress.getRoadAddress();
+            String addr = KakaoAddress.getAddress();
+
+            List<Integer> building = buildingRepository.findBuildingIndexByBuildingAddressStartingWithOrBuildingRoadAddressStartingWith(addr, roadAddr);
+
+            for(int i=0, length = building.size(); i < length; i++) {
+
+            }
+        }
 
         return addressList;
     }
