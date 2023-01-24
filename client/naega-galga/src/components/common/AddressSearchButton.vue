@@ -1,5 +1,5 @@
 <template>
-  <el-button type="info" @click="addressSearch"> 주소 찾기 </el-button>
+  <el-button type="primary" @click="addressSearch"> 주소 찾기 </el-button>
 </template>
 
 <script lang="ts">
@@ -16,7 +16,6 @@ export default defineComponent({
         oncomplete: function (data) {
           // 팝업에서 검색결과 클릭시 data를 input에 넣음
           const { roadAddress, jibunAddress } = data; // 도로명 주소 변수
-          console.log(roadAddress, jibunAddress);
           //emit roadAddr
           emit("getRoadAddress", roadAddress);
           emit("getJibunAddress", jibunAddress);

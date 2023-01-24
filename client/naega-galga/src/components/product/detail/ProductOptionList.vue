@@ -74,11 +74,6 @@ export default defineComponent({
               name: option,
               src: require("@/assets/image/product-option-icon/icon-wardrobe.png"),
             };
-          case "싱크대":
-            return {
-              name: option,
-              src: require("@/assets/image/product-option-icon/icon-sink.png"),
-            };
           case "침대":
             return {
               name: option,

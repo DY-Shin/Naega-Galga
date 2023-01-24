@@ -1,4 +1,5 @@
 import apiInstance from "@/api/apiInstance";
+import apiTokenInstance from "@/api/apiTokenInstance";
 
 const state = {
   user_info: {
@@ -7,29 +8,32 @@ const state = {
     user_phone: "010-9169-5671",
     user_address: "그레이빌 206호",
   },
-
   token: null,
 };
+
 const getters = {};
+
 const mutations = {
-  GET_USER_INFO(state, user_info) {
-    state.user_info = user_info;
-  },
   SAVE_TOKEN(state, token) {
     state.token = token;
   },
-};
-const actions = {
-  get_user_info(context) {
-    apiInstance
-      .get(`api/v1/user`)
-      .then(res => {
-        context.commit("GET_USER_INFO", res.data.key);
-      })
-      .catch(err => {
-        console.log(err);
-      });
+  LOGOUT(state) {
+    state.token = null;
   },
+
+  GET_USER_INFO(state, user_info) {
+    state.user_info = user_info;
+  },
+
+  USER_INFO_CHANGE(state, changeform) {
+    state.user_name = changeform.name;
+    state.user_id = changeform.user_id;
+    state.user_phone_number = changeform.user_phone_number;
+    state.user_address = changeform.user_address;
+  },
+};
+
+const actions = {
   join(context, joinform) {
     apiInstance
       .post(`/api/v1/join`, {
@@ -49,7 +53,38 @@ const actions = {
         console.log(err);
       });
   },
+  logout(context) {
+    apiTokenInstance.post(`api/v1/logout`).then(res => {
+      context.commit("LOGOUT", res.data.key).catch(err => {
+        console.log(err);
+      });
+    });
+  },
+
+  passwordCheck() {
+    apiTokenInstance.post(`/api/users/checkpassword`);
+  },
+
+  userDelete(context) {
+    apiInstance.delete(`/api/users/delete`).then(res => {
+      context.commit("LOGOUT", res.data.key).catch(err => {
+        console.log(err);
+      });
+    });
+  },
+
+  get_user_info(context) {
+    apiInstance
+      .get(`api/v1/user`)
+      .then(res => {
+        context.commit("GET_USER_INFO", res.data.key);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  },
 };
+
 export default {
   namespaced: true,
   state,
