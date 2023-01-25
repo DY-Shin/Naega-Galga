@@ -1,6 +1,6 @@
 package com.ssafy.commonpjt.api.controller;
 
-import com.ssafy.commonpjt.api.dto.KakaoAddressDTO;
+import com.ssafy.commonpjt.api.dto.searchDTO.DetailSearchDTO;
 import com.ssafy.commonpjt.api.service.SearchServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,10 +15,6 @@ import java.util.List;
 public class SearchController {
     @Autowired
     private SearchServiceImpl searchService;
-
-
-    private static final String API_SERVER_HOST = "https://dapi.kakao.com/v2/local/search/address.json";
-
     /**
      * 기능설명 부탁
      * @param address
@@ -29,24 +25,16 @@ public class SearchController {
     public ResponseEntity<?> searchProduct(@RequestParam("address") String address) {
         log.info(address);
 
-        List<?> list = searchService.searchProduct(address);
+        List<?> searchResult = searchService.searchProduct(address);
 
-        return ResponseEntity.ok(list);
+        return ResponseEntity.ok(searchResult);
     }
 
-//    @GetMapping("/{address}")
-//    public String searchProduct(@PathVariable("address") String address) {
-//        log.info(address);
-//        if(address.equals("")) {
-//        }
-//        return searchService.searchProduct(address);
-//    }
-
-//    @GetMapping("/search/detail")
-//    public ResponseEntity<?> detailProduct() {
-//        List<?> productInfo = searchService.detailProduct();
-//        return ResponseEntity.ok(?);
-//    }
+    @GetMapping("/detail/{id}")
+    public ResponseEntity<?> detailProduct(@PathVariable("id") int id) {
+        DetailSearchDTO productInfo = searchService.detailProduct(id);
+        return ResponseEntity.ok(productInfo);
+    }
 
 
 }
