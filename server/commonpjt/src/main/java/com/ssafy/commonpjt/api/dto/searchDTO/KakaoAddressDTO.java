@@ -1,4 +1,4 @@
-package com.ssafy.commonpjt.api.dto;
+package com.ssafy.commonpjt.api.dto.searchDTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,12 +12,5 @@ import lombok.NoArgsConstructor;
 public class KakaoAddressDTO {
 
     private String address;
-
     private String roadAddress;
-
-    // private String X;
-
-    // private String Y;
-
-
 }
