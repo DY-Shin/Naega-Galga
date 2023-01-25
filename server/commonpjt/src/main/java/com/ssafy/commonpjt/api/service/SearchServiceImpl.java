@@ -1,10 +1,10 @@
 package com.ssafy.commonpjt.api.service;
 
-import com.ssafy.commonpjt.api.dto.KakaoAddressDTO;
-import com.ssafy.commonpjt.api.dto.SearchDTO;
+import com.ssafy.commonpjt.api.dto.searchDTO.KakaoAddressDTO;
+import com.ssafy.commonpjt.api.dto.searchDTO.SearchProductDTO;
+import com.ssafy.commonpjt.api.dto.searchDTO.DetailSearchDTO;
 import com.ssafy.commonpjt.db.entity.Product;
 import com.ssafy.commonpjt.db.repository.BuildingRepository;
-import com.ssafy.commonpjt.db.repository.OptionsRepository;
 import com.ssafy.commonpjt.db.repository.ProductRepository;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -16,7 +16,6 @@ import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class SearchServiceImpl implements SearchService{
@@ -28,9 +27,15 @@ public class SearchServiceImpl implements SearchService{
     private BuildingRepository buildingRepository;
     @Autowired
     private ProductRepository productRepository;
-    @Autowired
-    private OptionsRepository optionsRepository;
 
+    /**
+     * 카카오 로컬 api를 호출
+     * 검색한 주소의 정확한 값으로 변환하여
+     * DB에 저장된 값과 비교하여 반환
+     *
+     * @param address
+     * @return List<SearchDTO>
+     */
     @Override
     public List<?> searchProduct(String address) {
         System.out.println(address);
@@ -55,7 +60,7 @@ public class SearchServiceImpl implements SearchService{
 
         JSONArray addressArray = addressObject.getJSONArray("documents");
         for(int i = 0, addressArrayLength = addressArray.length(); i<addressArrayLength; i++) {
-            KakaoAddressDTO dto = KakaoAddressDTO.builder()
+            KakaoAddressDTO kakaoAddressDTO = KakaoAddressDTO.builder()
                     .address("")
                     .roadAddress("")
                     .build();
@@ -65,37 +70,35 @@ public class SearchServiceImpl implements SearchService{
 
             if(!object.isNull("address")) {
                 addressInfo = object.getJSONObject("address");
-                dto.setAddress(addressInfo.getString("address_name"));
+                kakaoAddressDTO.setAddress(addressInfo.getString("address_name"));
             }
 
             if(!object.isNull("road_address")) {
                 addressInfo = object.getJSONObject("road_address");
-                dto.setRoadAddress(addressInfo.getString("address_name"));
+                kakaoAddressDTO.setRoadAddress(addressInfo.getString("address_name"));
             }
 
-            addressList.add(dto);
+            addressList.add(kakaoAddressDTO);
         }
 
-        List<SearchDTO> searchResult = new ArrayList<>();
-        for(KakaoAddressDTO KakaoAddress : addressList) {
-            String roadAddr = KakaoAddress.getRoadAddress();
-            String addr = KakaoAddress.getAddress();
+        List<SearchProductDTO> searchResult = new ArrayList<>();
+        for(KakaoAddressDTO kakaoAddress : addressList) {
+            String roadAddr = kakaoAddress.getRoadAddress();
+            String addr = kakaoAddress.getAddress();
 
-            List<Integer> buildings = buildingRepository.findBuildingIndexByBuildingAddressStartingWithAndBuildingRoadAddressStartingWith(addr, roadAddr);
+            List<Integer> buildings = buildingRepository
+                    .findBuildingIndexByBuildingAddressStartingWithAndBuildingRoadAddressStartingWith(addr, roadAddr);
 
             for(Integer idx : buildings) {
+                System.out.println(idx);
                 List<Product> product = productRepository.productFetchJoin(idx);
-
                 for(Product p : product) {
-                    SearchDTO.Building buildingDTO = SearchDTO.Building.builder()
-                            .roadAddr(p.getBuilding().getBuildingRoadAddress())
-                            .build();
-                    SearchDTO.Product productDTO = SearchDTO.Product.builder()
+                    SearchProductDTO searchDTO = SearchProductDTO.builder()
                             .index(p.getProductIndex())
+                            .addr(p.getBuilding().getBuildingAddress())
+                            .roadAddr(p.getBuilding().getBuildingRoadAddress())
                             .price(p.getProductPrice())
                             .photo(p.getProductPhoto())
-                            .build();
-                    SearchDTO.Options optionsDTO = SearchDTO.Options.builder()
                             .airConditioner(p.getOptions().isOptionAirConditioner())
                             .fridge(p.getOptions().isOptionFridge())
                             .washingMachine(p.getOptions().isOptionWashingMachine())
@@ -107,8 +110,7 @@ public class SearchServiceImpl implements SearchService{
                             .closet(p.getOptions().isOptionCloset())
                             .bed(p.getOptions().isOptionBed())
                             .build();
-
-                    searchResult.add(new SearchDTO(buildingDTO, productDTO, optionsDTO));
+                    searchResult.add(searchDTO);
                 }
             }
         }
@@ -116,8 +118,30 @@ public class SearchServiceImpl implements SearchService{
         return searchResult;
     }
 
-//    @Override
-//    public List<?> detailProduct() {
-//        return null;
-//    }
+    @Override
+    public DetailSearchDTO detailProduct(int id) {
+        List<Product> product = productRepository.productFetchJoin(id);
+        DetailSearchDTO detailDTO = new DetailSearchDTO();
+        for(Product p:product) {
+            detailDTO = DetailSearchDTO.builder()
+                .index(p.getProductIndex())
+                .addr(p.getBuilding().getBuildingAddress())
+                .roadAddr(p.getBuilding().getBuildingRoadAddress())
+                .price(p.getProductPrice())
+                .photo(p.getProductPhoto())
+                .airConditioner(p.getOptions().isOptionAirConditioner())
+                .fridge(p.getOptions().isOptionFridge())
+                .washingMachine(p.getOptions().isOptionWashingMachine())
+                .gasStove(p.getOptions().isOptionGasStove())
+                .induction(p.getOptions().isOptionInduction())
+                .microWave(p.getOptions().isOptionMicroWave())
+                .desk(p.getOptions().isOptionDesk())
+                .wifi(p.getOptions().isOptionWifi())
+                .closet(p.getOptions().isOptionCloset())
+                .bed(p.getOptions().isOptionBed())
+                .build();
+        }
+
+        return detailDTO;
+    }
 }
