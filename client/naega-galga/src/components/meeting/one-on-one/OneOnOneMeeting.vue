@@ -2,24 +2,24 @@
   <div class="container">
     <div class="video-group">
       <video
-        v-if="videoOn.seller"
+        v-show="videoOn.seller"
         id="seller-video"
         class="border shadow"
         autoplay
         playinline
       ></video>
-      <div v-else id="seller-video" class="border shadow">
+      <div v-show="!videoOn.seller" id="seller-video" class="border shadow">
         <div class="no-video-text-position">비디오가 연결되지 않았습니다.</div>
       </div>
       <div>
         <video
-          v-if="videoOn.buyer"
+          v-show="videoOn.buyer"
           id="buyer-video"
           class="border"
           autoplay
           playinline
         ></video>
-        <div v-else id="buyer-video" class="border">
+        <div v-show="!videoOn.buyer" id="buyer-video" class="border">
           <div class="no-video-text-buyer">비디오가 연결되지 않았습니다.</div>
         </div>
       </div>
@@ -69,11 +69,29 @@
 </template>
 
 <script lang="ts">
-import { ref, reactive, Ref } from "vue";
+import { ref, reactive, Ref, onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
 
 export default {
   setup() {
+    //화상 미팅방 정보
+    // const store = useStore();
+    // const myInfo = computed(() => store.getters("userStore/GET_USER_INFO"));
+    const myIndex = 1;
+    const meetingInfo = {
+      sellerIndex: 2,
+      buyerIndex: 1,
+    };
+    const imSeller = computed(() => {
+      if (myIndex === meetingInfo.sellerIndex) {
+        return true;
+      }
+      return false;
+    });
+
+    let sellerVideo;
+    let buyerVideo;
+
     //media control
     const canUseMic = ref(false);
     const canUseVideo = ref(false);
@@ -88,6 +106,7 @@ export default {
       }
     };
 
+    //chat
     interface Message {
       isMine: boolean;
       text: string;
@@ -124,6 +143,28 @@ export default {
       }
     };
 
+    //미디어 기기 가져오기
+    const openMediaDevices = async constraints =>
+      await navigator.mediaDevices.getUserMedia(constraints);
+
+    onMounted(async () => {
+      sellerVideo = document.querySelector("video#seller-video");
+      buyerVideo = document.querySelector("video#buyer-video");
+
+      try {
+        const stream = await openMediaDevices({ video: true, audio: true });
+        //내가 판매자라면 판매자 비디오에 스트림 연결
+        if (imSeller.value) {
+          videoOn.seller = true;
+          sellerVideo.srcObject = stream;
+          return;
+        }
+        videoOn.buyer = true;
+        buyerVideo.srcObject = stream;
+      } catch (error) {
+        // alert("카메라와 마이크의 연결 상태를 확인해주세요");
+      }
+    });
     return {
       canUseMic,
       canUseVideo,
@@ -183,13 +224,14 @@ export default {
 }
 
 #buyer-video {
-  width: 10vw;
-  height: 30vh;
+  width: 20%;
+  height: 15%;
   z-index: 10;
   position: absolute;
   bottom: -1px;
   right: 0;
   border-bottom: none;
+  object-fit: cover;
 }
 
 #map {
