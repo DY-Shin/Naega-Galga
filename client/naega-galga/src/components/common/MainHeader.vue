@@ -111,7 +111,11 @@ export default defineComponent({
   },
   watch: {
     $route(to) {
-      if (to.path === "/join" || to.path === "/login") {
+      if (
+        to.path === "/join" ||
+        to.path === "/login" ||
+        to.path.includes("/meeting")
+      ) {
         this.isHeaderShow = false;
         return;
       }
