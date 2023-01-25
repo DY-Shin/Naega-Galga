@@ -64,7 +64,7 @@ export default defineComponent({
     onMounted(() => {
       const mapScript = document.createElement("script");
       mapScript.async = true;
-      mapScript.src = `//dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=eca171c688a86c3acc3456ba72a34e6b&libraries=services`;
+      mapScript.src = `//dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=${process.env.VUE_APP_KAKAO_MAP_KEY}&libraries=services`;
 
       document.head.appendChild(mapScript);
 
