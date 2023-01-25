@@ -27,8 +27,6 @@ export default defineComponent({
   height: flex;
 
   margin-top: 1rem;
-  /* margin-left: 15rem;
-  margin-right: 15rem; */
 
   display: grid;
   grid-template-columns: 1fr 1fr 3fr 1fr;
