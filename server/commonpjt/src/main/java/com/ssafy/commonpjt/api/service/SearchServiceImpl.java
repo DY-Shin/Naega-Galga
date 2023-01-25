@@ -1,7 +1,8 @@
 package com.ssafy.commonpjt.api.service;
 
 import com.ssafy.commonpjt.api.dto.KakaoAddressDTO;
-import com.ssafy.commonpjt.db.entity.Building;
+import com.ssafy.commonpjt.api.dto.SearchDTO;
+import com.ssafy.commonpjt.db.entity.Product;
 import com.ssafy.commonpjt.db.repository.BuildingRepository;
 import com.ssafy.commonpjt.db.repository.OptionsRepository;
 import com.ssafy.commonpjt.db.repository.ProductRepository;
@@ -15,6 +16,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class SearchServiceImpl implements SearchService{
@@ -74,20 +76,44 @@ public class SearchServiceImpl implements SearchService{
             addressList.add(dto);
         }
 
-        int addressCount = addressList.size();
-
+        List<SearchDTO> searchResult = new ArrayList<>();
         for(KakaoAddressDTO KakaoAddress : addressList) {
             String roadAddr = KakaoAddress.getRoadAddress();
             String addr = KakaoAddress.getAddress();
 
-            List<Integer> building = buildingRepository.findBuildingIndexByBuildingAddressStartingWithOrBuildingRoadAddressStartingWith(addr, roadAddr);
+            List<Integer> buildings = buildingRepository.findBuildingIndexByBuildingAddressStartingWithAndBuildingRoadAddressStartingWith(addr, roadAddr);
 
-            for(int i=0, length = building.size(); i < length; i++) {
+            for(Integer idx : buildings) {
+                List<Product> product = productRepository.productFetchJoin(idx);
 
+                for(Product p : product) {
+                    SearchDTO.Building buildingDTO = SearchDTO.Building.builder()
+                            .roadAddr(p.getBuilding().getBuildingRoadAddress())
+                            .build();
+                    SearchDTO.Product productDTO = SearchDTO.Product.builder()
+                            .index(p.getProductIndex())
+                            .price(p.getProductPrice())
+                            .photo(p.getProductPhoto())
+                            .build();
+                    SearchDTO.Options optionsDTO = SearchDTO.Options.builder()
+                            .airConditioner(p.getOptions().isOptionAirConditioner())
+                            .fridge(p.getOptions().isOptionFridge())
+                            .washingMachine(p.getOptions().isOptionWashingMachine())
+                            .gasStove(p.getOptions().isOptionGasStove())
+                            .induction(p.getOptions().isOptionInduction())
+                            .microWave(p.getOptions().isOptionMicroWave())
+                            .desk(p.getOptions().isOptionDesk())
+                            .wifi(p.getOptions().isOptionWifi())
+                            .closet(p.getOptions().isOptionCloset())
+                            .bed(p.getOptions().isOptionBed())
+                            .build();
+
+                    searchResult.add(new SearchDTO(buildingDTO, productDTO, optionsDTO));
+                }
             }
         }
 
-        return addressList;
+        return searchResult;
     }
 
 //    @Override
