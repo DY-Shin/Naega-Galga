@@ -40,7 +40,7 @@ insert into building (building_address, building_road_address, building_name, bu
 VALUES ('경북 구미시 공단동 207', '경북 구미시 수출대로 112', '구미소방서', true, true);
 
 insert into building (building_address, building_road_address, building_name, building_elevator, building_parking)
-VALUES ('경북 성남시 구미동 227', '경기 성남시 분당구 구미로 130', '구미동행정복지센터', true, true);
+VALUES ('경기 성남시 분당구 구미동 227', '경기 성남시 분당구 구미로 130', '구미동행정복지센터', true, true);
 
 insert into product (product_animal, product_detail, product_direction, product_floor, product_manage_cost, product_photo, product_price, product_rooms, product_size, product_type, building_index, option_index, seller_index)
 VALUES ('고양이', '역장실', '동향', '4층', 10, '','100만원','원룸', '10평','월세',1,1,1);
