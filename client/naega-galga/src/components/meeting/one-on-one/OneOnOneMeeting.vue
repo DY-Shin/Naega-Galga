@@ -48,17 +48,17 @@
     </div>
   </div>
   <div class="control-buttons">
-    <el-button v-model="canUseMic" round @click="canUseMic = !canUseMic">
-      <el-icon v-if="canUseMic"><Microphone /></el-icon>
+    <el-button v-model="myMicMute" round @click="muteMic">
+      <el-icon v-if="myMicMute"><Microphone /></el-icon>
       <el-icon v-else><Mute /></el-icon>
-      <span class="button-text" v-if="canUseMic">ON</span>
+      <span class="button-text" v-if="myMicMute">ON</span>
       <span class="button-text" v-else>OFF</span>
       <el-icon size="10"><ArrowUp /></el-icon>
     </el-button>
-    <el-button v-model="canUseVideo" round @click="canUseVideo = !canUseVideo">
-      <el-icon v-if="canUseVideo"><VideoCamera /></el-icon>
+    <el-button v-model="myVideoMute" round @click="muteVideo">
+      <el-icon v-if="myVideoMute"><VideoCamera /></el-icon>
       <el-icon v-else><VideoPause /></el-icon>
-      <span v-if="canUseVideo" class="button-text">ON</span>
+      <span v-if="myVideoMute" class="button-text">ON</span>
       <span v-else class="button-text">OFF</span>
     </el-button>
     <el-button round type="danger" @click="onClickExit">
@@ -91,12 +91,24 @@ export default {
 
     let sellerVideo;
     let buyerVideo;
+    let myVideo;
+    let myVideoStream;
 
     //media control
-    const canUseMic = ref(false);
-    const canUseVideo = ref(false);
+    const myMicMute = ref(false);
+    const myVideoMute = ref(false);
 
     const videoOn = reactive({ seller: false, buyer: false });
+
+    const muteMic = () => {
+      myVideo.muted = myMicMute.value;
+      myMicMute.value = !myMicMute.value;
+    };
+    const muteVideo = () => {
+      myVideoMute.value = !myVideoMute.value;
+      const videoTracks = myVideoStream.getVideoTracks();
+      videoTracks.forEach(track => (track.enabled = myVideoMute.value));
+    };
 
     //exit
     const router = useRouter();
@@ -152,23 +164,29 @@ export default {
       buyerVideo = document.querySelector("video#buyer-video");
 
       try {
-        const stream = await openMediaDevices({ video: true, audio: true });
+        myVideoStream = await openMediaDevices({ video: true, audio: true });
         //내가 판매자라면 판매자 비디오에 스트림 연결
+        myMicMute.value = true;
+        myVideoMute.value = true;
         if (imSeller.value) {
           videoOn.seller = true;
-          sellerVideo.srcObject = stream;
+          sellerVideo.srcObject = myVideoStream;
+          myVideo = sellerVideo;
           return;
         }
         videoOn.buyer = true;
-        buyerVideo.srcObject = stream;
+        buyerVideo.srcObject = myVideoStream;
+        myVideo = buyerVideo;
       } catch (error) {
         // alert("카메라와 마이크의 연결 상태를 확인해주세요");
       }
     });
     return {
-      canUseMic,
-      canUseVideo,
+      myMicMute,
+      myVideoMute,
       videoOn,
+      muteMic,
+      muteVideo,
       onClickExit,
       messageInput: inputtedMessage,
       onClickSendMessage,
@@ -220,7 +238,9 @@ export default {
   width: 60vw;
   height: 80vh;
   z-index: 1;
+  object-fit: cover;
   box-shadow: 5px 5px 5px #ebeef5;
+  background-color: #fafafa;
 }
 
 #buyer-video {
@@ -232,6 +252,7 @@ export default {
   right: 0;
   border-bottom: none;
   object-fit: cover;
+  background-color: #fafafa;
 }
 
 #map {
