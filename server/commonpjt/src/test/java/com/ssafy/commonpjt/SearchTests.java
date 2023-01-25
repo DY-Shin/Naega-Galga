@@ -1,8 +1,6 @@
 package com.ssafy.commonpjt;
 
-import com.ssafy.commonpjt.api.dto.SearchDTO;
 import com.ssafy.commonpjt.api.service.SearchServiceImpl;
-import com.ssafy.commonpjt.db.entity.Building;
 import com.ssafy.commonpjt.db.entity.Product;
 import com.ssafy.commonpjt.db.repository.BuildingRepository;
 import com.ssafy.commonpjt.db.repository.ProductRepository;
