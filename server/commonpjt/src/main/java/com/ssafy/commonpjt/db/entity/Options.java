@@ -1,9 +1,6 @@
 package com.ssafy.commonpjt.db.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
@@ -12,7 +9,8 @@ import java.util.List;
 
 @Entity
 @Table(name = "options")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

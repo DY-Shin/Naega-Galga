@@ -1,9 +1,6 @@
 package com.ssafy.commonpjt.db.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
@@ -13,7 +10,8 @@ import java.util.List;
 
 @Entity
 @Table(name = "chat_room")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -27,14 +25,11 @@ public class ChatRoom {
     @CreationTimestamp
     private Timestamp createdAt;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "seller_index", referencedColumnName = "user_index")
     private User seller;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "buyer_index", referencedColumnName = "user_index")
     private User buyer;
-
-    @OneToMany(mappedBy = "chatRoom")
-    private List<Reserve> reserve = new ArrayList<>();
 }

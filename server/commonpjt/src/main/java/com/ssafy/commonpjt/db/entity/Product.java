@@ -1,9 +1,6 @@
 package com.ssafy.commonpjt.db.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
@@ -15,7 +12,8 @@ import java.util.List;
 
 @Entity
 @Table(name = "product")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -25,7 +23,7 @@ public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="product_index", nullable = false)
-    private Integer ProductIndex;
+    private Integer productIndex;
 
     @Column(nullable = false)
     private String productDetail;
@@ -57,18 +55,18 @@ public class Product {
     @Column(nullable = false)
     private String productAnimal;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "building_index", referencedColumnName = "building_index")
     private Building building;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "option_index", referencedColumnName = "option_index")
     private Options options;
 
     @OneToMany(mappedBy = "product")
     private List<WishList> wishList = new ArrayList<>();
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "seller_index", referencedColumnName = "user_index")
-    private User user;
+    private User productSeller;
 }

@@ -1,9 +1,6 @@
 package com.ssafy.commonpjt.db.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -11,7 +8,8 @@ import java.util.List;
 
 @Entity
 @Table(name = "building")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -36,6 +34,6 @@ public class Building {
     @Column(nullable = false)
     private boolean buildingParking;
 
-    @OneToMany(mappedBy = "building")
+    @OneToMany(mappedBy = "building", fetch = FetchType.LAZY)
     private List<Product> product = new ArrayList<>();
 }

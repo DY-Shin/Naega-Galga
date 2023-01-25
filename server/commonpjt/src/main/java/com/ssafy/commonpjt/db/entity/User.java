@@ -1,9 +1,6 @@
 package com.ssafy.commonpjt.db.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -11,7 +8,8 @@ import java.util.List;
 
 @Entity
 @Table(name = "user")
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -24,8 +22,8 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<WishList> wishList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user")
-    private List<Product> product = new ArrayList<>();
+    @OneToMany(mappedBy = "productSeller")
+    private List<Product> productSeller = new ArrayList<>();
 
     @OneToMany(mappedBy = "seller")
     private List<ChatRoom> seller = new ArrayList<>();
@@ -35,4 +33,10 @@ public class User {
 
     @OneToMany(mappedBy = "sender")
     private List<ChatMessage> sender = new ArrayList<>();
+
+    @OneToMany(mappedBy = "guest")
+    private List<Meeting> meetingGuest =  new ArrayList<>();
+
+    @OneToMany(mappedBy = "owner")
+    private List<Meeting> meetingOwner = new ArrayList<>();
 }

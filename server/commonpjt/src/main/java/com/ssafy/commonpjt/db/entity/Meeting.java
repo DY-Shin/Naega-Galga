@@ -1,9 +1,6 @@
 package com.ssafy.commonpjt.db.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
@@ -11,7 +8,8 @@ import java.sql.Timestamp;
 
 @Entity
 @Table(name = "meeting")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -25,9 +23,11 @@ public class Meeting {
     private String meetingUrl;
 
     @CreationTimestamp
-    private Timestamp createdAt;
+    private Timestamp reserveAt;
 
-    @ManyToOne
-    @JoinColumn(name = "reserve_index", referencedColumnName = "reserve_index")
-    private Reserve reserve;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private User owner;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private User guest;
 }

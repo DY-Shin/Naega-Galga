@@ -1,9 +1,6 @@
 package com.ssafy.commonpjt.db.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -12,7 +9,8 @@ import java.sql.Timestamp;
 
 @Entity
 @Table(name = "chat_message")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -32,11 +30,11 @@ public class ChatMessage {
     @ColumnDefault("false")
     private boolean isRead;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "chat_index", referencedColumnName = "chat_index")
     private ChatRoom chatRoom;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sender_index", referencedColumnName = "user_index")
     private User sender;
 }
