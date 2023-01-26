@@ -30,7 +30,7 @@
     <!-- <div class="send-box box">{sd</div> -->
     <el-icon
       id="close-btn"
-      @click="closeChat"
+      @click="CloseChat"
       :size="40"
       color="#FF4444"
       style="
@@ -42,6 +42,9 @@
       "
       ><CircleCloseFilled
     /></el-icon>
+    <div id="chatTitle" style="font-size: 20px; margin: 10px 15px 0">
+      {{ list[list_idx] }}
+    </div>
     <div>
       <el-scrollbar class="inner">
         <div v-for="item in chatHistory" :key="item.time">
@@ -64,15 +67,63 @@
 
     <div class="message-input" style="display: inline-flex">
       <el-input v-model="input" />
-      <el-icon
-        style="z-index: 1012; left: 15px; top: 5px; cursor: pointer"
-        :size="25"
-        color="rgb(121, 121, 121)"
-        ><Promotion
-      /></el-icon>
+      <img
+        src="@/assets/image/icon-send.png"
+        width="30"
+        height="30"
+        style="padding: 3px 7px"
+      />
+    </div>
+    <div id="clock-icon" @click="OpenBook">
+      <img src="@/assets/image/icon-clock.png" width="30" />
     </div>
   </div>
   <!-- --------------chat room end-------------- -->
+  <!-- --------------book start-------------- -->
+  <div v-if="isOpenBook" class="BookWindow">
+    <div style="text-align: center">
+      <el-calendar v-model="dateValue" @click="getDate" />
+      <form id="bookForm">
+        <div style="padding: 5px 10px 15px">
+          {{ year }}년 {{ month }}월 {{ date }}일
+        </div>
+        <div style="padding-left: 10px">
+          <el-select v-model="timeValue" placeholder="오전" style="width: 75px">
+            <el-option
+              v-for="item in timeOptions"
+              :key="item"
+              :value="item"
+            /> </el-select
+          ><el-select
+            class="m-1"
+            v-model="hourValue"
+            placeholder="시"
+            style="width: 60px; margin-left: 5px"
+          >
+            <el-option
+              v-for="item in hourOptions"
+              :key="item"
+              :value="item"
+            /> </el-select
+          ><el-select
+            v-model="minuteValue"
+            placeholder="분"
+            style="width: 60px; margin-left: 5px"
+          >
+            <el-option
+              v-for="item in minuteOptions"
+              :key="item"
+              :value="item"
+            />
+          </el-select>
+          <el-button type="primary" @click="book" style="margin-left: 5px"
+            >예약하기</el-button
+          >
+        </div>
+      </form>
+    </div>
+  </div>
+  <!-- --------------book end-------------- -->
 </template>
 <script lang="ts">
 import { defineComponent, ref } from "vue";
@@ -80,6 +131,46 @@ import { Plus, Promotion } from "@element-plus/icons-vue";
 
 export default defineComponent({
   setup() {
+    const timeValue = ref("");
+    const hourValue = ref();
+    const minuteValue = ref();
+    const timeOptions = ["오전", "오후"];
+    const hourOptions = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+    const minuteOptions = [0, 10, 20, 30, 40, 50];
+    // const timeOptions = ["오전", "오후"];
+    const dateValue = ref(new Date());
+    const year = ref(dateValue.value.getFullYear());
+    const month = ref(dateValue.value.getMonth() + 1);
+    const date = ref(dateValue.value.getDate());
+    const time = ref("");
+    const getDate = () => {
+      console.log(dateValue);
+      year.value = dateValue.value.getFullYear();
+      month.value = dateValue.value.getMonth() + 1;
+      date.value = dateValue.value.getDate();
+      console.log(date.value);
+    };
+
+    const book = () => {
+      console.log(
+        year.value +
+          "년 " +
+          month.value +
+          "월 " +
+          date.value +
+          "일 " +
+          timeValue.value +
+          " " +
+          hourValue.value +
+          "시 " +
+          minuteValue.value +
+          "분"
+      );
+      dateValue.value = new Date();
+      timeValue.value = "";
+      hourValue.value = "";
+      minuteValue.value = "";
+    };
     const input = ref("");
     interface chat {
       time: string;
@@ -128,6 +219,8 @@ export default defineComponent({
     const list_idx = ref(-1);
     const isOpenList = ref(false);
     const isOpenChat = ref(false);
+    const isOpenBook = ref(false);
+
     const OpenChatList = () => {
       isOpenList.value = !isOpenList.value;
     };
@@ -135,30 +228,91 @@ export default defineComponent({
     const OpenChat = (index: number) => {
       list_idx.value = index;
       isOpenChat.value = true;
-      window.scrollTo(0, 0);
+      isOpenList.value = false;
     };
 
-    const closeChat = () => {
+    const CloseChat = () => {
       isOpenChat.value = false;
+      isOpenBook.value = false;
+    };
+
+    const OpenBook = () => {
+      isOpenBook.value = !isOpenBook.value;
     };
 
     return {
       input,
-      isOpenList,
-      isOpenChat,
       list,
       OpenChatList,
       OpenChat,
+      OpenBook,
+      isOpenList,
+      isOpenChat,
+      isOpenBook,
       list_idx,
-      closeChat,
+      CloseChat,
       chatHistory,
       Plus,
       Promotion,
+      dateValue,
+      getDate,
+      date,
+      year,
+      month,
+      time,
+      timeOptions,
+      timeValue,
+      hourOptions,
+      minuteOptions,
+      hourValue,
+      minuteValue,
+      book,
     };
   },
 });
 </script>
-<style scoped>
+
+<style>
+/* -----------------달력 css start----------------- */
+.el-calendar__body {
+  padding: 15px 20px;
+}
+.el-calendar__header {
+  margin-top: 10px;
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 20px;
+  border-bottom: var(--el-calendar-header-border-bottom);
+}
+.el-calendar-table .el-calendar-day {
+  font-size: small;
+  box-sizing: border-box;
+  padding: 8px;
+  height: 40px;
+}
+/* -----------------달력 css end----------------- */
+.BookWindow {
+  background: rgb(255, 255, 255);
+  border: 1px solid rgb(184, 184, 184);
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+  border-radius: 15px;
+  z-index: 102;
+  position: fixed;
+  top: calc(50vh - 200px);
+  left: calc(100vw - 500px);
+  right: 100px;
+  width: 320px;
+  height: 450px;
+}
+
+/* -----------------chat css start----------------- */
+#chatTitle {
+  margin: 10px 20px;
+  font-size: 15px;
+}
+#clock-icon {
+  padding: 10px;
+}
 .chat-room {
   margin: 100px;
   z-index: 101;
@@ -166,7 +320,7 @@ export default defineComponent({
   top: calc(50vh - 350px);
   left: calc(50vw - 200px);
   width: 400px;
-  height: 500px;
+  height: 550px;
   background: rgb(255, 255, 255);
   border: 1px solid rgb(184, 184, 184);
   box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
@@ -223,11 +377,11 @@ export default defineComponent({
 }
 .message-input {
   z-index: 101;
-  position: fixed;
+  /* position: fix; */
   top: calc(50vh + 170px);
   left: calc(50vw - 100px);
   padding-left: 10px;
-  width: 360px;
+  width: 390px;
   height: 40px;
 }
 
@@ -254,10 +408,10 @@ export default defineComponent({
   background-color: rgb(255, 255, 255);
   border-radius: 15px;
 }
-.el-popper .is-light .el-popover .el-popover--plain {
+/* .el-popper .is-light .el-popover .el-popover--plain {
   background-color: black;
   width: 100px;
-}
+} */
 
 #chat-btn {
   position: fixed;
