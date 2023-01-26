@@ -1,4 +1,9 @@
 <template>
+  <div class="test">
+    <div style="">부산 동래구 충렬대로 255</div>
+    <div style="">싸피원룸</div>
+    <div style="">부산 동래구 충렬대로 255</div>
+  </div>
   <el-container><el-main id="map"></el-main></el-container>
 </template>
 
@@ -36,10 +41,10 @@ export default defineComponent({
       () => props.GetList,
       () => {
         displayMarker(window.map, props.GetList);
-        // console.log(openInfoWindow.length);
-        // for (let i = 0; i < openInfoWindow.length; i++) {
-        //   openInfoWindow[i].close();
-        // }
+        console.log(infowindows.length);
+        for (let i = 0; i < infowindows.length; i++) {
+          infowindows[i].close();
+        }
       },
       { deep: true }
     );
@@ -47,7 +52,7 @@ export default defineComponent({
     const clickListener = (map, marker, infowindow) =>
       function () {
         infowindow.open(map, marker);
-        openInfoWindow.push(infowindow);
+        infowindows.push(infowindow);
       };
 
     const markerPositions1: object[] = [
@@ -82,14 +87,22 @@ export default defineComponent({
           center: new window.kakao.maps.LatLng(latitude, longitude),
         };
         window.map = new window.kakao.maps.Map(container, options);
-        displayMarker(window.map, markerPositions1);
+        // displayMarker(window.map, markerPositions1);
       });
     };
     const setBounds = bounds => {
       window.map.setBounds(bounds);
     };
-    let openInfoWindow: any[];
+    let infowindows: any[] = [];
+
+    let markers: any[] = [];
+
     const displayMarker = (map, markerList) => {
+      if (markers.length > 0) {
+        for (let i = 0; i < markers.length; i++) {
+          markers[i].setMap(null);
+        }
+      }
       let num = 0;
       let bounds = new window.kakao.maps.LatLngBounds();
       let geocoder = new window.kakao.maps.services.Geocoder();
@@ -103,16 +116,28 @@ export default defineComponent({
                 result[0].y,
                 result[0].x
               );
+              let imageSrc =
+                  "https://cdn-icons-png.flaticon.com/512/2776/2776067.png",
+                imageSize = new window.kakao.maps.Size(50, 50),
+                imageOption = { offset: new window.kakao.maps.Point(25, 45) };
+              let markerImage = new window.kakao.maps.MarkerImage(
+                  imageSrc,
+                  imageSize,
+                  imageOption
+                ),
+                markerPosition = coords;
 
               // 결과값으로 받은 위치를 마커로 표시합니다
               let marker = new window.kakao.maps.Marker({
                 map: map,
-                position: coords,
+                position: markerPosition,
+                image: markerImage,
               });
 
               setInfoWindow(coords, marker, "set");
 
               marker.setMap(map);
+              markers.push(marker);
               bounds.extend(coords);
             }
             num++;
@@ -135,6 +160,7 @@ export default defineComponent({
             position: coords,
           });
           marker.setMap(window.map);
+          markers.push(marker);
 
           setInfoWindow(coords, marker, "click");
         }
@@ -144,7 +170,7 @@ export default defineComponent({
     const setInfoWindow = (coords, marker, type) => {
       let infowindow = new window.kakao.maps.InfoWindow({
         content:
-          '<div class="" style="width: 150px; height: 100px; text- align: center; padding: 10px 0; border: 1px solid red"> asd < /div>',
+          '<div  style="width: 250px; height: 100px; text- align: center; padding: 10px 0; border: 1px solid red"> asd < /div>',
         removable: true,
       });
       window.kakao.maps.event.addListener(
@@ -160,7 +186,7 @@ export default defineComponent({
             position: coords,
           })
         );
-        openInfoWindow.push(infowindow);
+        infowindows.push(infowindow);
       }
     };
 
@@ -180,5 +206,14 @@ export default defineComponent({
   height: 200px;
   text-align: center;
   padding: 6px 0;
+}
+.test {
+  text-align: center;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+
+  border: 1px solid rgb(203, 203, 203);
+  border-radius: 25px;
+  width: 300px;
+  height: 250px;
 }
 </style>
