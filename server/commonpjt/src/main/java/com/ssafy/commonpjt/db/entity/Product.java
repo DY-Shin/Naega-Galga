@@ -22,7 +22,7 @@ import java.util.List;
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="product_index", nullable = false)
+    @Column(name = "product_index", nullable = false)
     private Integer productIndex;
 
     @Column(nullable = false)
@@ -63,10 +63,10 @@ public class Product {
     @JoinColumn(name = "option_index", referencedColumnName = "option_index")
     private Options options;
 
-    @OneToMany(mappedBy = "product")
-    private List<WishList> wishList = new ArrayList<>();
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "seller_index", referencedColumnName = "user_index")
     private User productSeller;
+
+    @OneToMany(mappedBy = "product")
+    private List<WishList> wishList = new ArrayList<>();
 }
