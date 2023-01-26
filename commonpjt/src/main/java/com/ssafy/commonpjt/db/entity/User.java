@@ -1,7 +1,6 @@
 package com.ssafy.commonpjt.db.entity;
 
 import lombok.*;
-import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -23,9 +22,8 @@ import java.util.stream.Collectors;
 public class User implements UserDetails {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_index")
-    private Long id;
+    @GeneratedValue
+    private int userIndex;
 
     @Column(nullable = false, length = 50, unique = true)
     private String userId;
@@ -39,9 +37,8 @@ public class User implements UserDetails {
     @Column(nullable = false, length = 50)
     private String userName;
 
-//    @ColumnDefault("'TEST'")
-    @Column(length = 50, unique = true)
-    private String userCorporateRegistrationNumber;
+    @Column(nullable = false, length = 50)
+    private String userCorporationRegistrationNumber;
 
     @Column(nullable = false, length = 100)
     private String userAddress;

@@ -34,17 +34,17 @@ public class UserService {
     private final JwtTokenProvider jwtTokenProvider;
     private final RedisTemplate redisTemplate;
 
-    public ResponseEntity<?> join(UserDto userDto) throws Exception{
-        if (userRepository.existsByUserId(userDto.getUserId())){
+    public ResponseEntity<?> join(UserDTO userDTO) throws Exception{
+        if (userRepository.existsByUserId(userDTO.getUserId())){
             return response.fail("이미 회원가입된 아이디입니다.", HttpStatus.BAD_REQUEST);
         }
         User user = User.builder()
-                .userId(userDto.getUserId())
-                .userPassword(passwordEncoder.encode(userDto.getUserPassword()))
-                .userPhone(userDto.getUserPhone())
-                .userName(userDto.getUserName())
-                .userCorporateRegistrationNumber(userDto.getCorporateRegistrationNumber())
-                .userAddress(userDto.getUserAddress())
+                .userId(userDTO.getUserId())
+                .userPassword(passwordEncoder.encode(userDTO.getUserPassword()))
+                .userPhone(userDTO.getUserPhone())
+                .userName(userDTO.getUserName())
+                .userCorporationRegistrationNumber(userDTO.getUserCorporationRegistrationNumber())
+                .userAddress(userDTO.getUserAddress())
                 .roles(Collections.singletonList(Authority.USER.name()))
                 .build();
         userRepository.save(user);

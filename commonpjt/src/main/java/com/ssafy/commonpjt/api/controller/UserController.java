@@ -1,13 +1,12 @@
 package com.ssafy.commonpjt.api.controller;
 
 import com.ssafy.commonpjt.api.dto.ResponseDto;
-import com.ssafy.commonpjt.api.dto.UserDto;
+import com.ssafy.commonpjt.api.dto.UserDTO;
 import com.ssafy.commonpjt.api.dto.UserLoginRequestDto;
 import com.ssafy.commonpjt.api.dto.UserLogoutRequestDto;
 import com.ssafy.commonpjt.api.service.UserService;
 import com.ssafy.commonpjt.common.jwt.JwtTokenProvider;
 import com.ssafy.commonpjt.common.lib.Helper;
-import com.ssafy.commonpjt.common.security.SecurityUtil;
 import com.ssafy.commonpjt.db.entity.User;
 import com.ssafy.commonpjt.db.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,9 +17,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.Errors;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.http.HttpServletRequest;
-import java.util.Optional;
 
 
 @Slf4j
@@ -35,11 +31,11 @@ public class UserController {
 
     @PostMapping("")
     // Postman 사용 시 @RequestBody 를 제거해야 form-data 로 확인 가능
-    public ResponseEntity<?> join(@Validated @RequestBody UserDto userDto, Errors errors) throws Exception{
+    public ResponseEntity<?> join(@Validated @RequestBody UserDTO userDTO, Errors errors) throws Exception{
         if (errors.hasErrors()) {
             return response.invalidFields(Helper.refineErrors(errors));
         }
-        return userService.join(userDto);
+        return userService.join(userDTO);
     }
 
     @PostMapping("login")
