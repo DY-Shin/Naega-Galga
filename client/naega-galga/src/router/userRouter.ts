@@ -1,11 +1,41 @@
-export default {
-  path: "/user",
-  component: import("@/views/UserView.vue"),
-  // children: [
-  //   {
-  //     path: "login",
-  //     //쓰시는 컴포넌트로 바꿔두세요
-  //     component: import("@/views/UserView.vue"),
-  //   },
-  // ],
-};
+export default [
+  {
+    path: "/user",
+    component: import("@/views/UserView.vue"),
+    children: [
+      {
+        path: "",
+        component: import("@/components/user/mypage/UserInfo.vue"),
+      },
+      {
+        path: "reservation",
+        name: "ReservationList",
+        component: import(
+          "@/components/user/mypage/reservation/ReservationList.vue"
+        ),
+      },
+      {
+        path: "wish",
+        name: "WishList",
+        component: import("@/components/user/mypage/wish/WishList.vue"),
+      },
+      {
+        path: "register",
+        name: "RegisterList",
+        component: import("@/components/user/mypage/register/RegisterList.vue"),
+      },
+    ],
+  },
+  {
+    path: "/join",
+    component: import("@/views/JoinView.vue"),
+  },
+  {
+    path: "/login",
+    component: import("@/views/LoginView.vue"),
+  },
+  {
+    path: "/delete",
+    component: import("@/views/UserDeleteView.vue"),
+  },
+];

@@ -1,9 +1,10 @@
 import { createStore } from "vuex";
+import userStore from "./userStore";
+import alertStore from "./alertStore";
 
 export default createStore({
-  state: {},
-  getters: {},
-  mutations: {},
-  actions: {},
-  modules: {},
+  modules: {
+    userStore,
+    alertStore,
+  },
 });
