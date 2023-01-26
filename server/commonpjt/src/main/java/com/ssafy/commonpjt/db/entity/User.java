@@ -13,19 +13,20 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
 @Entity
 @Table(name = "user")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @DynamicInsert
+@Builder
 public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_index")
-    private Long id;
+    private Integer userIndex;
 
     @Column(nullable = false, length = 50, unique = true)
     private String userId;
@@ -45,6 +46,27 @@ public class User implements UserDetails {
 
     @Column(nullable = false, length = 100)
     private String userAddress;
+
+    @OneToMany(mappedBy = "user")
+    private List<WishList> wishList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "productSeller")
+    private List<Product> productSeller = new ArrayList<>();
+
+    @OneToMany(mappedBy = "seller")
+    private List<ChatRoom> seller = new ArrayList<>();
+
+    @OneToMany(mappedBy = "buyer")
+    private List<ChatRoom> buyer = new ArrayList<>();
+
+    @OneToMany(mappedBy = "sender")
+    private List<ChatMessage> sender = new ArrayList<>();
+
+    @OneToMany(mappedBy = "guest")
+    private List<Meeting> meetingGuest =  new ArrayList<>();
+
+    @OneToMany(mappedBy = "owner")
+    private List<Meeting> meetingOwner = new ArrayList<>();
 
     @Column
     @ElementCollection(fetch = FetchType.EAGER)
