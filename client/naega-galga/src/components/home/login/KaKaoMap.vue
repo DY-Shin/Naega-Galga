@@ -30,37 +30,36 @@ export default defineComponent({
       () => props.GetAddress,
       () => {
         changeCenter(props.GetAddress);
-        console.log(props.GetList?.length + "!!!!!!!!!!");
       }
     );
     watch(
       () => props.GetList,
       () => {
-        console.log("getList!! ");
-        // displayMarker(window.map, props.GetList);
+        displayMarker(window.map, props.GetList);
+        // console.log(openInfoWindow.length);
+        // for (let i = 0; i < openInfoWindow.length; i++) {
+        //   openInfoWindow[i].close();
+        // }
       },
       { deep: true }
     );
 
-    const makeOverListener = (map, marker, infowindow) =>
+    const clickListener = (map, marker, infowindow) =>
       function () {
         infowindow.open(map, marker);
-      };
-    const makeOutListener = infowindow =>
-      function () {
-        infowindow.close();
+        openInfoWindow.push(infowindow);
       };
 
     const markerPositions1: object[] = [
       {
-        address: "부산 동래구 충렬대로 255",
-        a: 35.2014786272255,
-        b: 129.087166169007,
-      },
-      {
         address: "경상북도 구미시 인동6길 26-2",
         a: 36.1020372425131,
         b: 128.420294611527,
+      },
+      {
+        address: "부산 동래구 충렬대로 255",
+        a: 35.2014786272255,
+        b: 129.087166169007,
       },
     ];
 
@@ -83,48 +82,45 @@ export default defineComponent({
           center: new window.kakao.maps.LatLng(latitude, longitude),
         };
         window.map = new window.kakao.maps.Map(container, options);
-        // displayMarker(markerPositions1);
-        displayMarker2(markerPositions1);
+        displayMarker(window.map, markerPositions1);
       });
     };
-
-    // const displayMarker = markerList => {
-    //   let bounds = new window.kakao.maps.LatLngBounds();
-    //   if (markerList.length > 0) {
-    //     // markers.forEach(marker => marker.setMap(null));
-    //   }
-    //   for (let i = 0; i < markerList.length; i++) {
-    //     let coords = new window.kakao.maps.LatLng(
-    //       markerList[i].a,
-    //       markerList[i].b
-    //     );
-    //     console.log("1 " + coords);
-    //     let marker = new window.kakao.maps.Marker({
-    //       position: coords,
-    //     });
-    //     // markers.push([markerList[i].a, markerList[i].b]);
-    //     marker.setMap(window.map);
-    //     bounds.extend(coords);
-    //   }
-    //   console.log("1!!! " + bounds);
-    //   window.map.setBounds(bounds);
-    // };
-    const displayMarker2 = markerList => {
-      let geocoder = new window.kakao.maps.services.Geocoder();
+    const setBounds = bounds => {
+      window.map.setBounds(bounds);
+    };
+    let openInfoWindow: any[];
+    const displayMarker = (map, markerList) => {
+      let num = 0;
       let bounds = new window.kakao.maps.LatLngBounds();
+      let geocoder = new window.kakao.maps.services.Geocoder();
       for (let i = 0; i < markerList.length; i++) {
-        let callback = function (result, status) {
-          if (status === window.kakao.maps.services.Status.OK) {
-            let coords = window.kakao.maps.LatLng(result[0].y, result[0].x);
-            let marker = new window.kakao.maps.Marker({
-              position: coords,
-            });
-            marker.setMap(window.map);
-            bounds.extend(coords);
-          }
-        };
+        geocoder.addressSearch(
+          markerList[i].address,
+          function (result, status) {
+            // 정상적으로 검색이 완료됐으면
+            if (status === window.kakao.maps.services.Status.OK) {
+              let coords = new window.kakao.maps.LatLng(
+                result[0].y,
+                result[0].x
+              );
 
-        geocoder.addressSearch("해남군 송지면", callback);
+              // 결과값으로 받은 위치를 마커로 표시합니다
+              let marker = new window.kakao.maps.Marker({
+                map: map,
+                position: coords,
+              });
+
+              setInfoWindow(coords, marker, "set");
+
+              marker.setMap(map);
+              bounds.extend(coords);
+            }
+            num++;
+            if (num == markerList.length) {
+              setBounds(bounds);
+            }
+          }
+        );
       }
     };
 
@@ -133,36 +129,44 @@ export default defineComponent({
       geocoder.addressSearch(address, function (result, status) {
         if (status === window.kakao.maps.services.Status.OK) {
           let coords = new window.kakao.maps.LatLng(result[0].y, result[0].x);
-          console.log("3 " + coords);
           window.map.setCenter(coords);
           window.map.setLevel(1);
           let marker = new window.kakao.maps.Marker({
             position: coords,
           });
           marker.setMap(window.map);
-          let infowindow = new window.kakao.maps.InfoWindow({
-            content:
-              '<div class="" style="width: 150px; height: 100px; text- align: center; padding: 10px 0; border: 1px solid red"> asd < /div>',
-            removable: true,
-          });
-          window.kakao.maps.event.addListener(
-            marker,
-            "mouseover",
-            makeOverListener(window.map, marker, infowindow)
-          );
-          window.kakao.maps.event.addListener(
-            marker,
-            "mouseout",
-            makeOutListener(infowindow)
-          );
+
+          setInfoWindow(coords, marker, "click");
         }
       });
     };
 
+    const setInfoWindow = (coords, marker, type) => {
+      let infowindow = new window.kakao.maps.InfoWindow({
+        content:
+          '<div class="" style="width: 150px; height: 100px; text- align: center; padding: 10px 0; border: 1px solid red"> asd < /div>',
+        removable: true,
+      });
+      window.kakao.maps.event.addListener(
+        marker,
+        "click",
+        clickListener(window.map, marker, infowindow)
+      );
+      console.log(type);
+      if (type == "click") {
+        infowindow.open(
+          window.map,
+          new window.kakao.maps.Marker({
+            position: coords,
+          })
+        );
+        openInfoWindow.push(infowindow);
+      }
+    };
+
     return {
       markerPositions1,
-      makeOverListener,
-      makeOutListener,
+      clickListener,
       changeCenter,
       props,
     };

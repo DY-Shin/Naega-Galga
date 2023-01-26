@@ -163,7 +163,6 @@ export default defineComponent({
           options: ["베란다", "주방분리", "에어컨", "냉장고"],
           isWish: true,
         });
-        console.log("emit " + productList.length);
 
         emit("productList", productList);
       } else if (input.value == "3") {
@@ -185,7 +184,6 @@ export default defineComponent({
           options: ["에어컨", "냉장고"],
           isWish: true,
         });
-        console.log("emit " + productList.length);
 
         emit("productList", productList);
       } else {

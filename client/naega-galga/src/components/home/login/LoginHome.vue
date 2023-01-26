@@ -29,33 +29,33 @@ export default defineComponent({
       addressProxy.value = address;
     };
 
-    let listProxy: Product[] = [];
-    const sendList = (list: Product[]) => {
-      listProxy.splice(0);
+    let listProxy = ref([]);
+    const sendList = (list: []) => {
+      listProxy.value.splice(0);
       for (let i = 0; i < list.length; i++) {
-        listProxy.push(list[i]);
+        listProxy.value.push(list[i]);
       }
       for (let i = 0; i < list.length; i++) {
-        console.log("listProxy length! " + listProxy.length);
+        console.log("listProxy length! " + listProxy.value.length);
       }
     };
 
-    interface Product {
-      productType: string;
-      productName: string;
-      price: string;
-      managePrice: number;
-      floor: string;
-      roomSize: number;
-      address: string;
-      roomDirection: string;
-      animal: boolean;
-      seller?: string;
-      explanationDate: string | null;
-      parking: number;
-      options: Array<string>;
-      isFavorite: boolean;
-    }
+    // interface Product {
+    //   productType: string;
+    //   productName: string;
+    //   price: string;
+    //   managePrice: number;
+    //   floor: string;
+    //   roomSize: number;
+    //   address: string;
+    //   roomDirection: string;
+    //   animal: boolean;
+    //   seller?: string;
+    //   explanationDate: string | null;
+    //   parking: number;
+    //   options: Array<string>;
+    //   isFavorite: boolean;
+    // }
 
     return {
       sendAddress,
