@@ -30,7 +30,7 @@ public class SearchController {
         return ResponseEntity.ok(searchResult);
     }
 
-    @GetMapping("/detail/{id}")
+    @GetMapping("/details/{id}")
     public ResponseEntity<?> detailProduct(@PathVariable("id") int id) {
         DetailSearchDTO productInfo = searchService.detailProduct(id);
         return ResponseEntity.ok(productInfo);
