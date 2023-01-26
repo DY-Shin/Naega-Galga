@@ -16,17 +16,13 @@
   <!-- --------------chat list start-------------- -->
   <el-scrollbar v-show="isOpenList" class="chat-list" height="400px">
     <div v-for="(item, index) in list" :key="item">
-      <button
-        @click="OpenChat(index)"
-        onclick="window.scrollTo(0, 0);"
-        class="chat-list-item"
-      >
+      <button @click="OpenChat(index)" class="chat-list-item">
         {{ item }}
       </button>
     </div>
   </el-scrollbar>
   <!-- --------------chat room start-------------- -->
-  <div class="chat-room" v-show="isOpenChat">
+  <div class="chat-room" ref="chat-room" v-show="isOpenChat">
     <!-- <div class="send-box box">{sd</div> -->
     <el-icon
       id="close-btn"
@@ -46,8 +42,8 @@
       {{ list[list_idx] }}
     </div>
     <div>
-      <el-scrollbar class="inner">
-        <div v-for="item in chatHistory" :key="item.time">
+      <div class="chat-content" ref="sample">
+        <div v-for="item in chatHistory" :key="item.time" class="msg">
           <div class="item" v-if="item.type == 'get'">
             <div class="box">
               <p class="msg">{{ item.content }}</p>
@@ -62,7 +58,7 @@
             </div>
           </div>
         </div>
-      </el-scrollbar>
+      </div>
     </div>
 
     <div class="message-input" style="display: inline-flex">
@@ -273,6 +269,21 @@ export default defineComponent({
 </script>
 
 <style>
+::-webkit-scrollbar {
+  width: 8px; /* 스크롤바의 너비 */
+  display: none;
+}
+
+::-webkit-scrollbar-thumb {
+  height: 30%; /* 스크롤바의 길이 */
+  background: #c8c8c8; /* 스크롤바의 색상 */
+
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(218, 218, 218, 0.1); /*스크롤바 뒷 배경 색상*/
+}
 /* -----------------달력 css start----------------- */
 .el-calendar__body {
   padding: 15px 20px;
@@ -326,7 +337,7 @@ export default defineComponent({
   box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
   border-radius: 15px;
 }
-.chat-room .inner {
+.chat-room .chat-content {
   display: flex;
   flex-direction: column-reverse;
   overflow-y: auto;
