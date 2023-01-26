@@ -22,7 +22,7 @@
     </div>
   </el-scrollbar>
   <!-- --------------chat room start-------------- -->
-  <div class="chat-room" ref="chat-room" v-show="isOpenChat">
+  <div class="chat-room" v-show="isOpenChat">
     <!-- <div class="send-box box">{sd</div> -->
     <el-icon
       id="close-btn"
@@ -42,7 +42,7 @@
       {{ list[list_idx] }}
     </div>
     <div>
-      <div class="chat-content" ref="sample">
+      <div class="chat-content">
         <div v-for="item in chatHistory" :key="item.time" class="msg">
           <div class="item" v-if="item.type == 'get'">
             <div class="box">
