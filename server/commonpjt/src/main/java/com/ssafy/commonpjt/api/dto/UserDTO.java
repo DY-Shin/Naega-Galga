@@ -3,7 +3,7 @@ package com.ssafy.commonpjt.api.dto;
 import lombok.Data;
 
 @Data
-public class UserDto {
+public class UserDTO {
     private Long id;
     private String userId;
     private String userPassword;

@@ -2,10 +2,9 @@ package com.ssafy.commonpjt.api.dto;
 
 import lombok.Data;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Data
-public class UserLoginRequestDto {
+public class UserLoginDTO {
     private String userId;
     private String userPassword;
 

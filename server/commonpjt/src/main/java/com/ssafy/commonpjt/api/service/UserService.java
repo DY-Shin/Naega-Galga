@@ -9,17 +9,13 @@ import com.ssafy.commonpjt.db.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
@@ -28,45 +24,45 @@ import java.util.concurrent.TimeUnit;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final ResponseDto response;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final JwtTokenProvider jwtTokenProvider;
     private final RedisTemplate redisTemplate;
 
-    public ResponseEntity<?> join(UserDto userDto) throws Exception{
+    public void join(UserDTO userDto) throws Exception {
         if (userRepository.existsByUserId(userDto.getUserId())){
-            return response.fail("이미 회원가입된 아이디입니다.", HttpStatus.BAD_REQUEST);
+            throw new Exception("Already Exists Id");
         }
         User user = User.builder()
                 .userId(userDto.getUserId())
                 .userPassword(passwordEncoder.encode(userDto.getUserPassword()))
                 .userPhone(userDto.getUserPhone())
-                .userName(userDto.getUserName())
-                .userCorporateRegistrationNumber(userDto.getCorporateRegistrationNumber())
+                .name(userDto.getUserName())
+                .corporateRegistrationNumber(userDto.getCorporateRegistrationNumber())
                 .userAddress(userDto.getUserAddress())
                 .roles(Collections.singletonList(Authority.USER.name()))
                 .build();
         userRepository.save(user);
-        return response.success("회원가입에 성공했습니다.");
     }
 
-    public ResponseEntity<?> login(UserLoginRequestDto login) {
+    public TokenDTO login(UserLoginDTO login) throws Exception {
+        System.out.println(login.getUserId());
+        System.out.println(userRepository.findByUserId(login.getUserId()));
         if (userRepository.findByUserId(login.getUserId()).orElse(null) == null) {
-            return response.fail("해당하는 유저가 존재하지 않습니다", HttpStatus.BAD_REQUEST);
+            throw new Exception("No User Exists");
         }
         UsernamePasswordAuthenticationToken authenticationToken = login.toAuthentication();
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-        TokenDto tokenDto = jwtTokenProvider.generateToken(authentication);
+        TokenDTO tokenDto = jwtTokenProvider.generateToken(authentication);
         redisTemplate.opsForValue()
                 .set("RT:" + authentication.getName(), tokenDto.getRefreshToken(),
                         tokenDto.getRefreshTokenExpirationTime(), TimeUnit.MILLISECONDS);
-        return response.success(tokenDto, "로그인에 성공했습니다.", HttpStatus.OK);
+        return tokenDto;
     }
 
-    public ResponseEntity<?> logout(UserLogoutRequestDto logout) {
+    public void logout(UserLogoutDTO logout) throws Exception {
         if (!jwtTokenProvider.validateToken(logout.getAccessToken())) {
-            return response.fail("잘못된 요청입니다.", HttpStatus.BAD_REQUEST);
+            throw new Exception("Invalid Request");
         }
         Authentication authentication = jwtTokenProvider.getAuthentication(logout.getAccessToken());
         if (redisTemplate.opsForValue().get("RT:" + authentication.getName()) != null) {
@@ -75,30 +71,50 @@ public class UserService {
         Long expiration = jwtTokenProvider.getExpiration(logout.getAccessToken());
         redisTemplate.opsForValue()
                 .set(logout.getAccessToken(), "logout", expiration, TimeUnit.MILLISECONDS);
-        return response.success("로그아웃 되었습니다.");
     }
 
-    @Transactional(readOnly = true)
-    public Optional<User> getUser(String userId) {
-        return userRepository.findByUserId(userId);
+    public void update(UserUpdateDTO userUpdateDto) throws Exception {
+        User user = userRepository.findByUserId(SecurityUtil.getLoginUsername()).orElseThrow(() -> new Exception("No User Exists"));
+        userUpdateDto.getUserId().ifPresent(user::updateId);
+        userUpdateDto.getUserPhone().ifPresent(user::updatePhone);
+        userUpdateDto.getUserName().ifPresent(user::updateName);
+        userUpdateDto.getCorporateRegistrationNumber().ifPresent(user::updateCorporateRegistrationNumber);
+        userUpdateDto.getUserAddress().ifPresent(user::updateAddress);
     }
 
-    @Transactional(readOnly = true)
-    public Optional<User> getMyUser() {
-        return SecurityUtil.getCurrentUsername().flatMap(userRepository::findByUserId);
+    public void updatePassword(UpdatePasswordDTO updatePasswordDto) throws Exception {
+        User user = userRepository.findByUserId(SecurityUtil.getLoginUsername()).orElseThrow(() -> new Exception("No User Exists"));
+        if (!user.matchPassword(passwordEncoder, updatePasswordDto.getCheckPassword())) {
+            throw new Exception("Incorrect Password");
+        }
+        user.updatePassword(passwordEncoder, updatePasswordDto.getToBePassword());
     }
 
-    @Transactional
-    public ResponseEntity<?> delete(UserLogoutRequestDto logout) {
+    public UserInfoDTO getInfo(String userId) throws Exception {
+        User user = userRepository.findByUserId(userId).orElseThrow(() -> new Exception("No User Exists"));
+        return new UserInfoDTO(user);
+    }
+
+    public UserInfoDTO getMyInfo() throws Exception {
+        User user = userRepository.findByUserId(SecurityUtil.getLoginUsername()).orElseThrow(() -> new Exception("No User Exists"));
+        return new UserInfoDTO(user);
+    }
+
+    // 회원 탈퇴
+    public void delete(UserLogoutDTO logout) throws Exception {
         if (!jwtTokenProvider.validateToken(logout.getAccessToken())) {
-            return response.fail("잘못된 요청입니다.", HttpStatus.BAD_REQUEST);
+            throw new Exception("Invalid Request");
         }
         Authentication authentication = jwtTokenProvider.getAuthentication(logout.getAccessToken());
         String userId = authentication.getName();
+        User user = userRepository.findByUserId(userId).orElseThrow(() -> new Exception("No User Exists"));
+        if (!user.matchPassword(passwordEncoder, logout.getCheckPassword())){
+            throw new Exception("Incorrect Password");
+        }
         userRepository.foreignKeyDelete();
-        userRepository.delete(userId);
+        userRepository.delete(user);
         userRepository.foreignKeyCheck();
-        return response.success();
+        logout(logout);
     }
 }
 

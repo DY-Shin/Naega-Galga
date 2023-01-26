@@ -1,11 +1,10 @@
 package com.ssafy.commonpjt.db.entity;
 
 import lombok.*;
-import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.DynamicInsert;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -19,7 +18,6 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @Entity
 @Table(name = "user")
-@DynamicInsert
 public class User implements UserDetails {
 
     @Id
@@ -36,12 +34,11 @@ public class User implements UserDetails {
     @Column(nullable = false, length = 50)
     private String userPhone;
 
-    @Column(nullable = false, length = 50)
-    private String userName;
+    @Column(name= "user_name" ,nullable = false, length = 50)
+    private String name;
 
-//    @ColumnDefault("'TEST'")
     @Column(length = 50, unique = true)
-    private String userCorporateRegistrationNumber;
+    private String corporateRegistrationNumber;
 
     @Column(nullable = false, length = 100)
     private String userAddress;
@@ -86,5 +83,40 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    // 정보 수정
+    public void updateId(String userId) {
+        this.userId = userId;
+    }
+
+    public void updatePassword(PasswordEncoder passwordEncoder, String userPassword) {
+        this.userPassword = passwordEncoder.encode(userPassword);
+    }
+
+    public void updatePhone(String userPhone) {
+        this.userPhone = userPhone;
+    }
+
+    public void updateName(String userName) {
+        this.name = userName;
+    }
+
+    public void updateCorporateRegistrationNumber(String corporateRegistrationNumber) {
+        this.corporateRegistrationNumber = corporateRegistrationNumber;
+    }
+
+    public void updateAddress(String userAddress) {
+        this.userAddress = userAddress;
+    }
+
+    // 패스워드 암호화
+    public void encodePassword(PasswordEncoder passwordEncoder) {
+        this.userPassword = passwordEncoder.encode(userPassword);
+    }
+
+    // 패스워드 일치 확인
+    public boolean matchPassword(PasswordEncoder passwordEncoder, String checkPassword) {
+        return passwordEncoder.matches(checkPassword, getPassword());
     }
 }

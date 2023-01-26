@@ -1,13 +1,13 @@
 server:
   address: localhost
-  port: 8080
+  port: 8888
 
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://stg-yswa-kr-practice-db-master.mariadb.database.azure.com:3306/S08P11D106?serverTimezone=UTC&useUnicode=true&characterEncoding=utf8
-    username: S08P11D106@stg-yswa-kr-practice-db-master
-    password: 0T8LarTzoV
+    url: jdbc:mysql://localhost:3306/pjt?serverTimezone=UTC&useUnicode=true&characterEncoding=utf8
+    username: test
+    password: Abcd123!
 
   jpa:
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
