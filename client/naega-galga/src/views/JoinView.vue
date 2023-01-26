@@ -11,23 +11,23 @@
     >
       <el-form-item>
         <el-form-item prop="user_id" style="width: 50%">
-          <p>아이디</p>
+          <p class="p-tag-design">아이디</p>
           <el-input v-model="joinform.user_id" />
         </el-form-item>
 
         <el-form-item prop="user_name" style="width: 50%">
-          <p>이름</p>
+          <p class="p-tag-design">이름</p>
           <el-input v-model="joinform.user_name"></el-input>
         </el-form-item>
       </el-form-item>
 
       <el-form-item prop="user_password">
-        <p>비밀번호</p>
+        <p class="p-tag-design">비밀번호</p>
         <el-input v-model="joinform.user_password" type="password"></el-input>
       </el-form-item>
 
       <el-form-item prop="password_confirm">
-        <p>비밀번호 확인</p>
+        <p class="p-tag-design">비밀번호 확인</p>
         <el-input
           v-model="joinform.password_confirm"
           type="password"
@@ -35,8 +35,19 @@
       </el-form-item>
 
       <el-form-item prop="user_phone">
-        <p>핸드폰 번호</p>
+        <p class="p-tag-design">핸드폰 번호</p>
         <el-input v-model="joinform.user_phone"></el-input>
+      </el-form-item>
+
+      <el-form-item prop="user_address">
+        <address-search-button
+          @getRoadAddress="setRoadAddress"
+        ></address-search-button>
+        <el-input v-model="address_info.road_address"></el-input>
+        <el-input
+          v-model="address_info.sebu_address"
+          placeholder="상세 주소를 입력해주세요."
+        ></el-input>
       </el-form-item>
 
       <el-form-item label="사업자이신가요?">
@@ -50,7 +61,7 @@
         ></el-input>
       </el-form-item>
 
-      <el-form-item>
+      <el-form-item style="text-align: center">
         <el-button type="primary" @click="submitForm(joinformRef)">
           가입하기
         </el-button>
@@ -67,20 +78,40 @@ import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import type { FormInstance, FormRules } from "element-plus";
 
+import AddressSearchButton from "@/components/common/AddressSearchButton.vue";
+
 export default defineComponent({
   name: "JoinView",
+  components: {
+    AddressSearchButton,
+  },
   setup() {
     const store = useStore();
     const router = useRouter();
     const visible = ref(false);
 
     const joinformRef = ref<FormInstance>();
+
+    const setRoadAddress = (address: string) => {
+      address_info.road_address = address;
+    };
+
+    const address_info = reactive({
+      road_address: "",
+      sebu_address: "",
+    });
+
+    const user_address = ref(
+      address_info.road_address + " " + address_info.sebu_address
+    );
+
     const joinform = reactive({
       user_id: "",
       user_name: "",
       user_password: "",
       password_confirm: "",
       user_phone: "",
+      user_address,
       corporate_registration_number: "",
     });
 
@@ -134,9 +165,25 @@ export default defineComponent({
           message: "비밀번호는 같아야 한다 이녀석아",
         },
       ],
+      user_phone: [
+        {
+          required: true,
+          message: "핸드폰 번호는 반드시 입력해주세요.",
+          trigger: "blur",
+        },
+      ],
+      // user_address: [
+      //   {
+      //     required: true,
+      //     message: "주소는 반드시 입력해주세요.",
+      //     trigger: "blur",
+      //   },
+      // ],
     });
 
     const submitForm = async (formEl: FormInstance | undefined) => {
+      user_address.value =
+        address_info.road_address + " " + address_info.sebu_address;
       if (!formEl) {
         return;
       }
@@ -153,7 +200,18 @@ export default defineComponent({
     const cancel = () => {
       router.push({ path: "/" });
     };
-    return { visible, joinformRef, joinform, rules, submitForm, cancel };
+
+    return {
+      visible,
+      joinformRef,
+      joinform,
+      rules,
+      submitForm,
+      cancel,
+      setRoadAddress,
+      address_info,
+      user_address,
+    };
   },
 });
 </script>
@@ -162,7 +220,7 @@ export default defineComponent({
 .grid {
   display: grid;
   grid-template-columns: 7fr 9fr 7fr;
-  padding-top: 75px;
+  padding-top: 50px;
 }
 
 .joinform {
@@ -174,5 +232,9 @@ export default defineComponent({
   box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.24);
   border: 1px solid;
   border-color: #555555;
+}
+
+.p-tag-design {
+  margin: 0px;
 }
 </style>

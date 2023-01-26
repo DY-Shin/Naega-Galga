@@ -3,10 +3,11 @@ import apiTokenInstance from "@/api/apiTokenInstance";
 
 const state = {
   user_info: {
-    user_name: "창식이",
     user_id: "sige_tank",
     user_phone: "010-9169-5671",
+    user_name: "창식이",
     user_address: "그레이빌 206호",
+    corporate_registration_number: "",
   },
   token: null,
 };
@@ -37,19 +38,19 @@ const actions = {
   join(context, joinform) {
     apiInstance
       .post(`/api/users`, {
-        data: {
-          user_id: joinform.user_id,
-          user_password: joinform.user_password,
-          user_name: joinform.user_name,
-          user_phone: joinform.user_phone,
-          corporate_registration_number: joinform.corporate_registration_number,
-        },
+        userId: joinform.user_id,
+        userPassword: joinform.user_password,
+        userName: joinform.user_name,
+        userPhone: joinform.user_phone,
+        corporateRegistrationNumber: joinform.corporate_registration_number,
+        userAddress: joinform.user_address,
       })
       .then(res => {
         context.commit("SAVE_TOKEN", res.data.key);
       })
       .catch(err => {
         console.log(err);
+        console.log(joinform.user_address);
       });
   },
 
@@ -91,7 +92,7 @@ const actions = {
 
   get_user_info(context) {
     apiInstance
-      .get(`/api/users/me`)
+      .get(`/api/users`)
       .then(res => {
         context.commit("GET_USER_INFO", res.data.key);
       })
