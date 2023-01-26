@@ -26,24 +26,23 @@ const mutations = {
   },
 
   USER_INFO_CHANGE(state, changeform) {
-    state.user_name = changeform.name;
-    state.user_id = changeform.user_id;
-    state.user_phone_number = changeform.user_phone_number;
-    state.user_address = changeform.user_address;
+    state.user_info.user_name = changeform.user_name;
+    state.user_info.user_id = changeform.user_id;
+    state.user_info.user_phone = changeform.user_phone;
+    state.user_info.user_address = changeform.user_address;
   },
 };
 
 const actions = {
   join(context, joinform) {
     apiInstance
-      .post(`/api/v1/join`, {
+      .post(`/api/users`, {
         data: {
-          id: joinform.id,
-          password1: joinform.password1,
-          password2: joinform.password2,
-          name: joinform.name,
-          phone_number: joinform.phone_number,
-          register_number: joinform.register_number,
+          user_id: joinform.user_id,
+          user_password: joinform.user_password,
+          user_name: joinform.user_name,
+          user_phone: joinform.user_phone,
+          corporate_registration_number: joinform.corporate_registration_number,
         },
       })
       .then(res => {
@@ -53,8 +52,25 @@ const actions = {
         console.log(err);
       });
   },
+
+  login(context, form) {
+    apiInstance
+      .post(`/api/users/login`, {
+        data: {
+          id: form.id,
+          password: form.password,
+        },
+      })
+      .then(res => {
+        context.commit("SAVE_TOKEN", res.data.key);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  },
+
   logout(context) {
-    apiTokenInstance.post(`api/v1/logout`).then(res => {
+    apiTokenInstance.post(`/api/users/logout`).then(res => {
       context.commit("LOGOUT", res.data.key).catch(err => {
         console.log(err);
       });
@@ -75,13 +91,21 @@ const actions = {
 
   get_user_info(context) {
     apiInstance
-      .get(`api/v1/user`)
+      .get(`/api/users/me`)
       .then(res => {
         context.commit("GET_USER_INFO", res.data.key);
       })
       .catch(err => {
         console.log(err);
       });
+  },
+
+  userInfoChange(context) {
+    apiInstance.put(`/api/users/change`).then(res => {
+      context.commit("USER_INFO_CHANGE", res.data.key).catch(err => {
+        console.log(err);
+      });
+    });
   },
 };
 

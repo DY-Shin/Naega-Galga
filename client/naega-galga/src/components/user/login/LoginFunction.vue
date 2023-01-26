@@ -21,17 +21,17 @@ import { useRouter } from "vue-router";
 export default defineComponent({
   name: "LoginFunction",
   setup() {
+    const store = useStore();
+    const router = useRouter();
+
     const loginform = reactive({
       id: "",
       password: "",
     });
 
-    const store = useStore();
-    const router = useRouter();
-
     const login = () => {
-      store.dispatch("login", loginform);
-      router.push({ path: "/user" });
+      store.dispatch("userStore/login", loginform);
+      router.push({ path: "/" });
     };
 
     const signup = () => {

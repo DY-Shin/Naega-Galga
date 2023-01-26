@@ -1,68 +1,61 @@
 <template>
   <div class="grid">
     <div />
-
-    <el-form :model="joinform" class="joinform">
+    <el-form
+      ref="joinformRef"
+      :model="joinform"
+      :rules="rules"
+      class="joinform"
+      style="min-width: 400px"
+      status-icon
+    >
       <el-form-item>
-        <el-form-item style="width: 50%">
-          <p class="p-design">아이디</p>
-          <el-input
-            v-model="joinform.id"
-            placeholder="영문, 숫자를 조합하여 8~12자리"
-          />
+        <el-form-item prop="user_id" style="width: 50%">
+          <p>아이디</p>
+          <el-input v-model="joinform.user_id" />
         </el-form-item>
-        <el-form-item style="width: 50%">
-          <p class="p-design">이름</p>
-          <el-input v-model="joinform.name" />
+
+        <el-form-item prop="user_name" style="width: 50%">
+          <p>이름</p>
+          <el-input v-model="joinform.user_name"></el-input>
         </el-form-item>
       </el-form-item>
 
-      <p class="p-design">비밀번호</p>
-      <el-input
-        v-model="joinform.password1"
-        type="password"
-        placeholder="영문, 숫자, 특수문자를 조합하여 8~16자리"
-      />
+      <el-form-item prop="user_password">
+        <p>비밀번호</p>
+        <el-input v-model="joinform.user_password" type="password"></el-input>
+      </el-form-item>
 
-      <p class="p-design">비밀번호 확인</p>
-      <el-input v-model="joinform.password2" type="password" />
+      <el-form-item prop="password_confirm">
+        <p>비밀번호 확인</p>
+        <el-input
+          v-model="joinform.password_confirm"
+          type="password"
+        ></el-input>
+      </el-form-item>
 
-      <p
-        class="warning"
-        style="
-          font-size: xx-small;
-          color: red;
-          visibility: visible;
-          margin-top: 0px;
-          margin-bottom: 0px;
-        "
-      >
-        비밀번호가 일치하지 않습니다.
-      </p>
+      <el-form-item prop="user_phone">
+        <p>핸드폰 번호</p>
+        <el-input v-model="joinform.user_phone"></el-input>
+      </el-form-item>
 
-      <p class="p-design">전화번호</p>
-      <el-input
-        v-model="joinform.phone_number"
-        placeholder="ex) 010-0000-0000"
-      />
-
-      <el-form-item
-        label="사업자이신가요?"
-        style="margin-top: 10px; margin-bottom: 10px"
-      >
+      <el-form-item label="사업자이신가요?">
         <el-checkbox label="예" v-model="visible" />
       </el-form-item>
 
-      <el-input
-        v-show="visible"
-        v-model="joinform.register_number"
-        placeholder="사업자 번호를 입력하세요"
-        style="margin-bottom: 20px"
-      />
-      <div class="buttons">
-        <el-button type="primary" @click="join">회원가입</el-button>
-        <el-button @click="cancel">취소하기</el-button>
-      </div>
+      <el-form-item prop="corporate_registration_number">
+        <el-input
+          v-show="visible"
+          v-model="joinform.corporate_registration_number"
+        ></el-input>
+      </el-form-item>
+
+      <el-form-item>
+        <el-button type="primary" @click="submitForm(joinformRef)">
+          가입하기
+        </el-button>
+        <el-button @click="cancel"> 취소하기 </el-button>
+      </el-form-item>
     </el-form>
     <div />
   </div>
@@ -72,43 +65,95 @@
 import { defineComponent, reactive, ref } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
+import type { FormInstance, FormRules } from "element-plus";
 
 export default defineComponent({
   name: "JoinView",
   setup() {
-    const joinform = reactive({
-      id: "",
-      password1: "",
-      password2: "",
-      name: "",
-      phone_number: "",
-      register_number: "",
-    });
-
     const store = useStore();
     const router = useRouter();
-
     const visible = ref(false);
 
-    const join = () => {
-      store.dispatch("join", joinform);
-      router.push({ path: "/login" });
+    const joinformRef = ref<FormInstance>();
+    const joinform = reactive({
+      user_id: "",
+      user_name: "",
+      user_password: "",
+      password_confirm: "",
+      user_phone: "",
+      corporate_registration_number: "",
+    });
+
+    const rules = reactive<FormRules>({
+      user_id: [
+        {
+          required: true,
+          message: "아이디를 반드시 입력해주세요.",
+          trigger: "blur",
+        },
+        {
+          min: 4,
+          max: 12,
+          message: "아이디는 4~12",
+          trigger: "blur",
+        },
+      ],
+      user_name: [
+        {
+          required: true,
+          message: "이름은 반드시 입력해주세요",
+          trigger: "blur",
+        },
+        {
+          min: 2,
+          max: 8,
+          message: "이름은 어쩌고",
+          trigger: "blur",
+        },
+      ],
+      user_password: [
+        {
+          required: true,
+          message: "비밀번호는 반드시 입력해주세요.",
+          trigger: "blur",
+        },
+        {
+          min: 8,
+          max: 16,
+          message: "비밀번호는 8~16",
+          trigger: "blur",
+        },
+      ],
+      password_confirm: [
+        {
+          required: true,
+          message: "비밀번호는 반드시 입력해주세요.",
+          trigger: "blur",
+        },
+        {
+          message: "비밀번호는 같아야 한다 이녀석아",
+        },
+      ],
+    });
+
+    const submitForm = async (formEl: FormInstance | undefined) => {
+      if (!formEl) {
+        return;
+      }
+      await formEl.validate((valid, fields) => {
+        if (valid) {
+          store.dispatch("userStore/join", joinform);
+          console.log("submit!");
+        } else {
+          console.log("error submit!", fields);
+        }
+      });
     };
 
     const cancel = () => {
       router.push({ path: "/" });
     };
-
-    const formInline = reactive({
-      user: "",
-      region: "",
-    });
-
-    const onSubmit = () => {
-      console.log("submit!");
-    };
-
-    return { joinform, visible, join, cancel, formInline, onSubmit };
+    return { visible, joinformRef, joinform, rules, submitForm, cancel };
   },
 });
 </script>
@@ -129,16 +174,5 @@ export default defineComponent({
   box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.24);
   border: 1px solid;
   border-color: #555555;
-}
-
-.p-design {
-  margin-top: 15px;
-  margin-bottom: 0px;
-  font-size: 14px;
-}
-
-.buttons {
-  display: flex;
-  justify-content: center;
 }
 </style>
