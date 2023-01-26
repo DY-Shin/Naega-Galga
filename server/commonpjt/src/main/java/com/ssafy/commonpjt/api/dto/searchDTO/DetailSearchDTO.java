@@ -50,28 +50,7 @@ public class DetailSearchDTO {
     private boolean closet;
     private boolean bed;
 
-    public static DetailSearchDTO toDTO(Building building, Product product, Options options) {
-        return DetailSearchDTO.builder()
-                .index(product.getProductIndex())
-                .seller(product.getProductSeller().getUserIndex())
-                .addr(building.getBuildingAddress())
-                .roadAddr(building.getBuildingRoadAddress())
-                .price(product.getProductPrice())
-                .photo(product.getProductPhoto())
-                .airConditioner(options.isOptionAirConditioner())
-                .fridge(options.isOptionFridge())
-                .washingMachine(options.isOptionWashingMachine())
-                .gasStove(options.isOptionGasStove())
-                .induction(options.isOptionInduction())
-                .microWave(options.isOptionMicroWave())
-                .desk(options.isOptionDesk())
-                .wifi(options.isOptionWifi())
-                .closet(options.isOptionCloset())
-                .bed(options.isOptionBed())
-                .build();
-    }
-
-    public static DetailSearchDTO to(Product product) {
+    public static DetailSearchDTO toDTO(Product product) {
         return DetailSearchDTO.builder()
                 .index(product.getProductIndex())
                 .seller(product.getProductSeller().getUserIndex())

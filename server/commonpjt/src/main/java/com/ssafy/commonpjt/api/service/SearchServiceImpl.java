@@ -95,7 +95,6 @@ public class SearchServiceImpl implements SearchService{
                     .findBuildingIndexByBuildingAddressStartingWithAndBuildingRoadAddressStartingWith(addr, roadAddr);
 
             for(Integer idx : buildings) {
-                System.out.println(idx);
                 List<Product> product = productRepository.productFetchJoin(idx);
                 for(Product productInfo : product) {
                     searchResult.add(SearchProductDTO.toDTO(productInfo));
@@ -108,6 +107,6 @@ public class SearchServiceImpl implements SearchService{
     @Override
     public DetailSearchDTO detailProduct(int id) {
         Product product = productRepository.findByProductIndex(id);
-        return DetailSearchDTO.to(product);
+        return DetailSearchDTO.toDTO(product);
     }
 }
