@@ -53,3 +53,6 @@ VALUES ('고양이', '서장실', '남향', '4층', 10, '','100만원','원룸',
 
 insert into product (product_animal, product_detail, product_direction, product_floor, product_manage_cost, product_photo, product_price, product_rooms, product_size, product_type, building_index, option_index, seller_index)
 VALUES ('불가', '동장실', '남향', '4층', 10, '','100만원','원룸', '10평','월세',4,4,4);
+
+insert into product (product_animal, product_detail, product_direction, product_floor, product_manage_cost, product_photo, product_price, product_rooms, product_size, product_type, building_index, option_index, seller_index)
+VALUES ('고양이', '사무실', '북향', '4층', 20, '','50만원','원룸', '20평','월세',1,5,1);
