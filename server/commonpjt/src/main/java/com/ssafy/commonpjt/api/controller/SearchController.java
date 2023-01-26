@@ -23,10 +23,7 @@ public class SearchController {
 
     @GetMapping("")
     public ResponseEntity<?> searchProduct(@RequestParam("address") String address) {
-        log.info(address);
-
         List<?> searchResult = searchService.searchProduct(address);
-
         return ResponseEntity.ok(searchResult);
     }
 
@@ -35,6 +32,4 @@ public class SearchController {
         DetailSearchDTO productInfo = searchService.detailProduct(id);
         return ResponseEntity.ok(productInfo);
     }
-
-
 }

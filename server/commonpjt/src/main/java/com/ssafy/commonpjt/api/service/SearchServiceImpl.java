@@ -3,8 +3,11 @@ package com.ssafy.commonpjt.api.service;
 import com.ssafy.commonpjt.api.dto.searchDTO.KakaoAddressDTO;
 import com.ssafy.commonpjt.api.dto.searchDTO.SearchProductDTO;
 import com.ssafy.commonpjt.api.dto.searchDTO.DetailSearchDTO;
+import com.ssafy.commonpjt.db.entity.Building;
 import com.ssafy.commonpjt.db.entity.Product;
+import com.ssafy.commonpjt.db.entity.Options;
 import com.ssafy.commonpjt.db.repository.BuildingRepository;
+import com.ssafy.commonpjt.db.repository.OptionsRepository;
 import com.ssafy.commonpjt.db.repository.ProductRepository;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -27,6 +30,8 @@ public class SearchServiceImpl implements SearchService{
     private BuildingRepository buildingRepository;
     @Autowired
     private ProductRepository productRepository;
+    @Autowired
+    private OptionsRepository optionsRepository;
 
     /**
      * 카카오 로컬 api를 호출
@@ -92,56 +97,17 @@ public class SearchServiceImpl implements SearchService{
             for(Integer idx : buildings) {
                 System.out.println(idx);
                 List<Product> product = productRepository.productFetchJoin(idx);
-                for(Product p : product) {
-                    SearchProductDTO searchDTO = SearchProductDTO.builder()
-                            .index(p.getProductIndex())
-                            .addr(p.getBuilding().getBuildingAddress())
-                            .roadAddr(p.getBuilding().getBuildingRoadAddress())
-                            .price(p.getProductPrice())
-                            .photo(p.getProductPhoto())
-                            .airConditioner(p.getOptions().isOptionAirConditioner())
-                            .fridge(p.getOptions().isOptionFridge())
-                            .washingMachine(p.getOptions().isOptionWashingMachine())
-                            .gasStove(p.getOptions().isOptionGasStove())
-                            .induction(p.getOptions().isOptionInduction())
-                            .microWave(p.getOptions().isOptionMicroWave())
-                            .desk(p.getOptions().isOptionDesk())
-                            .wifi(p.getOptions().isOptionWifi())
-                            .closet(p.getOptions().isOptionCloset())
-                            .bed(p.getOptions().isOptionBed())
-                            .build();
-                    searchResult.add(searchDTO);
+                for(Product productInfo : product) {
+                    searchResult.add(SearchProductDTO.toDTO(productInfo));
                 }
             }
         }
-
         return searchResult;
     }
 
     @Override
     public DetailSearchDTO detailProduct(int id) {
-        List<Product> product = productRepository.productFetchJoin(id);
-        DetailSearchDTO detailDTO = new DetailSearchDTO();
-        for(Product p:product) {
-            detailDTO = DetailSearchDTO.builder()
-                .index(p.getProductIndex())
-                .addr(p.getBuilding().getBuildingAddress())
-                .roadAddr(p.getBuilding().getBuildingRoadAddress())
-                .price(p.getProductPrice())
-                .photo(p.getProductPhoto())
-                .airConditioner(p.getOptions().isOptionAirConditioner())
-                .fridge(p.getOptions().isOptionFridge())
-                .washingMachine(p.getOptions().isOptionWashingMachine())
-                .gasStove(p.getOptions().isOptionGasStove())
-                .induction(p.getOptions().isOptionInduction())
-                .microWave(p.getOptions().isOptionMicroWave())
-                .desk(p.getOptions().isOptionDesk())
-                .wifi(p.getOptions().isOptionWifi())
-                .closet(p.getOptions().isOptionCloset())
-                .bed(p.getOptions().isOptionBed())
-                .build();
-        }
-
-        return detailDTO;
+        Product product = productRepository.findByProductIndex(id);
+        return DetailSearchDTO.to(product);
     }
 }

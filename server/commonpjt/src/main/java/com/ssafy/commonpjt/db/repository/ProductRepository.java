@@ -1,10 +1,9 @@
 package com.ssafy.commonpjt.db.repository;
 
 import com.ssafy.commonpjt.db.entity.Product;
-import com.ssafy.commonpjt.db.entity.Building;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.Repository;
 
 import java.util.List;
 
@@ -16,5 +15,6 @@ public interface ProductRepository extends JpaRepository<Product, Integer>{
             "where p.building.buildingIndex = ?1")
     List<Product> productFetchJoin(Integer buildingIndex);
 
-//    List<Product> findByBuildingAnd
+    @EntityGraph(attributePaths = {"building","options"}, type = EntityGraph.EntityGraphType.LOAD)
+    Product findByProductIndex(Integer productIndex);
 }
