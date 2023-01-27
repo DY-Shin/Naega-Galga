@@ -1,9 +1,4 @@
 <template>
-  <!-- <div class="test">
-    <div style="">부산 동래구 충렬대로 255</div>
-    <div style="">싸피원룸</div>
-    <div style="">부산 동래구 충렬대로 255</div>
-  </div> -->
   <el-container><el-main id="map"></el-main></el-container>
 </template>
 
@@ -30,7 +25,6 @@ export default defineComponent({
   },
 
   setup(props) {
-    // let markers: number[] = [];
     watch(
       () => props.GetIdx,
       () => {
@@ -42,21 +36,12 @@ export default defineComponent({
       () => props.GetList,
       () => {
         displayMarker(window.map, props.GetList);
-        // console.log(props.GetList);
-        // console.log(markers[0].getPosition);
-        // console.log(markers[1].getPosition);
-        // console.log(markers[2].getPosition);
-        for (let i = 0; i < infowindows.length; i++) {
-          infowindows[i].close();
+        for (let i = 0; i < overlays.length; i++) {
+          overlays[i].setMap(null);
         }
       },
       { deep: true }
     );
-
-    const clickListener = (map, marker, infowindow) =>
-      function () {
-        infowindow.open(map, marker);
-      };
 
     const markerPositions1: object[] = [
       {
@@ -93,7 +78,7 @@ export default defineComponent({
       });
     };
 
-    let infowindows: any[] = [];
+    let overlays: any[] = [];
     let markers: any[] = [];
     let nums: any[] = [];
 
@@ -135,7 +120,7 @@ export default defineComponent({
                 image: markerImage,
               });
 
-              setInfoWindow(coords, marker, markerList[i]); // 상세 정보 창 만들어주고
+              setOverlay(coords, marker, markerList[i]); // 상세 정보 창 만들어주고
 
               marker.setMap(map);
               markers[num] = marker;
@@ -154,44 +139,60 @@ export default defineComponent({
       // 모든 마커 범위 포함하게 지도 범위 재설정
       window.map.setBounds(bounds);
     };
-    const setInfoWindow = (coords, marker, product) => {
-      // 상세 정보 창 만들어서 배열에 넣음 클릭 시 열림 이벤트 등록
-      // const move = () => {
-      //   console.log("!!");
-      //   alert("asd");
-      // };
-      // const move = () => {
-      //   console.log("!!");
-      //   alert("!!!");
-      // };
-      let infowindow = new window.kakao.maps.InfoWindow({
-        content: `<button @click="${console.log(
-          "!!"
-        )}">내가갈가[家]</button><div style="padding:5px;">${product.address} ${
-          product.type
-        } <br><a href="/" style="color:blue" target="_blank">${
-          product.address
-        }</a> <a href="https://map.kakao.com/link/to/Hello World!,33.450701,126.570667" style="color:blue" target="_blank">길찾기</a></div>`,
-        // content: `<div
-        // style="
-        // width: 300px;
-        // height: 100px;
-        // text-align: center;
-        // padding: 10px 0;
-        // border: 1px solid white">${product.address} ${product.type}
-        // <button style="border:none;
-        // background: whitesmoke;
-        // cursor:pointer"
-        // @click="location.href='/'">hi</button>`,
-        removable: true,
+    const setOverlay = (coords, marker, product) => {
+      let customOverlay = new window.kakao.maps.CustomOverlay({
+        position: coords,
+        xAnchor: 0.5,
+        yAnchor: 1.2,
       });
 
-      window.kakao.maps.event.addListener(
-        marker,
-        "click",
-        clickListener(window.map, marker, infowindow)
-      );
-      infowindows.push(infowindow);
+      let content = document.createElement("div");
+      content.className = "overlaybox";
+
+      let img = document.createElement("img");
+      img.src =
+        "https://cdn.pixabay.com/photo/2023/01/07/07/16/houses-7702757_1280.jpg";
+      img.width = 280;
+      img.height = 200;
+      img.className = "overlayimg";
+      content.appendChild(img);
+
+      let rooms = document.createElement("h3");
+      rooms.className = "overlay-rooms";
+      rooms.appendChild(document.createTextNode(product.rooms));
+      content.appendChild(rooms);
+
+      let priceinfo = document.createElement("div");
+      let type = document.createElement("div");
+      type.className = "overlay-type";
+      type.appendChild(document.createTextNode(product.type));
+
+      let price = document.createElement("div");
+      price.className = "overlay-price";
+      price.appendChild(document.createTextNode(product.price));
+
+      let closebtnbox = document.createElement("div");
+      closebtnbox.onclick = () => {
+        customOverlay.setMap(null);
+      };
+      let closebtn = document.createElement("img");
+      closebtn.className = "overlay-icon";
+      closebtn.src = "https://cdn-icons-png.flaticon.com/512/1828/1828665.png";
+      closebtn.width = 15;
+      closebtn.height = 15;
+      closebtnbox.appendChild(closebtn);
+
+      priceinfo.appendChild(type);
+      priceinfo.appendChild(price);
+      priceinfo.appendChild(closebtnbox);
+
+      content.appendChild(priceinfo);
+
+      window.kakao.maps.event.addListener(marker, "click", function () {
+        customOverlay.setMap(window.map);
+      });
+      overlays.push(customOverlay);
+      customOverlay.setContent(content);
     };
 
     const changeCenter = addr_idx => {
@@ -200,28 +201,20 @@ export default defineComponent({
       let idx = nums[addr_idx];
       let marker = markers[idx];
       let coords = marker.getPosition();
-
+      overlays[idx].setMap(window.map);
       window.map.setCenter(coords);
       window.map.setLevel(1);
-      infowindows[idx].open(
-        window.map,
-        new window.kakao.maps.Marker({
-          position: coords,
-        })
-      );
-      // setInfoWindow(marker.getPosition(), marker);
     };
 
     return {
       markerPositions1,
-      clickListener,
       changeCenter,
       props,
     };
   },
 });
 </script>
-<style scoped>
+<style>
 .info-window {
   border: 1px solid red;
   width: 150px;
@@ -232,10 +225,36 @@ export default defineComponent({
 .test {
   text-align: center;
   box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
-
   border: 1px solid rgb(203, 203, 203);
   border-radius: 25px;
   width: 300px;
   height: 250px;
+}
+.overlaybox {
+  width: 280px;
+  height: 280px;
+  border-radius: 15px;
+  background-color: white;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+}
+.overlay-rooms {
+  margin: 10px 20px;
+}
+.overlay-type {
+  float: left;
+  padding: 0 20px 0 20px;
+}
+.overlay-price {
+  float: left;
+}
+.overlay-icon {
+  float: right;
+  padding: 0 15px;
+}
+.overlayimg {
+  border-radius: 15px 15px 0 0;
+}
+.content {
+  z-index: 1000;
 }
 </style>
