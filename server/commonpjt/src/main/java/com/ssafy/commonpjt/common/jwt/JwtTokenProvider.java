@@ -29,11 +29,14 @@ public class JwtTokenProvider {
     private static final long ACCESS_TOKEN_EXPIRE_TIME = 30 * 60 * 1000L; // 30분
     private static final long REFRESH_TOKEN_EXPIRE_TIME = 7 * 24 * 60 * 60 * 1000L; // 7일
 
+    // application.yml 에서 설정한 secret Key 값으로 토큰 생성
+    // application.yml 은 배포되면 안됨
     public JwtTokenProvider(@Value("${jwt.secret}") String secretKey) {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
 
+    // 토큰 생성 설정
     public TokenDTO generateToken(Authentication authentication) {
         String authorities = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
@@ -61,21 +64,25 @@ public class JwtTokenProvider {
                 .build();
     }
 
+    // 토큰 복호화
     public Authentication getAuthentication(String accessToken) {
         Claims claims = parseClaims(accessToken);
         if (claims.get("auth") == null) {
             throw new RuntimeException("권한 정보가 없는 토큰입니다.");
         }
 
+        // 클레임에서 권한 정보 가져오기
         Collection<? extends GrantedAuthority> authorities =
                 Arrays.stream(claims.get("auth").toString().split(","))
                         .map(SimpleGrantedAuthority::new)
                         .collect(Collectors.toList());
 
+        // UserDetails 객체를 만들어서 Authentication 리턴
         UserDetails principal = new User(claims.getSubject(), "", authorities);
         return new UsernamePasswordAuthenticationToken(principal, "", authorities);
     }
 
+    // 토큰 유효성 검사
     public boolean validateToken(String token) {
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
@@ -92,6 +99,7 @@ public class JwtTokenProvider {
         return false;
     }
 
+    // 토큰 파싱하기
     private Claims parseClaims(String accessToken) {
         try{
             return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(accessToken).getBody();
@@ -100,6 +108,7 @@ public class JwtTokenProvider {
         }
     }
 
+    // 토큰 만료시키기
     public Long getExpiration(String accessToken) {
         Date expiration = Jwts.parserBuilder()
                 .setSigningKey(key)

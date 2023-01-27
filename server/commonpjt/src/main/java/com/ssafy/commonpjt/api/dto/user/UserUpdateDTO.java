@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserUpdateDTO {
+    // 회원 정보 수정 시 입력 정보
     private String userId;
     private String userPhone;
     private String userName;

@@ -43,6 +43,7 @@ public class User implements UserDetails {
     @Column(nullable = false, length = 100)
     private String userAddress;
 
+    // 권한 설정을 외래 키로 부여
     @Column
     @ElementCollection(fetch = FetchType.EAGER)
     @Builder.Default

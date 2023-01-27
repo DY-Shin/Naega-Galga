@@ -6,6 +6,7 @@ import lombok.Data;
 
 @Data
 public class UserInfoDTO {
+    // 회원 정보 조회 시 조회 정보
     private final String userId;
     private final String userPhone;
     private final String userName;
