@@ -10,6 +10,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
+// Redis 설정
 @RequiredArgsConstructor
 @Configuration
 @EnableRedisRepositories
@@ -21,6 +22,7 @@ public class RedisRepositoryConfig {
     @Value("${spring.redis.port}")
     private int port;
 
+    // Redis 중 Lettuce 사용
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
         return new LettuceConnectionFactory(host, port);

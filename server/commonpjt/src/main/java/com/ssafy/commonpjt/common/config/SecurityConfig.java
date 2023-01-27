@@ -30,14 +30,16 @@ public class SecurityConfig {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
+                // 접속 URL 권한 설정
                 .antMatchers("/api/users", "/api/users/login", "/api/users/logout", "/api/users/delete").permitAll()
-                .antMatchers("/api/products").hasRole("USER")
-                .anyRequest().authenticated()
+//                .antMatchers("/api/products").hasRole("USER")
+//                .anyRequest().authenticated()
                 .and()
                 .addFilterBefore(new JwtTokenAuthenticationFilter(jwtTokenProvider, redisTemplate), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 
+    // 비밀번호 암호화 도구
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
