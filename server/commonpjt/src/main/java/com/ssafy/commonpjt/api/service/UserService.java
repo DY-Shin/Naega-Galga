@@ -1,6 +1,6 @@
 package com.ssafy.commonpjt.api.service;
 
-import com.ssafy.commonpjt.api.dto.*;
+import com.ssafy.commonpjt.api.dto.user.*;
 import com.ssafy.commonpjt.common.enums.Authority;
 import com.ssafy.commonpjt.common.jwt.JwtTokenProvider;
 import com.ssafy.commonpjt.common.security.SecurityUtil;
@@ -46,8 +46,6 @@ public class UserService {
     }
 
     public TokenDTO login(UserLoginDTO login) throws Exception {
-        System.out.println(login.getUserId());
-        System.out.println(userRepository.findByUserId(login.getUserId()));
         if (userRepository.findByUserId(login.getUserId()).orElse(null) == null) {
             throw new Exception("No User Exists");
         }
@@ -75,11 +73,12 @@ public class UserService {
 
     public void update(UserUpdateDTO userUpdateDto) throws Exception {
         User user = userRepository.findByUserId(SecurityUtil.getLoginUsername()).orElseThrow(() -> new Exception("No User Exists"));
-        userUpdateDto.getUserId().ifPresent(user::updateId);
-        userUpdateDto.getUserPhone().ifPresent(user::updatePhone);
-        userUpdateDto.getUserName().ifPresent(user::updateName);
-        userUpdateDto.getCorporateRegistrationNumber().ifPresent(user::updateCorporateRegistrationNumber);
-        userUpdateDto.getUserAddress().ifPresent(user::updateAddress);
+        if (userUpdateDto.getUserId() != null) user.setUserId(userUpdateDto.getUserId());
+        if (userUpdateDto.getUserPhone() != null) user.setUserPhone(userUpdateDto.getUserPhone());
+        if (userUpdateDto.getUserName() != null) user.setName(userUpdateDto.getUserName());
+        if (userUpdateDto.getCorporateRegistrationNumber() != null) user.setCorporateRegistrationNumber(userUpdateDto.getCorporateRegistrationNumber());
+        if (userUpdateDto.getUserAddress() != null) user.setUserAddress(userUpdateDto.getUserAddress());
+        userRepository.save(user);
     }
 
     public void updatePassword(UpdatePasswordDTO updatePasswordDto) throws Exception {
@@ -88,6 +87,7 @@ public class UserService {
             throw new Exception("Incorrect Password");
         }
         user.updatePassword(passwordEncoder, updatePasswordDto.getToBePassword());
+        userRepository.save(user);
     }
 
     public UserInfoDTO getInfo(String userId) throws Exception {

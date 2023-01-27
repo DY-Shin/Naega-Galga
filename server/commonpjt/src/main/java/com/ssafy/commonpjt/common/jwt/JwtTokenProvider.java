@@ -1,6 +1,6 @@
 package com.ssafy.commonpjt.common.jwt;
 
-import com.ssafy.commonpjt.api.dto.TokenDTO;
+import com.ssafy.commonpjt.api.dto.user.TokenDTO;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;

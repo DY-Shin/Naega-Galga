@@ -1,6 +1,6 @@
 package com.ssafy.commonpjt.api.controller;
 
-import com.ssafy.commonpjt.api.dto.*;
+import com.ssafy.commonpjt.api.dto.user.*;
 import com.ssafy.commonpjt.api.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

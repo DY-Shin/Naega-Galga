@@ -85,29 +85,9 @@ public class User implements UserDetails {
         return true;
     }
 
-    // 정보 수정
-    public void updateId(String userId) {
-        this.userId = userId;
-    }
-
+    // 비밀번호 수정
     public void updatePassword(PasswordEncoder passwordEncoder, String userPassword) {
         this.userPassword = passwordEncoder.encode(userPassword);
-    }
-
-    public void updatePhone(String userPhone) {
-        this.userPhone = userPhone;
-    }
-
-    public void updateName(String userName) {
-        this.name = userName;
-    }
-
-    public void updateCorporateRegistrationNumber(String corporateRegistrationNumber) {
-        this.corporateRegistrationNumber = corporateRegistrationNumber;
-    }
-
-    public void updateAddress(String userAddress) {
-        this.userAddress = userAddress;
     }
 
     // 패스워드 암호화

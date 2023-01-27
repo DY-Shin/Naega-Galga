@@ -1,4 +1,4 @@
-package com.ssafy.commonpjt.api.dto;
+package com.ssafy.commonpjt.api.dto.user;
 
 import com.ssafy.commonpjt.db.entity.User;
 import lombok.Builder;
