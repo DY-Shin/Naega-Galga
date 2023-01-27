@@ -14,6 +14,7 @@ public class JwtSecurityConfig extends SecurityConfigurerAdapter<DefaultSecurity
     private final JwtTokenProvider jwtTokenProvider;
     private final RedisTemplate redisTemplate;
 
+    // 토큰 설정
     @Override
     public void configure(HttpSecurity http) {
         JwtTokenAuthenticationFilter customFilter = new JwtTokenAuthenticationFilter(jwtTokenProvider, redisTemplate);

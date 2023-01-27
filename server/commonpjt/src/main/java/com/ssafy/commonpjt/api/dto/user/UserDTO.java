@@ -1,9 +1,11 @@
-package com.ssafy.commonpjt.api.dto;
+package com.ssafy.commonpjt.api.dto.user;
 
 import lombok.Data;
 
 @Data
-public class UserDto {
+public class UserDTO {
+
+    // 회원가입시 입력 정보
     private Long id;
     private String userId;
     private String userPassword;
