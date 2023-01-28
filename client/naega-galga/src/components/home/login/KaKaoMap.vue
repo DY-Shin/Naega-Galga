@@ -10,7 +10,6 @@
 
 <script lang="ts">
 import { defineComponent, onMounted, watch } from "@vue/runtime-core";
-["GetAddress"];
 
 declare global {
   interface Window {
@@ -20,34 +19,45 @@ declare global {
 }
 
 export default defineComponent({
-  props: { GetAddress: { type: String } },
+  props: {
+    GetIdx: { type: Number },
+    GetList: { type: Array },
+  },
 
   setup(props) {
     watch(
-      () => props.GetAddress,
+      () => props.GetIdx,
       () => {
-        console.log("getAddress!!");
-        changeCenter(props.GetAddress);
+        console.log(props.GetIdx);
+        changeCenter(props.GetIdx);
       }
     );
-
-    // let markers: [number[]];
-    const makeOverListener = (map, marker, infowindow) =>
-      function () {
-        infowindow.open(map, marker);
-      };
-    const makeOutListener = infowindow =>
-      function () {
-        infowindow.close();
-      };
+    watch(
+      () => props.GetList,
+      () => {
+        displayMarker(window.map, props.GetList);
+        for (let i = 0; i < overlays.length; i++) {
+          overlays[i].setMap(null);
+        }
+      },
+      { deep: true }
+    );
 
     const markerPositions1: object[] = [
-      { title: "카카오", latlng: [33.450705, 126.570677] },
-      { title: "생태연못", latlng: [33.450936, 126.569477] },
+      {
+        address: "경상북도 구미시 인동6길 26-2",
+        a: 36.1020372425131,
+        b: 128.420294611527,
+      },
+      {
+        address: "부산 동래구 충렬대로 255",
+        a: 35.2014786272255,
+        b: 129.087166169007,
+      },
     ];
 
-    const latitude = 33.450705;
-    const longitude = 126.570677;
+    const latitude = 36.1020372425131;
+    const longitude = 128.420294611527;
     onMounted(() => {
       const mapScript = document.createElement("script");
       mapScript.async = true;
@@ -65,84 +75,186 @@ export default defineComponent({
           center: new window.kakao.maps.LatLng(latitude, longitude),
         };
         window.map = new window.kakao.maps.Map(container, options);
-        displayMarker(window.map, markerPositions1);
       });
     };
-    const displayMarker = (map, markerList) => {
-      console.log(markerList.length + "!!!");
-      if (markerList.length > 0) {
-        // markers.forEach(marker => marker.setMap(null));
-      }
-      let bounds = new window.kakao.maps.LatLngBounds();
-      if (markerList.length > 0) {
-        for (let i = 0; i < markerList.length; i++) {
-          let marker = new window.kakao.maps.Marker({
-            position: new window.kakao.maps.LatLng(
-              markerList[i].latlng[0],
-              markerList[i].latlng[1]
-            ),
-          });
-          marker.setMap(map);
-          bounds.extend(
-            new window.kakao.maps.LatLng(
-              markerList[i].latlng[0],
-              markerList[i].latlng[1]
-            )
-          );
 
-          let infowindow = new window.kakao.maps.InfoWindow({
-            content:
-              '<div class="" style="width: 150px; height: 100px; text- align: center; padding: 10px 0; border: 1px solid red"> asd < /div>',
-            removable: true,
-          });
-          window.kakao.maps.event.addListener(
-            marker,
-            "mouseover",
-            makeOverListener(map, marker, infowindow)
-          );
-          window.kakao.maps.event.addListener(
-            marker,
-            "mouseout",
-            makeOutListener(infowindow)
-          );
+    let overlays: any[] = [];
+    let markers: any[] = [];
+    let nums: any[] = [];
+
+    const displayMarker = (map, markerList) => {
+      // 매물 목록 검색 결과 마커 표시함
+      if (markers.length > 0) {
+        for (let i = 0; i < markers.length; i++) {
+          markers[i].setMap(null);
         }
-        map.setBounds(bounds);
+      }
+      let num = 0;
+      let bounds = new window.kakao.maps.LatLngBounds();
+      let geocoder = new window.kakao.maps.services.Geocoder();
+      for (let i = 0; i < markerList.length; i++) {
+        geocoder.addressSearch(
+          markerList[i].address,
+          function (result, status) {
+            // 정상적으로 검색이 완료됐으면
+            if (status === window.kakao.maps.services.Status.OK) {
+              let coords = new window.kakao.maps.LatLng(
+                result[0].y,
+                result[0].x
+              );
+              nums[i] = num;
+              let imageSrc =
+                  "https://cdn-icons-png.flaticon.com/512/7976/7976202.png",
+                imageSize = new window.kakao.maps.Size(40, 40),
+                imageOption = { offset: new window.kakao.maps.Point(20, 40) };
+              let markerImage = new window.kakao.maps.MarkerImage(
+                  imageSrc,
+                  imageSize,
+                  imageOption
+                ),
+                markerPosition = coords;
+
+              let marker = new window.kakao.maps.Marker({
+                map: map,
+                position: markerPosition,
+                image: markerImage,
+              });
+
+              setOverlay(coords, marker, markerList[i]); // 상세 정보 창 만들어주고
+
+              marker.setMap(map);
+              markers[num] = marker;
+
+              bounds.extend(coords);
+            }
+            num++;
+            if (num == markerList.length) {
+              setBounds(bounds);
+            }
+          }
+        );
       }
     };
-    const changeCenter = address => {
-      let geocoder = new window.kakao.maps.services.Geocoder();
-      geocoder.addressSearch(address, function (result, status) {
-        if (status === window.kakao.maps.services.Status.OK) {
-          let coords = new window.kakao.maps.LatLng(
-            Number(result[0].y),
-            Number(result[0].x)
-          );
-          window.map.setCenter(coords);
-          window.map.setLevel(1);
-          let marker = new window.kakao.maps.Marker({
-            position: coords,
-          });
-          marker.setMap(window.map);
-        }
+    const setBounds = bounds => {
+      // 모든 마커 범위 포함하게 지도 범위 재설정
+      window.map.setBounds(bounds);
+    };
+    const setOverlay = (coords, marker, product) => {
+      let customOverlay = new window.kakao.maps.CustomOverlay({
+        position: coords,
+        xAnchor: 0.5,
+        yAnchor: 1.2,
       });
+
+      let content = document.createElement("div");
+      content.className = "overlaybox";
+
+      let img = document.createElement("img");
+      img.src =
+        "https://cdn.pixabay.com/photo/2023/01/07/07/16/houses-7702757_1280.jpg";
+      img.width = 280;
+      img.height = 200;
+      img.className = "overlayimg";
+      content.appendChild(img);
+
+      let rooms = document.createElement("h3");
+      rooms.className = "overlay-rooms";
+      rooms.appendChild(document.createTextNode(product.rooms));
+      content.appendChild(rooms);
+
+      let priceinfo = document.createElement("div");
+      let type = document.createElement("div");
+      type.className = "overlay-type";
+      type.appendChild(document.createTextNode(product.type));
+
+      let price = document.createElement("div");
+      price.className = "overlay-price";
+      price.appendChild(document.createTextNode(product.price));
+
+      let closebtnbox = document.createElement("div");
+      closebtnbox.onclick = () => {
+        customOverlay.setMap(null);
+      };
+      let closebtn = document.createElement("img");
+      closebtn.className = "overlay-icon";
+      closebtn.src = "https://cdn-icons-png.flaticon.com/512/1828/1828665.png";
+      closebtn.width = 15;
+      closebtn.height = 15;
+      closebtnbox.appendChild(closebtn);
+
+      priceinfo.appendChild(type);
+      priceinfo.appendChild(price);
+      priceinfo.appendChild(closebtnbox);
+
+      content.appendChild(priceinfo);
+
+      window.kakao.maps.event.addListener(marker, "click", function () {
+        customOverlay.setMap(window.map);
+      });
+      overlays.push(customOverlay);
+      customOverlay.setContent(content);
+    };
+
+    const changeCenter = addr_idx => {
+      console.log(nums);
+      // 목록에서 선택 시 해당 위치로 지도 중심 이동, 상세 정보 창 열림
+      let idx = nums[addr_idx];
+      let marker = markers[idx];
+      let coords = marker.getPosition();
+      overlays[idx].setMap(window.map);
+      window.map.setCenter(coords);
+      window.map.setLevel(1);
     };
 
     return {
       markerPositions1,
-      makeOverListener,
-      makeOutListener,
       changeCenter,
       props,
     };
   },
 });
 </script>
-<style scoped>
+<style>
 .info-window {
   border: 1px solid red;
   width: 150px;
   height: 200px;
   text-align: center;
   padding: 6px 0;
+}
+.test {
+  text-align: center;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+  border: 1px solid rgb(203, 203, 203);
+  border-radius: 25px;
+  width: 300px;
+  height: 250px;
+}
+.overlaybox {
+  width: 280px;
+  height: 280px;
+  border-radius: 15px;
+  background-color: white;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+}
+.overlay-rooms {
+  margin: 10px 20px;
+}
+.overlay-type {
+  float: left;
+  padding: 0 20px 0 20px;
+}
+.overlay-price {
+  float: left;
+}
+.overlay-icon {
+  float: right;
+  padding: 0 15px;
+}
+.overlayimg {
+  border-radius: 15px 15px 0 0;
+}
+.content {
+  z-index: 1000;
 }
 </style>
