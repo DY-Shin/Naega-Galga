@@ -1,11 +1,10 @@
 package com.ssafy.commonpjt.db.entity;
 
 import lombok.*;
-import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.DynamicInsert;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -19,7 +18,6 @@ import java.util.stream.Collectors;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@DynamicInsert
 @Builder
 public class User implements UserDetails {
 
@@ -37,12 +35,12 @@ public class User implements UserDetails {
     @Column(nullable = false, length = 50)
     private String userPhone;
 
-    @Column(nullable = false, length = 50)
-    private String userName;
+    @Column(name= "user_name" ,nullable = false, length = 50)
+    private String name;
 
 //    @ColumnDefault("'TEST'")
     @Column(length = 50, unique = true)
-    private String userCorporateRegistrationNumber;
+    private String corporateRegistrationNumber;
 
     @Column(nullable = false, length = 100)
     private String userAddress;
@@ -68,6 +66,7 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "owner")
     private List<Meeting> meetingOwner = new ArrayList<>();
 
+    // 권한 설정을 외래 키로 부여
     @Column
     @ElementCollection(fetch = FetchType.EAGER)
     @Builder.Default
@@ -108,5 +107,20 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    // 비밀번호 수정
+    public void updatePassword(PasswordEncoder passwordEncoder, String userPassword) {
+        this.userPassword = passwordEncoder.encode(userPassword);
+    }
+
+    // 패스워드 암호화
+    public void encodePassword(PasswordEncoder passwordEncoder) {
+        this.userPassword = passwordEncoder.encode(userPassword);
+    }
+
+    // 패스워드 일치 확인
+    public boolean matchPassword(PasswordEncoder passwordEncoder, String checkPassword) {
+        return passwordEncoder.matches(checkPassword, getPassword());
     }
 }
