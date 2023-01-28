@@ -49,8 +49,9 @@ public class Product {
     @Column(nullable = false)
     private String productDirection;
 
-    @Column(nullable = false)
-    private String productPhoto;
+    @Column(nullable = true)
+    @Builder.Default
+    private String productPhoto = "NULL";
 
     @Column(nullable = false)
     private String productAnimal;
