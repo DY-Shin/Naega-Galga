@@ -16,7 +16,7 @@
     <el-scrollbar :style="{ height: 'calc(100vh - 225px)' }">
       <div
         v-for="(item, index) in productList"
-        :key="item.floor"
+        :key="item.type"
         class="scrollbar-demo-item"
         @click="whereIs(index)"
       >
@@ -28,12 +28,8 @@
         </div>
         <div class="home-info-box">
           <div class="home-area">{{ item.address }}</div>
-          <div class="home-price">{{ item.productType }} {{ item.price }}</div>
-          <div class="home-info">
-            <div v-for="opt in item.options" :key="opt" style="display: inline">
-              # {{ opt }}
-            </div>
-          </div>
+          <div class="home-info">{{ item.rooms }}</div>
+          <div class="home-price">{{ item.type }} {{ item.price }}</div>
         </div>
         <button v-if="item.isWish" id="heart-btn" @click="clickHeart()">
           <img
@@ -65,7 +61,6 @@ export default defineComponent({
     const searchWord = ref("");
     const { emit } = context;
     const whereIs = index => {
-      emit("address", productList[index].address);
       emit("addr_idx", index);
     };
     let productList: Product[] = reactive([]);
@@ -80,113 +75,68 @@ export default defineComponent({
       if (input.value == "1") {
         productList.splice(0);
         productList.push({
-          productType: "월세",
-          productName: "싸피빌라",
-          price: "30",
-          managePrice: 50000,
-          floor: "2층",
-          roomSize: 30,
+          rooms: "원룸",
+          type: "월세",
+          price: "30/1500",
+          size: 10,
           address: "부산 동래구 충렬대로 255",
-          roomDirection: "남향",
-          animal: true,
-          seller: "싸피",
           explanationDate: null,
-          parking: 1,
-          options: ["주방분리", "풀 옵션"],
-          isWish: false,
+          isWish: true,
         });
         productList.push({
-          productType: "월세",
-          productName: "싸피빌라",
-          price: "30",
-          managePrice: 50000,
-          floor: "2층",
-          roomSize: 30,
+          rooms: "투룸",
+          type: "월세",
+          price: "60/1500",
+          size: 35,
           address: "경상북도 구미시 인동6길 26-2",
-          roomDirection: "남향",
-          animal: true,
-          seller: "싸피",
           explanationDate: "2023.1.30",
-          parking: 2,
-          options: ["에어컨", "냉장고"],
           isWish: true,
         });
         productList.push({
-          productType: "월세",
-          productName: "싸피빌라",
-          price: "30",
-          managePrice: 50000,
-          floor: "2층",
-          roomSize: 30,
-          address: "경북 안동시 경동로 1375 안동대학교",
-          roomDirection: "남향",
-          animal: true,
-          seller: "싸피",
+          rooms: "원룸",
+          type: "월세",
+          price: "30/1500",
+          size: 10,
+          address: "대전 서구 둔산로 100",
           explanationDate: null,
-          parking: 3,
-          options: ["베란다", "주방분리", "에어컨", "냉장고"],
           isWish: true,
         });
-        console.log("emit " + productList.length);
         emit("productList", productList);
       } else if (input.value == "2") {
         productList.splice(0);
 
         productList.push({
-          productType: "월세",
-          productName: "싸피빌라",
-          price: "30",
-          managePrice: 50000,
-          floor: "2층",
-          roomSize: 30,
+          rooms: "투룸",
+          type: "월세",
+          price: "60/1500",
+          size: 35,
           address: "경상북도 구미시 인동6길 26-2",
-          roomDirection: "남향",
-          animal: true,
-          seller: "싸피",
           explanationDate: "2023.1.30",
-          parking: 0,
-          options: ["에어컨", "냉장고"],
           isWish: true,
         });
         productList.push({
-          productType: "월세",
-          productName: "싸피빌라",
-          price: "30",
-          managePrice: 50000,
-          floor: "2층",
-          roomSize: 30,
-          address: "경북 안동시 경동로 1375 안동대학교",
-          roomDirection: "남향",
-          animal: true,
-          seller: "싸피",
+          rooms: "원룸",
+          type: "월세",
+          price: "30/1500",
+          size: 10,
+          address: "대전 서구 둔산로 100",
           explanationDate: null,
-          parking: 0,
-          options: ["베란다", "주방분리", "에어컨", "냉장고"],
           isWish: true,
         });
-        console.log("emit " + productList.length);
 
         emit("productList", productList);
       } else if (input.value == "3") {
         productList.splice(0);
 
         productList.push({
-          productType: "월세",
-          productName: "싸피빌라",
-          price: "30",
-          managePrice: 50000,
-          floor: "2층",
-          roomSize: 30,
+          rooms: "원룸",
+          type: "월세",
+          price: "30/2000",
+          size: 20,
           address: "경상북도 구미시 인동6길 26-2",
-          roomDirection: "남향",
-          animal: true,
-          seller: "싸피",
           explanationDate: "2023.1.30",
-          parking: 0,
-          options: ["에어컨", "냉장고"],
           isWish: true,
         });
-        console.log("emit " + productList.length);
 
         emit("productList", productList);
       } else {
@@ -197,19 +147,12 @@ export default defineComponent({
     };
 
     interface Product {
-      productType: string;
-      productName: string;
+      rooms: string;
+      type: string;
       price: string;
-      managePrice: number;
-      floor: string;
-      roomSize: number;
+      size: number;
       address: string;
-      roomDirection: string;
-      animal: boolean;
-      seller?: string;
       explanationDate: string | null;
-      parking: number;
-      options: Array<string>;
       isWish: boolean;
     }
 
@@ -259,12 +202,12 @@ export default defineComponent({
 .home-price {
   color: black;
   text-align: left;
-  margin: 20px 0;
+  /* margin: 20px 0; */
 }
 .home-info {
   color: black;
   text-align: left;
-  /* margin: 20px 0; */
+  margin: 15px 0;
 }
 .text {
   padding: 5px;
