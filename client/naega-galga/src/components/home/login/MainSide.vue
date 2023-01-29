@@ -1,5 +1,5 @@
 <template>
-  <el-aside style="height: 100%">
+  <el-aside>
     <!-- search bar start -->
     <div class="search-bar" style="display: inline-flex">
       <el-input
@@ -27,7 +27,7 @@
           </div>
         </div>
         <div class="home-info-box">
-          <div class="home-area">{{ item.address }}</div>
+          <div class="home-addr">{{ item.address }}</div>
           <div class="home-info">{{ item.rooms }}</div>
           <div class="home-price">{{ item.type }} {{ item.price }}</div>
         </div>
@@ -83,6 +83,25 @@ export default defineComponent({
           explanationDate: null,
           isWish: true,
         });
+        productList.push({
+          rooms: "원룸",
+          type: "월세",
+          price: "30/1500",
+          size: 10,
+          address: "부산 동래구 충렬대로 255",
+          explanationDate: null,
+          isWish: true,
+        });
+        productList.push({
+          rooms: "원룸",
+          type: "월세",
+          price: "30/1500",
+          size: 10,
+          address: "부산 동래구 충렬대로 255",
+          explanationDate: null,
+          isWish: true,
+        });
+
         productList.push({
           rooms: "투룸",
           type: "월세",
@@ -175,7 +194,7 @@ export default defineComponent({
 .search-bar {
   width: 100%;
   height: 80px;
-  border-bottom: 2px solid #73767a;
+  border-bottom: 1px solid #bdbdbd;
 }
 
 .search-input {
@@ -194,7 +213,8 @@ export default defineComponent({
   width: 200px;
   /* padding-left: 10px; */
 }
-.home-area {
+.home-addr {
+  font-weight: 500;
   color: black;
   text-align: left;
   /* margin: 20px 0; */
@@ -206,6 +226,7 @@ export default defineComponent({
 }
 .home-info {
   color: black;
+  font-size: 20px;
   text-align: left;
   margin: 15px 0;
 }
@@ -244,7 +265,7 @@ export default defineComponent({
   box-shadow: 1px 2px 2px 2px rgb(147, 147, 147);
 }
 .scrollbar-demo-item {
-  border-bottom: 1px solid #575757;
+  border-top: 1px solid #bdbdbd;
   display: flex;
   align-items: center;
   height: 200px;
@@ -255,8 +276,8 @@ export default defineComponent({
 .el-aside {
   width: 500px;
   height: 100%;
-  border-top: 1px solid #73767a;
-  border-right: 1px solid #73767a;
+  border-top: 1px solid #bdbdbd;
+  /* border-right: 1px solid #bdbdbd; */
   /* border-left: 1px solid #73767a; */
   /* border: 1px solid #73767a;
   border-radius: 7px 0 0 7px; */

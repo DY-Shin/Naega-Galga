@@ -2,7 +2,7 @@
   <div class="common-layout">
     <el-container>
       <main-side @addr_idx="sendIdx" @productList="sendList"></main-side>
-      <el-container :style="{ height: 'calc(100vh - 150px)' }">
+      <el-container>
         <ka-kao-map :GetIdx="idxProxy" :GetList="listProxy"></ka-kao-map>
       </el-container>
     </el-container>

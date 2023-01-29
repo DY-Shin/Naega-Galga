@@ -1,5 +1,5 @@
 <template>
-  <el-container><el-main id="map"></el-main></el-container>
+  <el-container style="height: 103%"><el-main id="map"></el-main></el-container>
 </template>
 
 <style scoped>
@@ -157,10 +157,31 @@ export default defineComponent({
       img.className = "overlayimg";
       content.appendChild(img);
 
-      let rooms = document.createElement("h3");
+      let topbox = document.createElement("div");
+      topbox.className = "topbox";
+      let rooms = document.createElement("div");
       rooms.className = "overlay-rooms";
       rooms.appendChild(document.createTextNode(product.rooms));
-      content.appendChild(rooms);
+
+      let detailbtn = document.createElement("button");
+      detailbtn.className = "detailbtn";
+      detailbtn.setAttribute("onclick", "alert('!!')");
+      detailbtn.appendChild(document.createTextNode("상세보기"));
+
+      let chatbtn = document.createElement("button");
+      chatbtn.className = "chatbtn";
+      detailbtn.setAttribute("onclick", "alert('!!')");
+      chatbtn.appendChild(document.createTextNode("문의하기"));
+
+      topbox.appendChild(rooms);
+      topbox.appendChild(chatbtn);
+      topbox.appendChild(detailbtn);
+
+      content.appendChild(topbox);
+
+      let clearbox = document.createElement("div");
+      clearbox.className = "clear-box";
+      content.appendChild(clearbox);
 
       let priceinfo = document.createElement("div");
       let type = document.createElement("div");
@@ -202,8 +223,8 @@ export default defineComponent({
       let marker = markers[idx];
       let coords = marker.getPosition();
       overlays[idx].setMap(window.map);
-      window.map.setCenter(coords);
       window.map.setLevel(1);
+      window.map.setCenter(coords);
     };
 
     return {
@@ -215,21 +236,6 @@ export default defineComponent({
 });
 </script>
 <style>
-.info-window {
-  border: 1px solid red;
-  width: 150px;
-  height: 200px;
-  text-align: center;
-  padding: 6px 0;
-}
-.test {
-  text-align: center;
-  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
-  border: 1px solid rgb(203, 203, 203);
-  border-radius: 25px;
-  width: 300px;
-  height: 250px;
-}
 .overlaybox {
   width: 280px;
   height: 280px;
@@ -238,6 +244,7 @@ export default defineComponent({
   box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 }
 .overlay-rooms {
+  float: left;
   margin: 10px 20px;
 }
 .overlay-type {
@@ -256,5 +263,30 @@ export default defineComponent({
 }
 .content {
   z-index: 1000;
+}
+.clear-box {
+  clear: both;
+}
+.detailbtn {
+  cursor: pointer;
+  float: right;
+  padding: 3px 10px;
+  margin-top: 5px;
+  margin-right: 10px;
+  background: none;
+  border: none;
+  border-radius: 3px;
+  box-shadow: rgba(0, 0, 0, 0.2) 0px 5px 15px;
+}
+.chatbtn {
+  cursor: pointer;
+  float: right;
+  padding: 3px 10px;
+  margin-top: 5px;
+  margin-right: 10px;
+  background: none;
+  border: none;
+  border-radius: 3px;
+  box-shadow: rgba(0, 0, 0, 0.2) 0px 5px 15px;
 }
 </style>
