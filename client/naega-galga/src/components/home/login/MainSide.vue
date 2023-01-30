@@ -58,6 +58,7 @@
 <script lang="ts">
 import { reactive, ref, defineComponent, onBeforeUpdate } from "vue";
 import { Search } from "@element-plus/icons-vue";
+import { SearchProduct } from "@/api/productApi";
 
 export default defineComponent({
   setup(_, context) {
@@ -68,7 +69,7 @@ export default defineComponent({
       wishList[index] = !wishList[index];
     };
 
-    const searchWord = ref("");
+    const beforeInput = ref("");
     const { emit } = context;
     const whereIs = index => {
       emit("addr_idx", index);
@@ -79,10 +80,13 @@ export default defineComponent({
     wishList.push(false);
     wishList.push(true);
 
-    const getList = () => {
+    const getList = async () => {
+      const list = await SearchProduct(input.value);
+      productList = list.data;
+
       //검색 ->  목록 가져오기
-      if (input.value === searchWord.value) {
-        searchWord.value = input.value;
+      if (input.value === beforeInput.value) {
+        beforeInput.value = input.value;
         return;
       }
 
@@ -152,7 +156,7 @@ export default defineComponent({
         productList.splice(0);
       }
 
-      searchWord.value = input.value;
+      beforeInput.value = input.value;
     };
 
     interface Product {
@@ -172,7 +176,6 @@ export default defineComponent({
       getList,
       whereIs,
       Search,
-      searchWord,
       onBeforeUpdate,
       wishList,
     };

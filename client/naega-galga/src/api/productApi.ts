@@ -54,6 +54,12 @@ async function deleteProductWish(productIndex: number, userIndex: number) {
   );
   return response;
 }
+async function SearchProduct(keyword: string) {
+  const response: AxiosResponse = await apiTokenInstance.get(
+    `/api/product/${keyword}`
+  );
+  return response;
+}
 
 export {
   addProduct,
@@ -62,4 +68,5 @@ export {
   getProduct,
   addProductWish,
   deleteProductWish,
+  SearchProduct,
 };
