@@ -18,7 +18,7 @@
     <el-scrollbar :style="{ height: 'calc(100vh - 225px)' }">
       <div
         v-for="(item, index) in productList"
-        :key="item.index"
+        :key="item.productIndex"
         class="scrollbar-demo-item"
       >
         <div class="right-box" @click="whereIs(index)">
@@ -29,8 +29,8 @@
             </div> -->
           </div>
           <div class="home-info-box">
-            <div class="home-addr">{{ item.addr }}</div>
-            <!-- <div class="home-rooms">{{ item.rooms }} {{ item.size }}평</div> -->
+            <div class="home-addr">{{ item.roadAddr }}</div>
+            <div class="home-rooms">{{ item.rooms }} {{ item.size }}</div>
             <div class="home-price">{{ item.price }}</div>
           </div>
         </div>
@@ -68,21 +68,16 @@ import ResponseStatus from "@/api/responseStatus";
 export default defineComponent({
   setup(_, context) {
     interface Product {
-      index: number;
-      addr: string;
+      productIndex: number;
+      sellerIndex: number;
+      sellerName: string;
       roadAddr: string;
-      price: string;
       photo: string;
-      airConditioner: boolean;
-      fridge: boolean;
-      washingMachine: boolean;
-      gasStove: boolean;
-      induction: boolean;
-      microWave: boolean;
-      desk: boolean;
-      wifi: boolean;
-      closet: boolean;
-      bed: boolean;
+      price: string;
+      type: string;
+      size: string;
+      rooms: string;
+      presentation: boolean;
     }
     let input = ref("");
     const userIndex = 1;
@@ -92,9 +87,15 @@ export default defineComponent({
       let response;
 
       if (!wishList[index]) {
-        response = await addProductWish(productList[index].index, userIndex);
+        response = await addProductWish(
+          productList[index].productIndex,
+          userIndex
+        );
       } else {
-        response = await deleteProductWish(productList[index].index, userIndex);
+        response = await deleteProductWish(
+          productList[index].productIndex,
+          userIndex
+        );
       }
       if ((response.status = ResponseStatus.InternalServerError)) {
         alert("서버 오류로 요청을 처리할 수 없습니다.");
