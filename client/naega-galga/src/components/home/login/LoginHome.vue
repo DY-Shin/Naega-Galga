@@ -35,7 +35,6 @@ export default defineComponent({
       for (let i = 0; i < list.length; i++) {
         listProxy.value.push(list[i]);
       }
-      console.log(listProxy);
     };
     const chatOpenProxy = ref(false);
     const sendChatOpen = (chatOpen: boolean) => {

@@ -38,13 +38,15 @@ export default defineComponent({
       () => props.GetIdx,
       () => {
         console.log(props.GetIdx);
+        console.log(markers);
+        console.log(overlays);
         changeCenter(props.GetIdx);
       }
     );
     watch(
       () => props.GetList,
       () => {
-        console.log("!!!!!!!!!!!!!!!!!!!!");
+        // console.log("!!!!!!!!!!!!!!!!!!!!");
         displayMarker(window.map, props.GetList);
         for (let i = 0; i < overlays.length; i++) {
           overlays[i].setMap(null);
@@ -94,16 +96,18 @@ export default defineComponent({
 
     const displayMarker = (map, markerList) => {
       // 매물 목록 검색 결과 마커 표시함
+      markers.splice(0);
+      overlays.splice(0);
+
       if (markers.length > 0) {
         for (let i = 0; i < markers.length; i++) {
-          markers[i].setMap(null);
+          // markers[i].setMap(null);
         }
       }
       let num = 0;
       let bounds = new window.kakao.maps.LatLngBounds();
       let geocoder = new window.kakao.maps.services.Geocoder();
       for (let i = 0; i < markerList.length; i++) {
-        console.log(markerList[i].addr);
         geocoder.addressSearch(markerList[i].addr, function (result, status) {
           // 정상적으로 검색이 완료됐으면
           if (status === window.kakao.maps.services.Status.OK) {
@@ -227,6 +231,7 @@ export default defineComponent({
       let idx = nums[addr_idx];
       let marker = markers[idx];
       let coords = marker.getPosition();
+      console.log(overlays);
       overlays[idx].setMap(window.map);
       window.map.setLevel(1);
       window.map.setCenter(coords);

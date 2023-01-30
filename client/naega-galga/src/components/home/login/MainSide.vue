@@ -35,7 +35,7 @@
           </div>
         </div>
 
-        <button v-if="productList[index].bed" id="heart-btn">
+        <button v-if="wishList[index]" id="heart-btn">
           <img
             src="@/assets/image/icon-heart-filled.png"
             width="20"
@@ -58,7 +58,12 @@
 <script lang="ts">
 import { reactive, ref, defineComponent, onBeforeUpdate } from "vue";
 import { Search } from "@element-plus/icons-vue";
-import { SearchProduct } from "@/api/productApi";
+import {
+  SearchProduct,
+  addProductWish,
+  deleteProductWish,
+} from "@/api/productApi";
+import ResponseStatus from "@/api/responseStatus";
 
 export default defineComponent({
   setup(_, context) {
@@ -80,10 +85,23 @@ export default defineComponent({
       bed: boolean;
     }
     let input = ref("");
+    const userIndex = 1;
 
-    const isFavorite = ref(false);
-    const clickHeart = index => {
+    const clickHeart = async index => {
+      console.log(wishList[index]);
+      let response;
+
+      if (!wishList[index]) {
+        response = await addProductWish(productList[index].index, userIndex);
+      } else {
+        response = await deleteProductWish(productList[index].index, userIndex);
+      }
+      if ((response.status = ResponseStatus.InternalServerError)) {
+        alert("서버 오류로 요청을 처리할 수 없습니다.");
+      }
+
       wishList[index] = !wishList[index];
+      console.log(wishList[index]);
     };
 
     // const beforeInput = ref("");
@@ -92,19 +110,18 @@ export default defineComponent({
       emit("addr_idx", index);
     };
     let productList = reactive<Array<Product>>([]);
-    let wishList: boolean[] = reactive([]);
-    wishList.push(true);
-    wishList.push(false);
-    wishList.push(true);
+    let wishList = reactive<Array<boolean>>([false, true, true, false, true]);
 
     const getList = async () => {
-      console.log(input.value);
       const list = await SearchProduct(input.value);
+      productList.splice(0);
+      // wishList.splice(0);
       list.data.forEach((product: Product) => productList.push(product));
-      console.log(productList);
-      console.log(productList + "!!");
-      for (let i = 0; i < productList.length; i++) {
-        console.log(productList[i].addr);
+
+      for (let i = 0; i < list.data.length; i++) {
+        // productList.push(list.data[i]);
+        // productList.push(list.data[0][i]);
+        // wishList.push(list.data[1][i]);
       }
       emit("productList", productList);
       //검색 ->  목록 가져오기
@@ -118,7 +135,6 @@ export default defineComponent({
 
     return {
       input,
-      isFavorite,
       clickHeart,
       productList,
       getList,
