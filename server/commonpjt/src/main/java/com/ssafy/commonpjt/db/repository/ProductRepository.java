@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
-public interface ProductRepository extends JpaRepository<Product, Integer>{
+public interface ProductRepository extends JpaRepository<Product, Integer> {
 //    매물 찾기
     List<Product> findAll();
     @Query("select p " +
@@ -17,4 +17,6 @@ public interface ProductRepository extends JpaRepository<Product, Integer>{
 
     @EntityGraph(attributePaths = {"building","options"}, type = EntityGraph.EntityGraphType.LOAD)
     Product findByProductIndex(Integer productIndex);
+
+    List<Product> findAllByProductSeller(Integer userIndex);
 }

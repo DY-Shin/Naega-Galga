@@ -44,7 +44,7 @@ public class UserController {
     }
 
     // 회원 탈퇴
-    @DeleteMapping("delete")
+    @PostMapping("delete")
 //    @PreAuthorize("hasAnyRole('USER')")
     @ResponseStatus(HttpStatus.OK)
     public void delete(@Validated @RequestBody UserLogoutDTO logout) throws Exception {
@@ -58,10 +58,23 @@ public class UserController {
         return ResponseEntity.ok(userService.getMyInfo());
     }
 
+    // 내가 등록한 매물 목록 조회
+    @GetMapping("me/products")
+//    @PreAuthorize("hasAnyRole('USER')")
+    public ResponseEntity<?> getMyProductList(HttpServletResponse response) throws Exception {
+        return ResponseEntity.ok(userService.getMyProductList());
+    }
+
     // 아이디로 다른 회원 정보 조회
     @GetMapping("{userId}")
     public ResponseEntity<?> getInfo(@Validated @PathVariable("userId") String userId) throws Exception {
         return ResponseEntity.ok(userService.getInfo(userId));
+    }
+
+    // 아이디로 다른 회원이 등록한 매물 목록 조회
+    @GetMapping("{userId}/products")
+    public ResponseEntity<?> getUserProductList(@Validated @PathVariable("userId") String userId) throws Exception {
+        return ResponseEntity.ok(userService.getUserProductList(userId));
     }
 
     // 내 정보 수정
@@ -79,7 +92,7 @@ public class UserController {
     }
 
     // 비밀번호 체크
-    @GetMapping("password")
+    @PostMapping("password")
     public boolean checkPassword(@Validated @RequestBody UpdatePasswordDTO updatePasswordDTO) throws Exception {
         return userService.checkPassword(updatePasswordDTO);
     }

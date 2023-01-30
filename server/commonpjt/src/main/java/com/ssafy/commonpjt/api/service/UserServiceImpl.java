@@ -5,7 +5,9 @@ import com.ssafy.commonpjt.common.enums.Authority;
 import com.ssafy.commonpjt.common.jwt.JwtTokenProvider;
 import com.ssafy.commonpjt.common.security.SecurityUtil;
 import com.ssafy.commonpjt.db.entity.User;
+import com.ssafy.commonpjt.db.repository.ProductRepository;
 import com.ssafy.commonpjt.db.repository.UserRepository;
+import com.ssafy.commonpjt.db.repository.WishListRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -16,6 +18,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
@@ -28,6 +31,8 @@ public class UserServiceImpl implements UserService {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final JwtTokenProvider jwtTokenProvider;
     private final RedisTemplate redisTemplate;
+    private final WishListRepository wishListRepository;
+    private final ProductRepository productRepository;
 
     // 회원가입 서비스
     @Override
@@ -89,10 +94,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public void update(UserUpdateDTO userUpdateDto) throws Exception {
         User user = userRepository.findByUserId(SecurityUtil.getLoginUsername()).orElseThrow(() -> new Exception("No User Exists"));
-        if (userUpdateDto.getUserId() != null) user.setUserId(userUpdateDto.getUserId());
         if (userUpdateDto.getUserPhone() != null) user.setUserPhone(userUpdateDto.getUserPhone());
         if (userUpdateDto.getUserName() != null) user.setName(userUpdateDto.getUserName());
-        if (userUpdateDto.getCorporateRegistrationNumber() != null) user.setCorporateRegistrationNumber(userUpdateDto.getCorporateRegistrationNumber());
+//        if (userUpdateDto.getCorporateRegistrationNumber() != null) user.setCorporateRegistrationNumber(userUpdateDto.getCorporateRegistrationNumber());
         if (userUpdateDto.getUserAddress() != null) user.setUserAddress(userUpdateDto.getUserAddress());
         userRepository.save(user);
     }
@@ -143,6 +147,29 @@ public class UserServiceImpl implements UserService {
         }
         userRepository.delete(user);
         logout(logout);
+    }
+
+    // 관심 목록 조회
+    @Override
+    public List<?> wishList(String userId) throws Exception {
+        User user = userRepository.findByUserId(SecurityUtil.getLoginUsername()).orElseThrow(() -> new Exception("No User Exists"));
+        Integer userIndex = user.getUserIndex();
+        return wishListRepository.findAllByUser(userIndex);
+    }
+
+    // 등록한 매물 목록 조회
+    @Override
+    public List<?> getMyProductList() throws Exception {
+        User user = userRepository.findByUserId(SecurityUtil.getLoginUsername()).orElseThrow(() -> new Exception("No User Exists"));
+        Integer userIndex = user.getUserIndex();
+        return productRepository.findAllByProductSeller(userIndex);
+    }
+
+    @Override
+    public List<?> getUserProductList(String userId) throws Exception {
+        User user = userRepository.findByUserId(userId).orElseThrow(() -> new Exception("No User Exists"));
+        Integer userIndex = user.getUserIndex();
+        return productRepository.findAllByProductSeller(userIndex);
     }
 }
 
