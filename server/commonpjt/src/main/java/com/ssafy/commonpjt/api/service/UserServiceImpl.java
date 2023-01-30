@@ -149,7 +149,7 @@ public class UserServiceImpl implements UserService {
         logout(logout);
     }
 
-    // 관심 목록 조회
+    // 내 관심 목록 조회
     @Override
     public List<?> wishList(String userId) throws Exception {
         User user = userRepository.findByUserId(SecurityUtil.getLoginUsername()).orElseThrow(() -> new Exception("No User Exists"));
@@ -157,7 +157,7 @@ public class UserServiceImpl implements UserService {
         return wishListRepository.findAllByUser(userIndex);
     }
 
-    // 등록한 매물 목록 조회
+    // 내가 등록한 매물 목록 조회
     @Override
     public List<?> getMyProductList() throws Exception {
         User user = userRepository.findByUserId(SecurityUtil.getLoginUsername()).orElseThrow(() -> new Exception("No User Exists"));
@@ -165,6 +165,7 @@ public class UserServiceImpl implements UserService {
         return productRepository.findAllByProductSeller(userIndex);
     }
 
+    // 다른 유저가 등록한 매물 목록 조회
     @Override
     public List<?> getUserProductList(String userId) throws Exception {
         User user = userRepository.findByUserId(userId).orElseThrow(() -> new Exception("No User Exists"));
@@ -172,4 +173,3 @@ public class UserServiceImpl implements UserService {
         return productRepository.findAllByProductSeller(userIndex);
     }
 }
-
