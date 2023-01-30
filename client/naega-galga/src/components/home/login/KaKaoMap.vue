@@ -24,11 +24,12 @@ export default defineComponent({
     GetList: { type: Array },
   },
 
-  setup(props) {
+  setup(props, context) {
+    const { emit } = context;
+
     watch(
       () => props.GetIdx,
       () => {
-        console.log(props.GetIdx);
         changeCenter(props.GetIdx);
       }
     );
@@ -165,13 +166,14 @@ export default defineComponent({
 
       let detailbtn = document.createElement("button");
       detailbtn.className = "detailbtn";
-      detailbtn.setAttribute("onclick", "alert('!!')");
       detailbtn.appendChild(document.createTextNode("상세보기"));
 
       let chatbtn = document.createElement("button");
       chatbtn.className = "chatbtn";
-      detailbtn.setAttribute("onclick", "alert('!!')");
       chatbtn.appendChild(document.createTextNode("문의하기"));
+      chatbtn.onclick = function () {
+        emit("chatOpen", true);
+      };
 
       topbox.appendChild(rooms);
       topbox.appendChild(chatbtn);
@@ -217,7 +219,6 @@ export default defineComponent({
     };
 
     const changeCenter = addr_idx => {
-      console.log(nums);
       // 목록에서 선택 시 해당 위치로 지도 중심 이동, 상세 정보 창 열림
       let idx = nums[addr_idx];
       let marker = markers[idx];

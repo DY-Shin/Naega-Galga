@@ -1,12 +1,14 @@
 <template>
   <el-aside>
     <!-- search bar start -->
-    <div class="search-bar" style="display: inline-flex">
+    <div class="search-bar" style="text-align: center">
       <el-input
         class="search-input"
         v-model="input"
         placeholder="검색"
+        size="large"
         @keyup.enter="getList()"
+        style="width: 100%"
       >
         <template #append>
           <el-button :icon="Search" @click="getList()" />
@@ -18,27 +20,35 @@
         v-for="(item, index) in productList"
         :key="item.type"
         class="scrollbar-demo-item"
-        @click="whereIs(index)"
       >
-        <div class="img-content">
-          <div class="list-img"></div>
-          <div class="list-online-icon" v-if="item.explanationDate != null">
-            <div class="text">온라인 설명회</div>
+        <div class="right-box" @click="whereIs(index)">
+          <div class="img-content">
+            <div class="list-img"></div>
+            <div class="list-online-icon" v-if="item.explanationDate != null">
+              <div class="text">온라인 설명회</div>
+            </div>
+          </div>
+          <div class="home-info-box">
+            <div class="home-addr">{{ item.address }}</div>
+            <div class="home-rooms">{{ item.rooms }} {{ item.size }}평</div>
+            <div class="home-price">{{ item.type }} {{ item.price }}</div>
           </div>
         </div>
-        <div class="home-info-box">
-          <div class="home-addr">{{ item.address }}</div>
-          <div class="home-info">{{ item.rooms }}</div>
-          <div class="home-price">{{ item.type }} {{ item.price }}</div>
-        </div>
-        <button v-if="item.isWish" id="heart-btn" @click="clickHeart()">
+
+        <button v-if="wishList[index]" id="heart-btn">
           <img
             src="@/assets/image/icon-heart-filled.png"
             width="20"
             height="20"
+            @click="clickHeart(index)"
           /></button
-        ><button v-else id="heart-btn" @click="clickHeart()">
-          <img src="@/assets/image/icon-heart.png" width="20" height="20" />
+        ><button v-else id="heart-btn">
+          <img
+            src="@/assets/image/icon-heart.png"
+            width="20"
+            height="20"
+            @click="clickHeart(index)"
+          />
         </button>
       </div>
     </el-scrollbar>
@@ -54,8 +64,8 @@ export default defineComponent({
     let input = ref("");
 
     const isFavorite = ref(false);
-    const clickHeart = () => {
-      isFavorite.value = !isFavorite.value;
+    const clickHeart = index => {
+      wishList[index] = !wishList[index];
     };
 
     const searchWord = ref("");
@@ -64,6 +74,10 @@ export default defineComponent({
       emit("addr_idx", index);
     };
     let productList: Product[] = reactive([]);
+    let wishList: boolean[] = reactive([]);
+    wishList.push(true);
+    wishList.push(false);
+    wishList.push(true);
 
     const getList = () => {
       //검색 ->  목록 가져오기
@@ -74,6 +88,7 @@ export default defineComponent({
 
       if (input.value == "1") {
         productList.splice(0);
+
         productList.push({
           rooms: "원룸",
           type: "월세",
@@ -81,25 +96,6 @@ export default defineComponent({
           size: 10,
           address: "부산 동래구 충렬대로 255",
           explanationDate: null,
-          isWish: true,
-        });
-        productList.push({
-          rooms: "원룸",
-          type: "월세",
-          price: "30/1500",
-          size: 10,
-          address: "부산 동래구 충렬대로 255",
-          explanationDate: null,
-          isWish: true,
-        });
-        productList.push({
-          rooms: "원룸",
-          type: "월세",
-          price: "30/1500",
-          size: 10,
-          address: "부산 동래구 충렬대로 255",
-          explanationDate: null,
-          isWish: true,
         });
 
         productList.push({
@@ -109,7 +105,6 @@ export default defineComponent({
           size: 35,
           address: "경상북도 구미시 인동6길 26-2",
           explanationDate: "2023.1.30",
-          isWish: true,
         });
         productList.push({
           rooms: "원룸",
@@ -118,7 +113,6 @@ export default defineComponent({
           size: 10,
           address: "대전 서구 둔산로 100",
           explanationDate: null,
-          isWish: true,
         });
         emit("productList", productList);
       } else if (input.value == "2") {
@@ -131,7 +125,6 @@ export default defineComponent({
           size: 35,
           address: "경상북도 구미시 인동6길 26-2",
           explanationDate: "2023.1.30",
-          isWish: true,
         });
         productList.push({
           rooms: "원룸",
@@ -140,13 +133,11 @@ export default defineComponent({
           size: 10,
           address: "대전 서구 둔산로 100",
           explanationDate: null,
-          isWish: true,
         });
 
         emit("productList", productList);
       } else if (input.value == "3") {
         productList.splice(0);
-
         productList.push({
           rooms: "원룸",
           type: "월세",
@@ -154,7 +145,6 @@ export default defineComponent({
           size: 20,
           address: "경상북도 구미시 인동6길 26-2",
           explanationDate: "2023.1.30",
-          isWish: true,
         });
 
         emit("productList", productList);
@@ -172,7 +162,6 @@ export default defineComponent({
       size: number;
       address: string;
       explanationDate: string | null;
-      isWish: boolean;
     }
 
     return {
@@ -185,6 +174,7 @@ export default defineComponent({
       Search,
       searchWord,
       onBeforeUpdate,
+      wishList,
     };
   },
 });
@@ -203,15 +193,17 @@ export default defineComponent({
 }
 
 #heart-btn {
-  /* margin-left: 35px; */
-  margin-top: 85px;
-  margin-right: 10px;
+  position: relative;
   border: none;
   background: none;
+  bottom: 60px;
+  /* padding-bottom: 200px; */
+  padding-left: 400px;
 }
 .home-info-box {
-  width: 200px;
-  /* padding-left: 10px; */
+  height: 100px;
+  padding: 40px 0;
+  /* width: 200px; */
 }
 .home-addr {
   font-weight: 500;
@@ -224,11 +216,18 @@ export default defineComponent({
   text-align: left;
   /* margin: 20px 0; */
 }
-.home-info {
+.home-rooms {
   color: black;
   font-size: 20px;
   text-align: left;
   margin: 15px 0;
+}
+.home-size {
+  color: black;
+  float: right;
+  /* font-size: 20px; */
+  text-align: left;
+  /* margin: 15px 0; */
 }
 .text {
   padding: 5px;
@@ -238,6 +237,10 @@ export default defineComponent({
   float: left;
   height: 100%;
   width: 50%;
+}
+
+.right-box {
+  /* float: left; */
 }
 
 .list-img {
@@ -266,7 +269,7 @@ export default defineComponent({
 }
 .scrollbar-demo-item {
   border-top: 1px solid #bdbdbd;
-  display: flex;
+  /* display: flex; */
   align-items: center;
   height: 200px;
   text-align: center;
