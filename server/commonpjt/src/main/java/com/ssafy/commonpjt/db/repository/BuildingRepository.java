@@ -11,4 +11,9 @@ public interface BuildingRepository extends JpaRepository<Building, Integer> {
     List<Integer> findBuildingIndexByBuildingAddressStartingWithAndBuildingRoadAddressStartingWith(String buildingAddress, String buildingRoadAddress);
 
     List<Building> findAll();
+
+    Building findByBuildingAddress(String buildingAddress);
+
+    Building findByBuildingIndex(int buildingIndex);
+
 }
