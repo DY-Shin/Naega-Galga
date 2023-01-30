@@ -33,7 +33,7 @@ public class SecurityConfig {
                 // 접속 URL 권한 설정
                 .antMatchers("/api/users", "/api/users/login", "/api/users/logout", "/api/users/delete").permitAll()
 //                .antMatchers("/api/products").hasRole("USER")
-                .anyRequest().authenticated()
+//                .anyRequest().authenticated()
                 .and()
                 .addFilterBefore(new JwtTokenAuthenticationFilter(jwtTokenProvider, redisTemplate), UsernamePasswordAuthenticationFilter.class);
         return http.build();

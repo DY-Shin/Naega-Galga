@@ -17,6 +17,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -171,5 +172,32 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findByUserId(userId).orElseThrow(() -> new Exception("No User Exists"));
         Integer userIndex = user.getUserIndex();
         return productRepository.findAllByProductSeller(userIndex);
+    }
+
+    // 아이디 찾기
+    @Override
+    public List<?> findMyUserId(String name) throws Exception {
+        List<User> userList = userRepository.findAllByName(name);
+        System.out.println(name);
+        System.out.println(userList);
+//        return userList;
+        List<String> userIdList = new ArrayList<>();
+        for (User user : userList) {
+            userIdList.add(user.getUserId());
+        }
+        return userIdList;
+    }
+
+    // 비밀번호 재설정 (암호화로 인해 복호화가 불가능) -> true 를 반환받으면 updatePassword 메소드 실행
+    @Override
+    public boolean findMyPassword(FindPasswordDTO findPasswordDTO) throws Exception {
+        User user = userRepository.findByUserId(findPasswordDTO.getUserId()).orElseThrow(() -> new Exception("No User Exists"));
+        if (!user.getName().equals(findPasswordDTO.getUserName())){
+            throw new Exception("Incorrect Name");
+        }
+        if (!user.getUserPhone().equals(findPasswordDTO.getUserPhone())){
+            throw new Exception("Incorrect Phone Number");
+        }
+        return true;
     }
 }

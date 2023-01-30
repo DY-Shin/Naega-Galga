@@ -10,14 +10,15 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
-
-
+import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/users")
 public class UserController {
+
     private final UserService userService;
 
     // 회원가입
@@ -87,7 +88,7 @@ public class UserController {
     // 내 비밀번호 수정
     @PutMapping("password")
     @ResponseStatus(HttpStatus.OK)
-    public void updatePassword(@Validated @RequestBody UpdatePasswordDTO updatePasswordDto) throws Exception{
+    public void updatePassword(@Validated @RequestBody UpdatePasswordDTO updatePasswordDto) throws Exception {
         userService.updatePassword(updatePasswordDto);
     }
 
@@ -95,5 +96,17 @@ public class UserController {
     @PostMapping("password")
     public boolean checkPassword(@Validated @RequestBody UpdatePasswordDTO updatePasswordDTO) throws Exception {
         return userService.checkPassword(updatePasswordDTO);
+    }
+
+    // 아이디 찾기
+    @PostMapping("find/id")
+    public ResponseEntity<?> findMyUserId(@Validated @RequestBody FindIdDTO findIdDTO) throws Exception {
+        return ResponseEntity.ok(userService.findMyUserId(findIdDTO.getUserName()));
+    }
+
+    // 비밀번호 찾기
+    @PostMapping("find/password")
+    public boolean findMyPassword(@Validated @RequestBody FindPasswordDTO findPasswordDTO) throws Exception {
+        return userService.findMyPassword(findPasswordDTO);
     }
 }
