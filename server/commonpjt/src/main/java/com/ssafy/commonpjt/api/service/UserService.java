@@ -17,4 +17,6 @@ public interface UserService {
     List<?> wishList(String userId) throws Exception;
     List<?> getMyProductList() throws Exception;
     List<?> getUserProductList(String userId) throws Exception;
+    List<?> findMyUserId(String name) throws Exception;
+    boolean findMyPassword(FindPasswordDTO findPasswordDTO) throws Exception;
 }
