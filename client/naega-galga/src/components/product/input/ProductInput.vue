@@ -98,7 +98,6 @@
         />
         <span class="slash"> / </span>
         <el-input
-          v-if="isMonth"
           v-model="productInfo.productFloor"
           placeholder="매물의 층수"
           type="number"
@@ -331,7 +330,10 @@ export default defineComponent({
       productInfo.selectedOptionList = ["세탁기", "인덕션"];
     }
     const depositAndPrice = computed(
-      () => `${productInfo.deposit}/${productInfo.price}`
+      () =>
+        productInfo.productContractTypeRadio === "월세"
+          ? `${productInfo.deposit}/${productInfo.price}` //월세면 보증금/월세
+          : productInfo.deposit //전세면 그냥 보증금만
     );
 
     const numberInputDefaultValue = computed(value =>
@@ -387,30 +389,33 @@ export default defineComponent({
       "옷장",
       "침대",
     ];
-    const makeObjForRequest = (): FormData => {
+    const makeObjForRequest = () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const formData: any = new FormData();
 
       const options: string[] = [];
       productInfo.selectedOptionList.forEach(item => options.push(item));
-      const files: Array<UploadFile> = [];
-      fileList.forEach((item: UploadFile) => files.push(item));
+
+      fileList.forEach((item: UploadFile) => {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, no-unused-vars, @typescript-eslint/no-unused-vars
+        const file: File = item.raw!;
+        formData.append("productPhoto", file);
+      });
 
       const floor = `${productInfo.maxFloor}층/${productInfo.productFloor}층`;
 
       const product = {
-        productPhoto: files,
         productType: productInfo.productContractTypeRadio,
-        productPrice: depositAndPrice,
-        productManageCost: productInfo.managePrice,
-        productSize: productInfo.roomSize,
+        productPrice: depositAndPrice.value,
+        productManageCost: parseInt(productInfo.managePrice),
+        productSize: productInfo.roomSize.toString(),
         productDirection: productInfo.selectedRoomDirection,
         productFloor: floor,
         productRooms: productInfo.selectedProductType,
         productAnimal: productInfo.canAnimalRadio,
         productDetail: productInfo.productHo,
       };
-      formData.append("product", product);
+      formData.append("product", JSON.stringify(product));
 
       const building = {
         buildingParking: productInfo.parking,
@@ -419,7 +424,7 @@ export default defineComponent({
         buildingName: productInfo.buildingName,
         buildingElevator: stringToBooleanInt("있음", productInfo.elevatorRadio),
       };
-      formData.append("building", building);
+      formData.append("building", JSON.stringify(building));
 
       const checkOption = (option: string) =>
         optionList.some(item => item === option);
@@ -441,10 +446,10 @@ export default defineComponent({
       productInfo.selectedOptionList.forEach(item => {
         if (checkOption(item)) {
           switch (item) {
-            case "냉장고":
-              option.optionFridge = 1;
-              break;
             case "에어컨":
+              option.optionAirConditioner = 1;
+              break;
+            case "냉장고":
               option.optionFridge = 1;
               break;
             case "세탁기":
@@ -474,7 +479,7 @@ export default defineComponent({
           }
         }
       });
-      formData.append("option", option);
+      formData.append("options", JSON.stringify(option));
 
       return formData;
     };
@@ -482,6 +487,7 @@ export default defineComponent({
     const onClickAdd = async () => {
       const data = makeObjForRequest();
       data.append("userIndex", "1");
+
       //등록
       const status = await addProduct(data);
       if (status === ResponseStatus.Ok) {
