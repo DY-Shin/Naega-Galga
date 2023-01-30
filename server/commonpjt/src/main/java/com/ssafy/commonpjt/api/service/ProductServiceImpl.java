@@ -14,8 +14,15 @@ import com.ssafy.commonpjt.db.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -28,62 +35,95 @@ public class ProductServiceImpl implements ProductService {
     private final BuildingRepository buildingRepository;
     private final OptionsRepository optionsRepository;
 
+    private Product findProductByAddress(String productDetail, String jibunAddress){
+        return productRepository.findByProductDetailAndBuildingBuildingAddress(productDetail, jibunAddress);
+    }
     @Override
-    public int[] addProduct(int userIndex, ProductDTO productDTO, BuildingDTO buildingDTO, OptionsDTO optionsDTO) throws Exception {
-        Product product = productRepository.findByProductDetailAndBuildingBuildingAddress(productDTO.getProductDetail(), buildingDTO.getBuildingAddress());
-        if (product == null) {
-            Building building = buildingRepository.findByBuildingAddress(buildingDTO.getBuildingAddress());
-            if (building == null) {
-                building = new Building().builder()
-                        .buildingAddress(buildingDTO.getBuildingAddress())
-                        .buildingElevator(buildingDTO.getBuildingElevator() == 1)
-                        .buildingName(buildingDTO.getBuildingName())
-                        .buildingParking(buildingDTO.getBuildingParking() == 1)
-                        .buildingRoadAddress(buildingDTO.getBuildingRoadAddress())
-                        .build();
-                buildingRepository.save(building);
-            }
-            Options options = new Options().builder()
-                    .optionAirConditioner(optionsDTO.getOptionAirConditioner() == 1)
-                    .optionBed(optionsDTO.getOptionBed() == 1)
-                    .optionCloset(optionsDTO.getOptionCloset() == 1)
-                    .optionDesk(optionsDTO.getOptionDesk() == 1)
-                    .optionFridge(optionsDTO.getOptionFridge() == 1)
-                    .optionInduction(optionsDTO.getOptionInduction() == 1)
-                    .optionMicroWave(optionsDTO.getOptionMicroWave() == 1)
-                    .optionWashingMachine(optionsDTO.getOptionWashingMachine() == 1)
-                    .optionWifi(optionsDTO.getOptionWifi() == 1)
-                    .build();
-            optionsRepository.save(options);
-            //TODO: Product Entity에 User 추가하기
-            //TODO: Product Entity에 photo 추가하기
-            User productSeller = userRepository.findByUserIndex(userIndex);
-            product = new Product().builder()
-                    .building(building)
-                    .options(options)
-                    .productSeller(productSeller)
-                    .productDetail(productDTO.getProductDetail())
-                    .productFloor(productDTO.getProductFloor())
-                    .productType(productDTO.getProductType())
-                    .productPrice(productDTO.getProductPrice())
-                    .productManageCost(productDTO.getProductManageCost())
-                    .productSize(productDTO.getProductSize())
-                    .productRooms(productDTO.getProductRooms())
-                    .productDirection(productDTO.getProductDirection())
-//                    .productPhoto(productDTO.getProductPhoto())
-                    .productAnimal(productDTO.getProductAnimal())
-                    .build();
-            productRepository.save(product);
+    public boolean addProduct(int userIndex, List<MultipartFile> fileList, ProductDTO productDTO, BuildingDTO buildingDTO, OptionsDTO optionsDTO) throws Exception {
+        String productDetail = productDTO.getProductDetail();
+        String jibunAddress = buildingDTO.getBuildingJibunAddress();
+        Product product = findProductByAddress(productDetail, jibunAddress);
+        
+        //매물 정보 중복
+        if(product!=null) return false;
+        
+        //매물 정보 없음 -> 매물 정보 저장
+        StringBuilder imageFilePathListStr = new StringBuilder();      //구분자 -> ,
 
-            int[] output = new int[3];
-            output[0] = product.getProductIndex();
-            output[1] = building.getBuildingIndex();
-            output[2] = options.getOptionIndex();
-            return output;
-        } else {
-            //TODO: ProductServiceImpl addProduct 리턴값 정하기
-            return null;
+        //이미지 파일 저장
+        //TODO : 프로젝트 파일에 넣을건지, 배포 하면 절대경로에서 상대경로로 바꿔야됨
+        //경로 -> product/img/productRoadAddress/productDetail/i.png
+        StringBuilder sb = new StringBuilder("C:/D106/product/img/");
+        for(int i=0, size=fileList.size(); i<size; i++){
+            StringBuilder tmpSb = new StringBuilder(sb.toString());
+            tmpSb.append(buildingDTO.getBuildingRoadAddress())
+                    .append("/")
+                    .append(productDTO.getProductDetail())
+                    .append("/");
+            Path path = Paths.get(tmpSb.toString());
+            Files.createDirectories(path);
+            tmpSb.append(i).append(".png");
+
+            imageFilePathListStr.append(tmpSb.toString());
+            //마지막 파일이 아니면 구분자 추가
+            if(i!=size-1){
+                imageFilePathListStr.append(",");
+            }
+
+            File convFile = new File(tmpSb.toString());
+            convFile.createNewFile();
+            FileOutputStream fos = new FileOutputStream(convFile);
+            fos.write(fileList.get(i).getBytes());
+            fos.close();
         }
+        Building building = buildingRepository.findByBuildingAddress(buildingDTO.getBuildingJibunAddress());
+        if (building == null) {
+            building = new Building().builder()
+                    .buildingAddress(buildingDTO.getBuildingJibunAddress())
+                    .buildingElevator(buildingDTO.getBuildingElevator() == 1)
+                    .buildingName(buildingDTO.getBuildingName())
+                    .buildingParking(buildingDTO.getBuildingParking() == 1)
+                    .buildingRoadAddress(buildingDTO.getBuildingRoadAddress())
+                    .build();
+            buildingRepository.save(building);
+        }
+        Options options = new Options().builder()
+                .optionAirConditioner(optionsDTO.getOptionAirConditioner() == 1)
+                .optionBed(optionsDTO.getOptionBed() == 1)
+                .optionCloset(optionsDTO.getOptionCloset() == 1)
+                .optionDesk(optionsDTO.getOptionDesk() == 1)
+                .optionFridge(optionsDTO.getOptionFridge() == 1)
+                .optionInduction(optionsDTO.getOptionInduction() == 1)
+                .optionMicroWave(optionsDTO.getOptionMicrowave() == 1)
+                .optionWashingMachine(optionsDTO.getOptionWashingMachine() == 1)
+                .optionWifi(optionsDTO.getOptionWifi() == 1)
+                .build();
+        optionsRepository.save(options);
+        //TODO: Product Entity에 User 추가하기
+        //TODO: Product Entity에 photo 추가하기
+        User productSeller = userRepository.findByUserIndex(userIndex);
+        product = new Product().builder()
+                .building(building)
+                .options(options)
+                .productSeller(productSeller)
+                .productDetail(productDTO.getProductDetail())
+                .productFloor(productDTO.getProductFloor())
+                .productType(productDTO.getProductType())
+                .productPrice(productDTO.getProductPrice())
+                .productManageCost(productDTO.getProductManageCost())
+                .productSize(productDTO.getProductSize())
+                .productRooms(productDTO.getProductRooms())
+                .productDirection(productDTO.getProductDirection())
+                .productPhoto(imageFilePathListStr.toString())
+                .productAnimal(productDTO.getProductAnimal())
+                .build();
+        productRepository.save(product);
+
+        int[] output = new int[3];
+        output[0] = product.getProductIndex();
+        output[1] = building.getBuildingIndex();
+        output[2] = options.getOptionIndex();
+        return true;
     }
 
     @Override
@@ -148,51 +188,51 @@ public class ProductServiceImpl implements ProductService {
         }
     }
 
-    @Override
+//    @Override
     public int updateProduct(ProductDTO productDTO, BuildingDTO buildingDTO, OptionsDTO optionsDTO) {
-        Product product = productRepository.findByProductIndex(productDTO.getProductIndex());
-//        Product product = productRepository.findByProductIndex(productIndex);
-        if (product == null) {
-            return 204;
-        } else {
-            Building building = buildingRepository.findByBuildingIndex(buildingDTO.getBuildingIndex());
-            Options options = optionsRepository.findByOptionIndex(optionsDTO.getOptionIndex());
-            building.setBuildingAddress(buildingDTO.getBuildingAddress());
-            building.setBuildingElevator(buildingDTO.getBuildingElevator() == 1);
-            building.setBuildingName(buildingDTO.getBuildingName());
-            building.setBuildingParking(buildingDTO.getBuildingParking() == 1);
-            building.setBuildingRoadAddress(buildingDTO.getBuildingRoadAddress());
-            options.setOptionAirConditioner(optionsDTO.getOptionAirConditioner() == 1);
-            options.setOptionBed(optionsDTO.getOptionBed() == 1);
-            options.setOptionCloset(optionsDTO.getOptionCloset() == 1);
-            options.setOptionDesk(optionsDTO.getOptionDesk() == 1);
-            options.setOptionFridge(optionsDTO.getOptionFridge() == 1);
-            options.setOptionInduction(optionsDTO.getOptionInduction() == 1);
-            options.setOptionMicroWave(optionsDTO.getOptionMicroWave() == 1);
-            options.setOptionWashingMachine(optionsDTO.getOptionWashingMachine() == 1);
-            options.setOptionWifi(optionsDTO.getOptionWifi() == 1);
-            //TODO: Product Entity에 User 추가하기
-            //TODO: Product Entity에 photo 추가하기
-
-//            이거 안 됨 ?
-//            User user = product.getUser();
-            User productSeller = userRepository.findByUserIndex(product.getProductSeller().getUserIndex());
-            product.setBuilding(building);
-            product.setOptions(options);
-            product.setProductSeller(productSeller);
-            product.setProductDetail(productDTO.getProductDetail());
-            product.setProductFloor(productDTO.getProductFloor());
-            product.setProductType(productDTO.getProductType());
-            product.setProductPrice(productDTO.getProductPrice());
-            product.setProductManageCost(productDTO.getProductManageCost());
-            product.setProductSize(productDTO.getProductSize());
-            product.setProductRooms(productDTO.getProductRooms());
-            product.setProductDirection(productDTO.getProductDirection());
-//            product.setProductPhoto(productDTO.getProductPhoto());
-            product.setProductAnimal(productDTO.getProductAnimal());
-
+//        Product product = productRepository.findByProductIndex(productDTO.getProductIndex());
+////        Product product = productRepository.findByProductIndex(productIndex);
+//        if (product == null) {
+//            return 204;
+//        } else {
+//            Building building = buildingRepository.findByBuildingIndex(buildingDTO.getBuildingIndex());
+//            Options options = optionsRepository.findByOptionIndex(optionsDTO.getOptionIndex());
+//            building.setBuildingAddress(buildingDTO.getBuildingJibunAddress());
+//            building.setBuildingElevator(buildingDTO.getBuildingElevator() == 1);
+//            building.setBuildingName(buildingDTO.getBuildingName());
+//            building.setBuildingParking(buildingDTO.getBuildingParking() == 1);
+//            building.setBuildingRoadAddress(buildingDTO.getBuildingRoadAddress());
+//            options.setOptionAirConditioner(optionsDTO.getOptionAirConditioner() == 1);
+//            options.setOptionBed(optionsDTO.getOptionBed() == 1);
+//            options.setOptionCloset(optionsDTO.getOptionCloset() == 1);
+//            options.setOptionDesk(optionsDTO.getOptionDesk() == 1);
+//            options.setOptionFridge(optionsDTO.getOptionFridge() == 1);
+//            options.setOptionInduction(optionsDTO.getOptionInduction() == 1);
+//            options.setOptionMicroWave(optionsDTO.getOptionMicroWave() == 1);
+//            options.setOptionWashingMachine(optionsDTO.getOptionWashingMachine() == 1);
+//            options.setOptionWifi(optionsDTO.getOptionWifi() == 1);
+//            //TODO: Product Entity에 User 추가하기
+//            //TODO: Product Entity에 photo 추가하기
+//
+////            이거 안 됨 ?
+////            User user = product.getUser();
+//            User productSeller = userRepository.findByUserIndex(product.getProductSeller().getUserIndex());
+//            product.setBuilding(building);
+//            product.setOptions(options);
+//            product.setProductSeller(productSeller);
+//            product.setProductDetail(productDTO.getProductDetail());
+//            product.setProductFloor(productDTO.getProductFloor());
+//            product.setProductType(productDTO.getProductType());
+//            product.setProductPrice(productDTO.getProductPrice());
+//            product.setProductManageCost(productDTO.getProductManageCost());
+//            product.setProductSize(productDTO.getProductSize());
+//            product.setProductRooms(productDTO.getProductRooms());
+//            product.setProductDirection(productDTO.getProductDirection());
+////            product.setProductPhoto(productDTO.getProductPhoto());
+//            product.setProductAnimal(productDTO.getProductAnimal());
+//
             return 200;
-        }
+//        }
     }
 
     @Override

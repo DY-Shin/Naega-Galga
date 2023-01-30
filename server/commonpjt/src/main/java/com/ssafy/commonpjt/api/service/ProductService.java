@@ -3,11 +3,13 @@ package com.ssafy.commonpjt.api.service;
 import com.ssafy.commonpjt.api.dto.productDTO.BuildingDTO;
 import com.ssafy.commonpjt.api.dto.productDTO.OptionsDTO;
 import com.ssafy.commonpjt.api.dto.productDTO.ProductDTO;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.Map;
 
 public interface ProductService {
-    int[] addProduct(int userIndex, ProductDTO productDTO, BuildingDTO buildingDTO, OptionsDTO optionsDTO) throws Exception;
+    boolean addProduct(int userIndex, List<MultipartFile> fileList, ProductDTO productDTO, BuildingDTO buildingDTO, OptionsDTO optionsDTO) throws Exception;
 
     Map<String, Object> detailProduct(int productIndex);
 
