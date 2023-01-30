@@ -38,7 +38,6 @@ public class User implements UserDetails {
     @Column(name= "user_name" ,nullable = false, length = 50)
     private String name;
 
-//    @ColumnDefault("'TEST'")
     @Column(length = 50, unique = true)
     private String corporateRegistrationNumber;
 

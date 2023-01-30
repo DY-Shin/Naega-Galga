@@ -77,4 +77,10 @@ public class UserController {
     public void updatePassword(@Validated @RequestBody UpdatePasswordDTO updatePasswordDto) throws Exception{
         userService.updatePassword(updatePasswordDto);
     }
+
+    // 비밀번호 체크
+    @GetMapping("password")
+    public boolean checkPassword(@Validated @RequestBody UpdatePasswordDTO updatePasswordDTO) throws Exception {
+        return userService.checkPassword(updatePasswordDTO);
+    }
 }
