@@ -14,10 +14,10 @@
   </el-button>
   <!-- --------------chat icon end-------------- -->
   <!-- --------------chat list start-------------- -->
-  <el-scrollbar v-show="isOpenList" class="chat-list" height="400px">
-    <div v-for="(item, index) in list" :key="item">
+  <el-scrollbar v-show="isOpenList" class="chat-list" height="300px">
+    <div v-for="(item, index) in chatList" :key="item.productIndex">
       <button @click="OpenChat(index)" class="chat-list-item">
-        {{ item }}
+        {{ item.buildingName }}
       </button>
     </div>
   </el-scrollbar>
@@ -39,7 +39,7 @@
       ><CircleCloseFilled
     /></el-icon>
     <div id="chatTitle" style="font-size: 20px; margin: 10px 15px 0">
-      {{ list[list_idx] }}
+      {{ chatList[list_idx].buildingName }}
     </div>
     <div>
       <div class="chat-content">
@@ -84,7 +84,7 @@
           {{ year }}년 {{ month }}월 {{ date }}일
         </div>
         <div style="padding-left: 10px">
-          <el-select v-model="timeValue" placeholder="오전" style="width: 75px">
+          <el-select v-model="typeValue" placeholder="오전" style="width: 75px">
             <el-option
               v-for="item in timeOptions"
               :key="item"
@@ -112,7 +112,10 @@
               :value="item"
             />
           </el-select>
-          <el-button type="primary" @click="book" style="margin-left: 5px"
+          <el-button
+            type="primary"
+            @click="onClickBook"
+            style="margin-left: 5px"
             >예약하기</el-button
           >
         </div>
@@ -124,10 +127,12 @@
 <script lang="ts">
 import { defineComponent, ref, watch } from "vue";
 import { Plus, Promotion } from "@element-plus/icons-vue";
+import { addProductBook } from "@/api/productApi";
+import ResponseStatus from "@/api/responseStatus";
 
 export default defineComponent({
   props: {
-    GetOpen: { type: Boolean },
+    GetProductIndex: { type: Number },
   },
   setup(props) {
     const timeValue = ref("");
@@ -141,35 +146,13 @@ export default defineComponent({
     const year = ref(dateValue.value.getFullYear());
     const month = ref(dateValue.value.getMonth() + 1);
     const date = ref(dateValue.value.getDate());
-    const time = ref("");
+    const typeValue = ref("");
     const getDate = () => {
-      console.log(dateValue);
       year.value = dateValue.value.getFullYear();
       month.value = dateValue.value.getMonth() + 1;
       date.value = dateValue.value.getDate();
-      console.log(date.value);
     };
 
-    const book = () => {
-      console.log(
-        year.value +
-          "년 " +
-          month.value +
-          "월 " +
-          date.value +
-          "일 " +
-          timeValue.value +
-          " " +
-          hourValue.value +
-          "시 " +
-          minuteValue.value +
-          "분"
-      );
-      dateValue.value = new Date();
-      timeValue.value = "";
-      hourValue.value = "";
-      minuteValue.value = "";
-    };
     const input = ref("");
     interface chat {
       time: string;
@@ -200,22 +183,22 @@ export default defineComponent({
       content: "nice to meet youzdfgfdgzfgzgfzfgf",
     });
 
-    // const list = ["싸피부동산"];
-    const list: string[] = [
-      "싸피부동산",
-      "에듀부동산",
-      "와우정부동산",
-      "싸싸부동산",
-      "피피부동산",
-      "와우정부동산",
-      "싸싸부동산",
-      "피피부동산",
-      "와우정부동산",
-      "싸싸부동산",
-      "피피부동산",
+    const chatList: chatListInfo[] = [
+      { buildingName: "싸피부동산", productIndex: 1 },
+      { buildingName: "에듀부동산", productIndex: 2 },
+      { buildingName: "와우정부동산", productIndex: 3 },
+      { buildingName: "싸싸부동산", productIndex: 4 },
+      { buildingName: "피피부동산", productIndex: 5 },
+      { buildingName: "피피2부동산", productIndex: 6 },
+      { buildingName: "피피3부동산", productIndex: 7 },
     ];
 
-    const list_idx = ref(-1);
+    interface chatListInfo {
+      buildingName: string;
+      productIndex: number;
+    }
+
+    const list_idx = ref(0);
     const isOpenList = ref(false);
     const isOpenChat = ref(false);
     const isOpenBook = ref(false);
@@ -225,12 +208,14 @@ export default defineComponent({
     };
 
     watch(
-      () => props.GetOpen,
+      //지도 커스텀 어레이에서 문의하기 눌렀을 때 채팅방 어케 띄우지
+      () => props.GetProductIndex,
       () => {
-        isOpenChat.value = props.GetOpen;
+        console.log(props.GetProductIndex);
       }
     );
     const OpenChat = (index: number) => {
+      console.log(list_idx.value);
       list_idx.value = index;
       isOpenChat.value = true;
       isOpenList.value = false;
@@ -245,9 +230,51 @@ export default defineComponent({
       isOpenBook.value = !isOpenBook.value;
     };
 
+    // 예약 등록
+    const onClickBook = async () => {
+      console.log(
+        year.value +
+          "년 " +
+          month.value +
+          "월 " +
+          date.value +
+          "일 " +
+          timeValue.value +
+          " " +
+          hourValue.value +
+          "시 " +
+          minuteValue.value +
+          "분"
+      );
+      interface time {
+        year: number;
+        month: number;
+        date: number;
+        type: string;
+        hour: number;
+        minute: number;
+      }
+      const data: time = {
+        year: year.value,
+        month: month.value,
+        date: date.value,
+        type: timeValue.value,
+        hour: hourValue.value,
+        minute: minuteValue.value,
+      };
+      const status = await addProductBook(data);
+      if (status == ResponseStatus.Ok) {
+        alert("에약 완료");
+      }
+
+      dateValue.value = new Date();
+      timeValue.value = "";
+      hourValue.value = "";
+      minuteValue.value = "";
+    };
     return {
       input,
-      list,
+      chatList,
       OpenChatList,
       OpenChat,
       OpenBook,
@@ -264,14 +291,14 @@ export default defineComponent({
       date,
       year,
       month,
-      time,
+      typeValue,
       timeOptions,
       timeValue,
       hourOptions,
       minuteOptions,
       hourValue,
       minuteValue,
-      book,
+      onClickBook,
     };
   },
 });
@@ -424,7 +451,7 @@ export default defineComponent({
   bottom: 140px;
   right: 50px;
   width: 250px;
-  height: 309px;
+  height: 300px;
   background-color: rgb(255, 255, 255);
   border-radius: 15px;
 }

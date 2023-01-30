@@ -90,6 +90,7 @@ export default defineComponent({
         productList.splice(0);
 
         productList.push({
+          productIndex: 1,
           rooms: "원룸",
           type: "월세",
           price: "30/1500",
@@ -99,6 +100,7 @@ export default defineComponent({
         });
 
         productList.push({
+          productIndex: 2,
           rooms: "투룸",
           type: "월세",
           price: "60/1500",
@@ -107,6 +109,7 @@ export default defineComponent({
           explanationDate: "2023.1.30",
         });
         productList.push({
+          productIndex: 3,
           rooms: "원룸",
           type: "월세",
           price: "30/1500",
@@ -119,6 +122,7 @@ export default defineComponent({
         productList.splice(0);
 
         productList.push({
+          productIndex: 1,
           rooms: "투룸",
           type: "월세",
           price: "60/1500",
@@ -127,6 +131,7 @@ export default defineComponent({
           explanationDate: "2023.1.30",
         });
         productList.push({
+          productIndex: 2,
           rooms: "원룸",
           type: "월세",
           price: "30/1500",
@@ -139,6 +144,7 @@ export default defineComponent({
       } else if (input.value == "3") {
         productList.splice(0);
         productList.push({
+          productIndex: 1,
           rooms: "원룸",
           type: "월세",
           price: "30/2000",
@@ -156,6 +162,7 @@ export default defineComponent({
     };
 
     interface Product {
+      productIndex: number;
       rooms: string;
       type: string;
       price: string;

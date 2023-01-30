@@ -6,11 +6,11 @@
         <ka-kao-map
           :GetIdx="idxProxy"
           :GetList="listProxy"
-          @chatOpen="sendChatOpen"
+          @productIndex="sendProductIndex"
         ></ka-kao-map>
       </el-container>
     </el-container>
-    <chat-window :GetOpen="chatOpenProxy"></chat-window>
+    <chat-window :GetProductIndex="productIndexProxy"></chat-window>
   </div>
 </template>
 
@@ -36,10 +36,10 @@ export default defineComponent({
         listProxy.value.push(list[i]);
       }
     };
-    const chatOpenProxy = ref(false);
-    const sendChatOpen = (chatOpen: boolean) => {
-      console.log(chatOpen);
-      chatOpenProxy.value = chatOpen;
+    const productIndexProxy = ref();
+    const sendProductIndex = (productIndex: number) => {
+      console.log(productIndex);
+      productIndexProxy.value = productIndex;
     };
 
     return {
@@ -47,8 +47,8 @@ export default defineComponent({
       idxProxy,
       sendList,
       listProxy,
-      sendChatOpen,
-      chatOpenProxy,
+      sendProductIndex,
+      productIndexProxy,
     };
   },
 });
