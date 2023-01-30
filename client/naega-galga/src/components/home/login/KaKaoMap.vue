@@ -1,5 +1,12 @@
 <template>
-  <el-container style="height: 103%"><el-main id="map"></el-main></el-container>
+  <el-container
+    style="
+      height: 103%;
+      border-top: 1px solid #bdbdbd;
+      border-left: 1px solid #bdbdbd;
+    "
+    ><el-main id="map"></el-main
+  ></el-container>
 </template>
 
 <style scoped>
@@ -30,12 +37,14 @@ export default defineComponent({
     watch(
       () => props.GetIdx,
       () => {
+        console.log(props.GetIdx);
         changeCenter(props.GetIdx);
       }
     );
     watch(
       () => props.GetList,
       () => {
+        console.log("!!!!!!!!!!!!!!!!!!!!");
         displayMarker(window.map, props.GetList);
         for (let i = 0; i < overlays.length; i++) {
           overlays[i].setMap(null);
@@ -94,46 +103,41 @@ export default defineComponent({
       let bounds = new window.kakao.maps.LatLngBounds();
       let geocoder = new window.kakao.maps.services.Geocoder();
       for (let i = 0; i < markerList.length; i++) {
-        geocoder.addressSearch(
-          markerList[i].address,
-          function (result, status) {
-            // 정상적으로 검색이 완료됐으면
-            if (status === window.kakao.maps.services.Status.OK) {
-              let coords = new window.kakao.maps.LatLng(
-                result[0].y,
-                result[0].x
-              );
-              nums[i] = num;
-              let imageSrc =
-                  "https://cdn-icons-png.flaticon.com/512/7976/7976202.png",
-                imageSize = new window.kakao.maps.Size(40, 40),
-                imageOption = { offset: new window.kakao.maps.Point(20, 40) };
-              let markerImage = new window.kakao.maps.MarkerImage(
-                  imageSrc,
-                  imageSize,
-                  imageOption
-                ),
-                markerPosition = coords;
+        console.log(markerList[i].addr);
+        geocoder.addressSearch(markerList[i].addr, function (result, status) {
+          // 정상적으로 검색이 완료됐으면
+          if (status === window.kakao.maps.services.Status.OK) {
+            let coords = new window.kakao.maps.LatLng(result[0].y, result[0].x);
+            nums[i] = num;
+            let imageSrc =
+                "https://cdn-icons-png.flaticon.com/512/7976/7976202.png",
+              imageSize = new window.kakao.maps.Size(40, 40),
+              imageOption = { offset: new window.kakao.maps.Point(20, 40) };
+            let markerImage = new window.kakao.maps.MarkerImage(
+                imageSrc,
+                imageSize,
+                imageOption
+              ),
+              markerPosition = coords;
 
-              let marker = new window.kakao.maps.Marker({
-                map: map,
-                position: markerPosition,
-                image: markerImage,
-              });
+            let marker = new window.kakao.maps.Marker({
+              map: map,
+              position: markerPosition,
+              image: markerImage,
+            });
 
-              setOverlay(coords, marker, markerList[i]); // 상세 정보 창 만들어주고
+            setOverlay(coords, marker, markerList[i]); // 상세 정보 창 만들어주고
 
-              marker.setMap(map);
-              markers[num] = marker;
+            marker.setMap(map);
+            markers[num] = marker;
 
-              bounds.extend(coords);
-            }
-            num++;
-            if (num == markerList.length) {
-              setBounds(bounds);
-            }
+            bounds.extend(coords);
           }
-        );
+          num++;
+          if (num == markerList.length) {
+            setBounds(bounds);
+          }
+        });
       }
     };
     const setBounds = bounds => {

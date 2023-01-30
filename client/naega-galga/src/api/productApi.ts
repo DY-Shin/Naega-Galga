@@ -55,8 +55,9 @@ async function deleteProductWish(productIndex: number, userIndex: number) {
   return response;
 }
 async function SearchProduct(keyword: string) {
+  console.log(keyword + "옴");
   const response: AxiosResponse = await apiTokenInstance.get(
-    `/api/product/${keyword}`
+    `/api/search?address=${keyword}`
   );
   return response;
 }

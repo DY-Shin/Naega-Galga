@@ -18,24 +18,24 @@
     <el-scrollbar :style="{ height: 'calc(100vh - 225px)' }">
       <div
         v-for="(item, index) in productList"
-        :key="item.type"
+        :key="item.index"
         class="scrollbar-demo-item"
       >
         <div class="right-box" @click="whereIs(index)">
           <div class="img-content">
             <div class="list-img"></div>
-            <div class="list-online-icon" v-if="item.explanationDate != null">
+            <!-- <div class="list-online-icon" v-if="item.explanationDate != null">
               <div class="text">온라인 설명회</div>
-            </div>
+            </div> -->
           </div>
           <div class="home-info-box">
-            <div class="home-addr">{{ item.address }}</div>
-            <div class="home-rooms">{{ item.rooms }} {{ item.size }}평</div>
-            <div class="home-price">{{ item.type }} {{ item.price }}</div>
+            <div class="home-addr">{{ item.addr }}</div>
+            <!-- <div class="home-rooms">{{ item.rooms }} {{ item.size }}평</div> -->
+            <div class="home-price">{{ item.price }}</div>
           </div>
         </div>
 
-        <button v-if="wishList[index]" id="heart-btn">
+        <button v-if="productList[index].bed" id="heart-btn">
           <img
             src="@/assets/image/icon-heart-filled.png"
             width="20"
@@ -62,6 +62,23 @@ import { SearchProduct } from "@/api/productApi";
 
 export default defineComponent({
   setup(_, context) {
+    interface Product {
+      index: number;
+      addr: string;
+      roadAddr: string;
+      price: string;
+      photo: string;
+      airConditioner: boolean;
+      fridge: boolean;
+      washingMachine: boolean;
+      gasStove: boolean;
+      induction: boolean;
+      microWave: boolean;
+      desk: boolean;
+      wifi: boolean;
+      closet: boolean;
+      bed: boolean;
+    }
     let input = ref("");
 
     const isFavorite = ref(false);
@@ -69,104 +86,35 @@ export default defineComponent({
       wishList[index] = !wishList[index];
     };
 
-    const beforeInput = ref("");
+    // const beforeInput = ref("");
     const { emit } = context;
     const whereIs = index => {
       emit("addr_idx", index);
     };
-    let productList: Product[] = reactive([]);
+    let productList = reactive<Array<Product>>([]);
     let wishList: boolean[] = reactive([]);
     wishList.push(true);
     wishList.push(false);
     wishList.push(true);
 
     const getList = async () => {
+      console.log(input.value);
       const list = await SearchProduct(input.value);
-      productList = list.data;
-
+      list.data.forEach((product: Product) => productList.push(product));
+      console.log(productList);
+      console.log(productList + "!!");
+      for (let i = 0; i < productList.length; i++) {
+        console.log(productList[i].addr);
+      }
+      emit("productList", productList);
       //검색 ->  목록 가져오기
-      if (input.value === beforeInput.value) {
-        beforeInput.value = input.value;
-        return;
-      }
+      // if (input.value === beforeInput.value) {
+      //   beforeInput.value = input.value;
+      //   return;
+      // }
 
-      if (input.value == "1") {
-        productList.splice(0);
-
-        productList.push({
-          rooms: "원룸",
-          type: "월세",
-          price: "30/1500",
-          size: 10,
-          address: "부산 동래구 충렬대로 255",
-          explanationDate: null,
-        });
-
-        productList.push({
-          rooms: "투룸",
-          type: "월세",
-          price: "60/1500",
-          size: 35,
-          address: "경상북도 구미시 인동6길 26-2",
-          explanationDate: "2023.1.30",
-        });
-        productList.push({
-          rooms: "원룸",
-          type: "월세",
-          price: "30/1500",
-          size: 10,
-          address: "대전 서구 둔산로 100",
-          explanationDate: null,
-        });
-        emit("productList", productList);
-      } else if (input.value == "2") {
-        productList.splice(0);
-
-        productList.push({
-          rooms: "투룸",
-          type: "월세",
-          price: "60/1500",
-          size: 35,
-          address: "경상북도 구미시 인동6길 26-2",
-          explanationDate: "2023.1.30",
-        });
-        productList.push({
-          rooms: "원룸",
-          type: "월세",
-          price: "30/1500",
-          size: 10,
-          address: "대전 서구 둔산로 100",
-          explanationDate: null,
-        });
-
-        emit("productList", productList);
-      } else if (input.value == "3") {
-        productList.splice(0);
-        productList.push({
-          rooms: "원룸",
-          type: "월세",
-          price: "30/2000",
-          size: 20,
-          address: "경상북도 구미시 인동6길 26-2",
-          explanationDate: "2023.1.30",
-        });
-
-        emit("productList", productList);
-      } else {
-        productList.splice(0);
-      }
-
-      beforeInput.value = input.value;
+      // beforeInput.value = input.value;
     };
-
-    interface Product {
-      rooms: string;
-      type: string;
-      price: string;
-      size: number;
-      address: string;
-      explanationDate: string | null;
-    }
 
     return {
       input,
