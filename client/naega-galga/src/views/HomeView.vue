@@ -16,8 +16,4 @@ export default defineComponent({
   components: { LoginHome, LogoutHome },
 });
 </script>
-<style scoped>
-.el-container {
-  /* height: 100vh; */
-}
-</style>
+<style scoped></style>

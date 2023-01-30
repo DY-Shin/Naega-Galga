@@ -122,11 +122,14 @@
   <!-- --------------book end-------------- -->
 </template>
 <script lang="ts">
-import { defineComponent, ref } from "vue";
+import { defineComponent, ref, watch } from "vue";
 import { Plus, Promotion } from "@element-plus/icons-vue";
 
 export default defineComponent({
-  setup() {
+  props: {
+    GetOpen: { type: Boolean },
+  },
+  setup(props) {
     const timeValue = ref("");
     const hourValue = ref();
     const minuteValue = ref();
@@ -221,6 +224,12 @@ export default defineComponent({
       isOpenList.value = !isOpenList.value;
     };
 
+    watch(
+      () => props.GetOpen,
+      () => {
+        isOpenChat.value = props.GetOpen;
+      }
+    );
     const OpenChat = (index: number) => {
       list_idx.value = index;
       isOpenChat.value = true;
