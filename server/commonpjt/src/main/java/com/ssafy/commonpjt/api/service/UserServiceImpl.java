@@ -97,7 +97,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findByUserId(SecurityUtil.getLoginUsername()).orElseThrow(() -> new Exception("No User Exists"));
         if (userUpdateDto.getUserPhone() != null) user.setUserPhone(userUpdateDto.getUserPhone());
         if (userUpdateDto.getUserName() != null) user.setName(userUpdateDto.getUserName());
-//        if (userUpdateDto.getCorporateRegistrationNumber() != null) user.setCorporateRegistrationNumber(userUpdateDto.getCorporateRegistrationNumber());
+        if (userUpdateDto.getCorporateRegistrationNumber() != null) user.setCorporateRegistrationNumber(userUpdateDto.getCorporateRegistrationNumber());
         if (userUpdateDto.getUserAddress() != null) user.setUserAddress(userUpdateDto.getUserAddress());
         userRepository.save(user);
     }
@@ -113,9 +113,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public void updatePassword(UpdatePasswordDTO updatePasswordDto) throws Exception {
         User user = userRepository.findByUserId(SecurityUtil.getLoginUsername()).orElseThrow(() -> new Exception("No User Exists"));
-//        if (!user.matchPassword(passwordEncoder, updatePasswordDto.getCheckPassword())) {
-//            throw new Exception("Incorrect Password");
-//        }
         user.updatePassword(passwordEncoder, updatePasswordDto.getToBePassword());
         userRepository.save(user);
     }
@@ -162,8 +159,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<?> getMyProductList() throws Exception {
         User user = userRepository.findByUserId(SecurityUtil.getLoginUsername()).orElseThrow(() -> new Exception("No User Exists"));
-        Integer userIndex = user.getUserIndex();
-        return productRepository.findAllByProductSeller(userIndex);
+        return productRepository.findAllByProductSeller(user);
     }
 
     // 다른 유저가 등록한 매물 목록 조회
@@ -171,16 +167,14 @@ public class UserServiceImpl implements UserService {
     public List<?> getUserProductList(String userId) throws Exception {
         User user = userRepository.findByUserId(userId).orElseThrow(() -> new Exception("No User Exists"));
         Integer userIndex = user.getUserIndex();
-        return productRepository.findAllByProductSeller(userIndex);
+//        return productRepository.findAllByProductSeller(userIndex);
+        return null;
     }
 
     // 아이디 찾기
     @Override
     public List<?> findMyUserId(String name) throws Exception {
         List<User> userList = userRepository.findAllByName(name);
-        System.out.println(name);
-        System.out.println(userList);
-//        return userList;
         List<String> userIdList = new ArrayList<>();
         for (User user : userList) {
             userIdList.add(user.getUserId());

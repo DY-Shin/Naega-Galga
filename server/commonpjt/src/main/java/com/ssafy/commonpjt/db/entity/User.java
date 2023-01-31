@@ -47,7 +47,7 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user")
     private List<WishList> wishList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "productSeller")
+    @OneToMany(mappedBy = "productSeller", orphanRemoval = true)
     private List<Product> productSeller = new ArrayList<>();
 
     @OneToMany(mappedBy = "seller")
