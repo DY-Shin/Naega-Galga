@@ -43,6 +43,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Autowired
     private ObjectMapper objectMapper;
+    private String imagePath = "C:/D106/product/img/";
 
     private Product findProductByAddress(String productDetail, String jibunAddress){
         return productRepository.findByProductDetailAndBuildingBuildingAddress(productDetail, jibunAddress);
@@ -62,14 +63,18 @@ public class ProductServiceImpl implements ProductService {
         //이미지 파일 저장
         //TODO : 프로젝트 파일에 넣을건지, 배포 하면 절대경로에서 상대경로로 바꿔야됨
         //경로 -> product/img/productRoadAddress/productDetail/i.png
-        StringBuilder sb = new StringBuilder("C:/D106/product/img/");
         for(int i=0, size=fileList.size(); i<size; i++){
-            StringBuilder tmpSb = new StringBuilder(sb.toString());
+            StringBuilder fullPathSb = new StringBuilder(imagePath);
+            StringBuilder tmpSb = new StringBuilder();
             tmpSb.append(buildingDTO.getBuildingRoadAddress())
                     .append("/")
                     .append(productDTO.getProductDetail())
                     .append("/");
-            Path path = Paths.get(tmpSb.toString());
+
+            StringBuilder realPath = new StringBuilder(imagePath);
+            realPath.append(tmpSb.toString());
+
+            Path path = Paths.get(realPath.toString());
             Files.createDirectories(path);
             tmpSb.append(i).append(".png");
 
@@ -79,7 +84,11 @@ public class ProductServiceImpl implements ProductService {
                 imageFilePathListStr.append(",");
             }
 
-            File convFile = new File(tmpSb.toString());
+
+            fullPathSb.append(tmpSb.toString());
+            System.out.println(fullPathSb.toString());
+
+            File convFile = new File(fullPathSb.toString());
             convFile.createNewFile();
             FileOutputStream fos = new FileOutputStream(convFile);
             fos.write(fileList.get(i).getBytes());
@@ -231,20 +240,18 @@ public class ProductServiceImpl implements ProductService {
             return false;
         }
 
+        int buildingIndex = product.getBuilding().getBuildingIndex();
+        Building building = buildingRepository.findByBuildingIndex(buildingIndex);
+
         //파일 삭제
-        String[] productStr = product.getProductPhoto().split(",");  //파일 string을 parsing
-        String[] oneImagePathStr = productStr[0].split("/");         //파일 디렉토리 정보를 위해 파싱
+        String[] productStrings = product.getProductPhoto().split(",");  //파일 string을 parsing
 
-        StringBuilder imageDirectoryPath = new StringBuilder();
-        for(int i=0; i<oneImagePathStr.length-1; i++){
-            log.info("directory path " + oneImagePathStr[i]);
-            imageDirectoryPath.append(oneImagePathStr[i]);
-            if(i< oneImagePathStr.length-2){
-                imageDirectoryPath.append("/");
-            }
-        }
+        StringBuilder imageDirectoryPath = new StringBuilder(imagePath);
+        imageDirectoryPath
+                .append(building.getBuildingRoadAddress()).append("/")
+                .append(product.getProductDetail()).append("/");
+
         String directoryPathStr = imageDirectoryPath.toString();    //이미지의 부모 디렉토리 정보
-
         File directory = new File(directoryPathStr);
 
         //디렉토리가 존재하는지
