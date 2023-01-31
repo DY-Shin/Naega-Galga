@@ -10,7 +10,7 @@
         ></ka-kao-map>
       </el-container>
     </el-container>
-    <chat-window :GetProductIndex="productProxy"></chat-window>
+    <chat-window :GetProduct="productProxy"></chat-window>
   </div>
 </template>
 
@@ -35,11 +35,13 @@ export default defineComponent({
       for (let i = 0; i < list.length; i++) {
         listProxy.value.push(list[i]);
       }
+      console.log(listProxy.value + "00000000000000");
     };
     const productProxy = ref();
-    const sendProduct = (productIndex: number) => {
-      console.log(productIndex);
-      productProxy.value = productIndex;
+    const sendProduct = (product: object) => {
+      // console.log(product.roadAddr);
+      productProxy.value = product;
+      console.log(productProxy.value + " proxy " + product);
     };
 
     return {

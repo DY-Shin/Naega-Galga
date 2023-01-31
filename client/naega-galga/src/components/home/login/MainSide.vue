@@ -70,9 +70,9 @@ export default defineComponent({
     const getList = async () => {
       const list = await SearchProduct(input.value);
       productList.splice(0);
-      // wishList.splice(0);
-      list.data.forEach((product: Product) => productList.push(product));
 
+      list.data.forEach((product: Product) => productList.push(product));
+      console.log(productList);
       emit("productList", productList);
       //검색 ->  목록 가져오기
       // if (input.value === beforeInput.value) {

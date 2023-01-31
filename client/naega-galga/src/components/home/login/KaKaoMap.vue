@@ -17,7 +17,7 @@
 
 <script lang="ts">
 import { defineComponent, onMounted, watch } from "@vue/runtime-core";
-
+import { useRouter } from "vue-router";
 declare global {
   interface Window {
     kakao: any;
@@ -33,20 +33,17 @@ export default defineComponent({
 
   setup(props, context) {
     const { emit } = context;
+    const router = useRouter();
 
     watch(
       () => props.GetIdx,
       () => {
-        console.log(props.GetIdx);
-        console.log(markers);
-        console.log(overlays);
         changeCenter(props.GetIdx);
       }
     );
     watch(
       () => props.GetList,
       () => {
-        // console.log("!!!!!!!!!!!!!!!!!!!!");
         displayMarker(window.map, props.GetList);
         for (let i = 0; i < overlays.length; i++) {
           overlays[i].setMap(null);
@@ -54,19 +51,6 @@ export default defineComponent({
       },
       { deep: true }
     );
-
-    const markerPositions1: object[] = [
-      {
-        address: "경상북도 구미시 인동6길 26-2",
-        a: 36.1020372425131,
-        b: 128.420294611527,
-      },
-      {
-        address: "부산 동래구 충렬대로 255",
-        a: 35.2014786272255,
-        b: 129.087166169007,
-      },
-    ];
 
     const latitude = 36.1020372425131;
     const longitude = 128.420294611527;
@@ -129,7 +113,6 @@ export default defineComponent({
               position: markerPosition,
               image: markerImage,
             });
-
             setOverlay(coords, marker, markerList[i]); // 상세 정보 창 만들어주고
 
             marker.setMap(map);
@@ -145,7 +128,7 @@ export default defineComponent({
       }
     };
     const setBounds = bounds => {
-      // 모든 마커 범위 포함하게 지도 범위 재설정
+      // 모든 마커 범위 포함하도록 지도 범위 재설정
       window.map.setBounds(bounds);
     };
     const setOverlay = (coords, marker, product) => {
@@ -175,11 +158,21 @@ export default defineComponent({
       let detailbtn = document.createElement("button");
       detailbtn.className = "detailbtn";
       detailbtn.appendChild(document.createTextNode("상세보기"));
+      detailbtn.onclick = function () {
+        moveToDetail();
+      };
+
+      const moveToDetail = () => {
+        // 상세보기 페이지 이동
+        console.log(product.index);
+        router.push(`/product/${product.index}`);
+      };
 
       let chatbtn = document.createElement("button");
       chatbtn.className = "chatbtn";
       chatbtn.appendChild(document.createTextNode("문의하기"));
       chatbtn.onclick = function () {
+        console.log(product);
         emit("chatProduct", product);
       };
 
@@ -231,14 +224,12 @@ export default defineComponent({
       let idx = nums[addr_idx];
       let marker = markers[idx];
       let coords = marker.getPosition();
-      console.log(overlays);
       overlays[idx].setMap(window.map);
       window.map.setLevel(1);
       window.map.setCenter(coords);
     };
 
     return {
-      markerPositions1,
       changeCenter,
       props,
     };

@@ -39,7 +39,7 @@
       ><CircleCloseFilled
     /></el-icon>
     <div id="chatTitle" style="font-size: 20px; margin: 10px 15px 0">
-      {{ chatList[listIdx].buildingName }}
+      <!-- {{ chatProduct.roadAddr.value }}  자꾸 에러 나는데 이유를 알 수 없음 -->
     </div>
     <div>
       <div class="chat-content">
@@ -135,11 +135,24 @@ export default defineComponent({
     GetProduct: { type: Object },
   },
   setup(props) {
+    const listIdx = ref(0); // 목록에서 클릭한 채팅 인덱스
+    const isOpenList = ref(false);
+    const isOpenChat = ref(false);
+    const isOpenReserve = ref(false);
+    watch(
+      () => isOpenChat.value,
+      () => {
+        console.log("isOpenChat " + isOpenChat.value);
+      },
+      { deep: true }
+    );
     watch(
       () => props.GetProduct,
       () => {
-        console.log(props.GetProduct);
-      }
+        chatProduct.value = props.GetProduct;
+        isOpenChat.value = true;
+      },
+      { deep: true }
     );
 
     const ampm = ref("");
@@ -153,7 +166,9 @@ export default defineComponent({
     const year = ref(dateValue.value.getFullYear());
     const month = ref(dateValue.value.getMonth() + 1);
     const date = ref(dateValue.value.getDate());
+
     const typeValue = ref("");
+
     const getDate = () => {
       year.value = dateValue.value.getFullYear();
       month.value = dateValue.value.getMonth() + 1;
@@ -206,31 +221,21 @@ export default defineComponent({
       sellerIndex: number;
     }
 
-    const listIdx = ref(0);
-    const isOpenList = ref(false);
-    const isOpenChat = ref(false);
-    const isOpenReserve = ref(false);
-
     const OpenChatList = () => {
+      // 채팅 아이콘 누르면
       isOpenList.value = !isOpenList.value;
     };
 
-    watch(
-      //지도 커스텀 어레이에서 문의하기 눌렀을 때 채팅방 어케 띄우지
-      () => props.GetProduct,
-      () => {
-        console.log(props.GetProduct);
-      }
-    );
-    // const chatProduct = ref();
+    const chatProduct = ref();
     const OpenChat = (index: number) => {
-      console.log(listIdx.value);
+      // 채팅 목록에서 누르면
       listIdx.value = index;
       isOpenChat.value = true;
       isOpenList.value = false;
     };
 
     const CloseChat = () => {
+      // 채팅 닫기 버튼
       isOpenChat.value = false;
       isOpenReserve.value = false;
       dateValue.value = new Date();
@@ -240,18 +245,19 @@ export default defineComponent({
     };
 
     const OpenReserve = () => {
-      //예약 창 열기
+      // 예약 창 열기
       isOpenReserve.value = !isOpenReserve.value;
     };
 
     // 예약 등록
     const onClickReserve = async () => {
       if (ampm.value == "" || hour.value == "" || minute.value == "") {
+        // 빈칸 안돼
         alert("시간을 입력해주세요");
         return;
       }
 
-      const data = new Date( //Date 형식으로 보냄
+      const data = new Date( // Date 형식으로 보냄
         year.value,
         month.value,
         date.value,
@@ -259,22 +265,24 @@ export default defineComponent({
         minute.value
       );
 
-      const userIndex = 1; //나중에 로그인 정보로 바꾸기
-
+      const userIndex = 1; // 나중에 로그인 정보로 바꾸기
+      chatProduct.value = chatList[listIdx.value];
       const status = await addProductReserve(
-        chatList[listIdx.value].sellerIndex,
+        chatProduct.value.sellerIndex,
         userIndex,
         data
       );
 
       if (status == ResponseStatus.Ok) {
         alert("에약 완료");
+        isOpenReserve.value = false;
+      } else {
+        alert("다시 시도");
+        dateValue.value = new Date(); // 예약 형식 초기화해줌
+        ampm.value = "";
+        hour.value = "";
+        minute.value = "";
       }
-
-      dateValue.value = new Date();
-      ampm.value = "";
-      hour.value = "";
-      minute.value = "";
     };
     return {
       input,
@@ -303,6 +311,7 @@ export default defineComponent({
       hour,
       minute,
       onClickReserve,
+      chatProduct,
     };
   },
 });
