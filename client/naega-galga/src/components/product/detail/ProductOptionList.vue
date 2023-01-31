@@ -16,78 +16,90 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, PropType } from "@vue/runtime-core";
+import { computed } from "vue";
 
-export default defineComponent({
+export default {
   props: {
     options: {
-      type: Array as PropType<Array<string>>,
+      type: Object,
     },
   },
   setup(props) {
+    interface OptionIcon {
+      name: string;
+      src: any;
+    }
     //옵션 정보들을 icon image로 변경
-    const optionIconList = computed(() =>
-      props.options?.map(option => {
-        switch (option) {
-          case "냉장고":
-            return {
-              name: option,
-              src: require("@/assets/image/product-option-icon/icon-refrigerator.png"),
-            };
-          case "에어컨":
-            return {
-              name: option,
-              src: require("@/assets/image/product-option-icon/icon-air-conditioner.png"),
-            };
-          case "세탁기":
-            return {
-              name: option,
-              src: require("@/assets/image/product-option-icon/icon-washing-machine.png"),
-            };
-          case "가스레인지":
-            return {
-              name: option,
-              src: require("@/assets/image/product-option-icon/icon-gas-range.png"),
-            };
-          case "인덕션":
-            return {
-              name: option,
-              src: require("@/assets/image/product-option-icon/icon-induction-stove.png"),
-            };
-          case "전자레인지":
-            return {
-              name: option,
-              src: require("@/assets/image/product-option-icon/icon-microwaves.png"),
-            };
-          case "와이파이":
-            return {
-              name: option,
-              src: require("@/assets/image/product-option-icon/icon-wifi.png"),
-            };
-          case "책상":
-            return {
-              name: option,
-              src: require("@/assets/image/product-option-icon/icon-desk-chair.png"),
-            };
-          case "옷장":
-            return {
-              name: option,
-              src: require("@/assets/image/product-option-icon/icon-wardrobe.png"),
-            };
-          case "침대":
-            return {
-              name: option,
-              src: require("@/assets/image/product-option-icon/icon-double-bed.png"),
-            };
-        }
-      })
-    );
+    const optionIconList = computed(() => {
+      const arr: OptionIcon[] = [];
 
+      if (props.options?.optionFridge) {
+        arr.push({
+          name: "냉장고",
+          src: require("@/assets/image/product-option-icon/icon-refrigerator.png"),
+        });
+      }
+      if (props.options?.optionAirConditioner) {
+        arr.push({
+          name: "에어컨",
+          src: require("@/assets/image/product-option-icon/icon-air-conditioner.png"),
+        });
+      }
+      if (props.options?.optionWashingMachine) {
+        arr.push({
+          name: "세탁기",
+          src: require("@/assets/image/product-option-icon/icon-washing-machine.png"),
+        });
+      }
+      if (props.options?.optionGasStove) {
+        arr.push({
+          name: "가스레인지",
+          src: require("@/assets/image/product-option-icon/icon-gas-range.png"),
+        });
+      }
+      if (props.options?.optionInduction) {
+        arr.push({
+          name: "인덕션",
+          src: require("@/assets/image/product-option-icon/icon-induction-stove.png"),
+        });
+      }
+      if (props.options?.optionMicrowave) {
+        arr.push({
+          name: "전자레인지",
+          src: require("@/assets/image/product-option-icon/icon-microwaves.png"),
+        });
+      }
+      if (props.options?.optionWifi) {
+        arr.push({
+          name: "와이파이",
+          src: require("@/assets/image/product-option-icon/icon-wifi.png"),
+        });
+      }
+      if (props.options?.optionDesk) {
+        arr.push({
+          name: "책상",
+          src: require("@/assets/image/product-option-icon/icon-desk-chair.png"),
+        });
+      }
+      if (props.options?.optionCloset) {
+        arr.push({
+          name: "옷장",
+          src: require("@/assets/image/product-option-icon/icon-wardrobe.png"),
+        });
+      }
+      if (props.options?.optionBed) {
+        arr.push({
+          name: "침대",
+          src: require("@/assets/image/product-option-icon/icon-double-bed.png"),
+        });
+      }
+      return arr;
+    });
     return {
       optionIconList,
     };
   },
-});
+};
 </script>
 
 <style scoped>
