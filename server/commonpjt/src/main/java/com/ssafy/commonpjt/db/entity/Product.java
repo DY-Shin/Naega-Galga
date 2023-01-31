@@ -49,7 +49,7 @@ public class Product {
     @Column(nullable = false)
     private String productDirection;
 
-    @Column(nullable = true)
+    @Column(nullable = true, length=1000)
     @Builder.Default
     private String productPhoto = "NULL";
 
