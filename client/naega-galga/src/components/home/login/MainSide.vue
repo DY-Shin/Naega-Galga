@@ -24,9 +24,9 @@
         <div class="right-box" @click="whereIs(index)">
           <div class="img-content">
             <div class="list-img"></div>
-            <!-- <div class="list-online-icon" v-if="item.explanationDate != null">
+            <div class="list-online-icon" v-if="item.presentation">
               <div class="text">온라인 설명회</div>
-            </div> -->
+            </div>
           </div>
           <div class="home-info-box">
             <div class="home-addr">{{ item.roadAddr }}</div>
@@ -73,11 +73,6 @@ export default defineComponent({
       // wishList.splice(0);
       list.data.forEach((product: Product) => productList.push(product));
 
-      for (let i = 0; i < list.data.length; i++) {
-        // productList.push(list.data[i]);
-        // productList.push(list.data[0][i]);
-        // wishList.push(list.data[1][i]);
-      }
       emit("productList", productList);
       //검색 ->  목록 가져오기
       // if (input.value === beforeInput.value) {
@@ -115,18 +110,15 @@ export default defineComponent({
 .home-info-box {
   height: 100px;
   padding: 40px 0;
-  /* width: 200px; */
 }
 .home-addr {
   font-weight: 500;
   color: black;
   text-align: left;
-  /* margin: 20px 0; */
 }
 .home-price {
   color: black;
   text-align: left;
-  /* margin: 20px 0; */
 }
 .home-rooms {
   color: black;
@@ -137,9 +129,7 @@ export default defineComponent({
 .home-size {
   color: black;
   float: right;
-  /* font-size: 20px; */
   text-align: left;
-  /* margin: 15px 0; */
 }
 .text {
   padding: 5px;
@@ -192,9 +182,5 @@ export default defineComponent({
   width: 500px;
   height: 100%;
   border-top: 1px solid #bdbdbd;
-  /* border-right: 1px solid #bdbdbd; */
-  /* border-left: 1px solid #73767a; */
-  /* border: 1px solid #73767a;
-  border-radius: 7px 0 0 7px; */
 }
 </style>
