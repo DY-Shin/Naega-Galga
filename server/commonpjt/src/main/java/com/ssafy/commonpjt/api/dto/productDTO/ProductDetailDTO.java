@@ -14,4 +14,6 @@ public class ProductDetailDTO {
     private BuildingDTO building;
     private OptionsDTO options;
     private ProductSellerDTO seller;
+
+    private String[] imagePaths;
 }
