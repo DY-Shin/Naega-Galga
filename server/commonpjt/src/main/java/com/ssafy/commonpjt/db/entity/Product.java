@@ -49,7 +49,8 @@ public class Product {
     @Column(nullable = false)
     private String productDirection;
 
-    @Column(nullable = true, length=1000)
+
+    @Column(nullable = true, columnDefinition = "TEXT")
     @Builder.Default
     private String productPhoto = "NULL";
 
