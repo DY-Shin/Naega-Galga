@@ -34,22 +34,6 @@
             <div class="home-price">{{ item.type }} {{ item.price }}</div>
           </div>
         </div>
-
-        <button v-if="wishList[index]" id="heart-btn">
-          <img
-            src="@/assets/image/icon-heart-filled.png"
-            width="20"
-            height="20"
-            @click="clickHeart(index)"
-          /></button
-        ><button v-else id="heart-btn">
-          <img
-            src="@/assets/image/icon-heart.png"
-            width="20"
-            height="20"
-            @click="clickHeart(index)"
-          />
-        </button>
       </div>
     </el-scrollbar>
   </el-aside>
@@ -63,21 +47,12 @@ export default defineComponent({
   setup(_, context) {
     let input = ref("");
 
-    const isFavorite = ref(false);
-    const clickHeart = index => {
-      wishList[index] = !wishList[index];
-    };
-
     const searchWord = ref("");
     const { emit } = context;
     const whereIs = index => {
       emit("addr_idx", index);
     };
     let productList: Product[] = reactive([]);
-    let wishList: boolean[] = reactive([]);
-    wishList.push(true);
-    wishList.push(false);
-    wishList.push(true);
 
     const getList = () => {
       //검색 ->  목록 가져오기
@@ -166,15 +141,12 @@ export default defineComponent({
 
     return {
       input,
-      isFavorite,
-      clickHeart,
       productList,
       getList,
       whereIs,
       Search,
       searchWord,
       onBeforeUpdate,
-      wishList,
     };
   },
 });
@@ -192,14 +164,6 @@ export default defineComponent({
   padding: 20px;
 }
 
-#heart-btn {
-  position: relative;
-  border: none;
-  background: none;
-  bottom: 60px;
-  /* padding-bottom: 200px; */
-  padding-left: 400px;
-}
 .home-info-box {
   height: 100px;
   padding: 40px 0;
