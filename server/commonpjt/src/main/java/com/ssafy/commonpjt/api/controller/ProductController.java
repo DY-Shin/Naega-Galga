@@ -124,10 +124,47 @@ public class ProductController {
 //        return ResponseEntity.status(statusCode).body(null);
 //    }
 //
-//    @DeleteMapping("/{productIndex}")
-//    public ResponseEntity<Object> deleteProduct(@PathVariable int productIndex) throws Exception {
-//        int statusCode = productService.deleteProduct(productIndex);
-//        return ResponseEntity.status(statusCode).body(null);
-//    }
+    @DeleteMapping("/{productIndex}")
+    public ResponseEntity<?> deleteProduct(@PathVariable String productIndex) throws Exception {
+        try {
+            boolean deleted = productService.deleteProduct(Integer.parseInt(productIndex));
+
+            if (deleted) {
+                return new ResponseEntity<Void>(HttpStatus.OK);
+            }
+            return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+        }
+        catch(Exception e){
+            return new ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/test")
+    public ResponseEntity<?> deleteFile(){
+        String path = "C:/D106/product/img/경북 경산시 와촌면 상암길 252/202";
+        File directory = new File(path);
+
+        try{
+            //디렉토리가 존재하는지
+            if(!directory.exists()) {
+                throw new SecurityException();
+            }
+            //디렉토리인지
+            if(!directory.isDirectory()){
+                throw new SecurityException();
+            }
+
+            File[] imageFiles = directory.listFiles();
+            for(File image : imageFiles){
+                image.delete();
+            }
+            directory.delete();
+        }
+        catch(SecurityException e){
+            return new ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        //파일 삭제 성공
+        return new ResponseEntity<Void>(HttpStatus.OK);
+    }
 
 }

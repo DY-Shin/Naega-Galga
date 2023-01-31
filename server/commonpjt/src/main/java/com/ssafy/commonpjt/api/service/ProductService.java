@@ -15,5 +15,5 @@ public interface ProductService {
 
     int updateProduct(ProductDTO productDTO, BuildingDTO buildingDTO, OptionsDTO optionsDTO);
 
-    int deleteProduct(int productIndex);
+    boolean deleteProduct(int productIndex) throws Exception;
 }

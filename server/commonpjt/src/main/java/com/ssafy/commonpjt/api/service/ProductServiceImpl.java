@@ -21,6 +21,7 @@ import java.io.FileOutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -236,14 +237,47 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public int deleteProduct(int productIndex) {
+    public boolean deleteProduct(int productIndex) throws Exception, SecurityException {
         Product product = productRepository.findByProductIndex(productIndex);
+
+        //매물 정보 없음
         if (product == null) {
-            return 204;
-        } else {
-            productRepository.deleteProductByProductIndex(productIndex);
-            return 200;
+            return false;
         }
+
+        //파일 삭제
+        String[] productStr = product.getProductPhoto().split(",");  //파일 string을 parsing
+        String[] oneImagePathStr = productStr[0].split("/");         //파일 디렉토리 정보를 위해 파싱
+
+        StringBuilder imageDirectoryPath = new StringBuilder();
+        for(int i=0; i<oneImagePathStr.length-1; i++){
+            log.info("directory path " + oneImagePathStr[i]);
+            imageDirectoryPath.append(oneImagePathStr[i]);
+            if(i< oneImagePathStr.length-2){
+                imageDirectoryPath.append("/");
+            }
+        }
+        String directoryPathStr = imageDirectoryPath.toString();    //이미지의 부모 디렉토리 정보
+
+        File directory = new File(directoryPathStr);
+
+        //디렉토리가 존재하는지
+        if(!directory.exists()) {
+            throw new SecurityException();
+        }
+        //디렉토리인지
+        if(!directory.isDirectory()){
+            throw new SecurityException();
+        }
+
+        File[] imageFiles = directory.listFiles();
+        for(File image : imageFiles){
+            image.delete();
+        }
+        directory.delete();
+
+        productRepository.deleteProductByProductIndex(productIndex);
+        return true;
     }
 
 }
