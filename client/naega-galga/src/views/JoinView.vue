@@ -8,6 +8,7 @@
       class="joinform"
       style="min-width: 400px"
       status-icon
+      scroll-to-error
     >
       <el-form-item>
         <el-form-item prop="user_id" style="width: 50%">
@@ -40,10 +41,13 @@
       </el-form-item>
 
       <el-form-item prop="user_address">
+        <p class="p-tag-design">주소</p>
         <address-search-button
+          class="address-search-button"
           @getRoadAddress="setRoadAddress"
         ></address-search-button>
-        <el-input v-model="address_info.road_address"></el-input>
+
+        <el-input v-model="address_info.road_address" readonly></el-input>
         <el-input
           v-model="address_info.sebu_address"
           placeholder="상세 주소를 입력해주세요."
@@ -61,10 +65,8 @@
         ></el-input>
       </el-form-item>
 
-      <el-form-item style="text-align: center">
-        <el-button type="primary" @click="submitForm(joinformRef)">
-          가입하기
-        </el-button>
+      <el-form-item>
+        <el-button @click="submitForm(joinformRef)"> 가입하기 </el-button>
         <el-button @click="cancel"> 취소하기 </el-button>
       </el-form-item>
     </el-form>
@@ -112,8 +114,18 @@ export default defineComponent({
       password_confirm: "",
       user_phone: "",
       user_address,
-      corporate_registration_number: "",
+      corporate_registration_number: null,
     });
+
+    const password_confirm = (rule: any, value: any, callback: any) => {
+      if (value === "") {
+        callback(new Error("Please input the password again"));
+      } else if (value !== joinform.user_password) {
+        callback(new Error("Two inputs don't match!"));
+      } else {
+        callback();
+      }
+    };
 
     const rules = reactive<FormRules>({
       user_id: [
@@ -150,8 +162,12 @@ export default defineComponent({
         },
         {
           min: 8,
+          message: "비밀번호는 8글자 이상으로 만들어주세요.",
+          trigger: "blur",
+        },
+        {
           max: 16,
-          message: "비밀번호는 8~16",
+          message: "비밀번호는 16글자 이하로 만들어주세요.",
           trigger: "blur",
         },
       ],
@@ -162,6 +178,17 @@ export default defineComponent({
           trigger: "blur",
         },
         {
+          min: 8,
+          message: "비밀번호는 8글자 이상으로 만들어주세요.",
+          trigger: "blur",
+        },
+        {
+          max: 16,
+          message: "비밀번호는 16글자 이하로 만들어주세요.",
+          trigger: "blur",
+        },
+        {
+          validator: password_confirm,
           message: "비밀번호는 같아야 한다 이녀석아",
         },
       ],
@@ -172,13 +199,6 @@ export default defineComponent({
           trigger: "blur",
         },
       ],
-      // user_address: [
-      //   {
-      //     required: true,
-      //     message: "주소는 반드시 입력해주세요.",
-      //     trigger: "blur",
-      //   },
-      // ],
     });
 
     const submitForm = async (formEl: FormInstance | undefined) => {
@@ -190,7 +210,7 @@ export default defineComponent({
       await formEl.validate((valid, fields) => {
         if (valid) {
           store.dispatch("userStore/join", joinform);
-          console.log("submit!");
+          router.push({ path: "/login" });
         } else {
           console.log("error submit!", fields);
         }
@@ -236,5 +256,10 @@ export default defineComponent({
 
 .p-tag-design {
   margin: 0px;
+}
+
+.address-search-button {
+  margin-left: auto;
+  margin-bottom: 1px;
 }
 </style>

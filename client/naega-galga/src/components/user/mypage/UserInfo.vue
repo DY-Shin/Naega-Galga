@@ -3,6 +3,7 @@
 <template>
   <div id="mypagedetail">
     <h1>내 정보</h1>
+    <el-button @click="logout">로그아웃</el-button>
     <hr />
     <!-- 여기는 default form 입니다. -->
     <el-form v-if="isChange == false">
@@ -73,7 +74,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, reactive, ref } from "vue";
+import { defineComponent, computed, reactive, ref, onMounted } from "vue";
 import { useStore } from "vuex";
 import PasswordChange from "./PasswordChange.vue";
 import UserDeleteDialog from "./UserDeleteDialog.vue";
@@ -98,15 +99,23 @@ export default defineComponent({
       user_address: "",
     });
 
-    const go_user_info_change = event => {
+    const go_user_info_change = () => {
       isChange.value = true;
-      event.preventDefault();
+      // event.preventDefault();
     };
 
-    const user_info_change = event => {
+    const user_info_change = () => {
       store.dispatch("userStore/userInfoChange", changeform);
       isChange.value = false;
-      event.preventDefault();
+      // event.preventDefault();
+    };
+
+    const getUserInfo = onMounted(() =>
+      store.dispatch("userStore/getUserInfo")
+    );
+
+    const logout = () => {
+      store.dispatch("userStore/logout");
     };
 
     return {
@@ -115,6 +124,8 @@ export default defineComponent({
       isChange,
       go_user_info_change,
       user_info_change,
+      getUserInfo,
+      logout,
     };
   },
 });
