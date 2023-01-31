@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssafy.commonpjt.api.dto.productDTO.BuildingDTO;
 import com.ssafy.commonpjt.api.dto.productDTO.OptionsDTO;
 import com.ssafy.commonpjt.api.dto.productDTO.ProductDTO;
+import com.ssafy.commonpjt.api.dto.productDTO.ProductDetailDTO;
 import com.ssafy.commonpjt.api.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -58,12 +59,13 @@ public class ProductController {
     }
 
     @GetMapping("/{productIndex}")
-    public ResponseEntity<Map<String, Object>> detailProduct(@PathVariable int productIndex) throws Exception {
-        Map<String, Object> map = productService.detailProduct(productIndex);
-        if (map == null) {
-            return ResponseEntity.status(204).body(null);
+    public ResponseEntity<?> detailProduct(@PathVariable int productIndex) throws Exception {
+        ProductDetailDTO productDetailDTO = productService.detailProduct(productIndex);
+
+        if (productDetailDTO == null) {
+            return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
         } else {
-            return ResponseEntity.status(201).body(map);
+            return new ResponseEntity<ProductDetailDTO>(productDetailDTO, HttpStatus.OK);
         }
     }
 

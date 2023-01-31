@@ -1,8 +1,8 @@
 package com.ssafy.commonpjt.api.service;
 
-import com.ssafy.commonpjt.api.dto.productDTO.BuildingDTO;
-import com.ssafy.commonpjt.api.dto.productDTO.OptionsDTO;
-import com.ssafy.commonpjt.api.dto.productDTO.ProductDTO;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ssafy.commonpjt.api.dto.productDTO.*;
 import com.ssafy.commonpjt.db.entity.Building;
 import com.ssafy.commonpjt.db.entity.Options;
 import com.ssafy.commonpjt.db.entity.Product;
@@ -11,8 +11,9 @@ import com.ssafy.commonpjt.db.repository.BuildingRepository;
 import com.ssafy.commonpjt.db.repository.OptionsRepository;
 import com.ssafy.commonpjt.db.repository.ProductRepository;
 import com.ssafy.commonpjt.db.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -21,20 +22,27 @@ import java.io.FileOutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Service
 @Slf4j
-@RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
 
-    private final ProductRepository productRepository;
-    private final UserRepository userRepository;
-    private final BuildingRepository buildingRepository;
-    private final OptionsRepository optionsRepository;
+    @Autowired
+    private ProductRepository productRepository;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private BuildingRepository buildingRepository;
+    @Autowired
+    private OptionsRepository optionsRepository;
+    @Autowired
+    private ModelMapper modelMapper;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     private Product findProductByAddress(String productDetail, String jibunAddress){
         return productRepository.findByProductDetailAndBuildingBuildingAddress(productDetail, jibunAddress);
@@ -100,8 +108,7 @@ public class ProductServiceImpl implements ProductService {
                 .optionWifi(optionsDTO.getOptionWifi() == 1)
                 .build();
         optionsRepository.save(options);
-        //TODO: Product Entity에 User 추가하기
-        //TODO: Product Entity에 photo 추가하기
+
         User productSeller = userRepository.findByUserIndex(userIndex);
         product = new Product().builder()
                 .building(building)
@@ -117,6 +124,7 @@ public class ProductServiceImpl implements ProductService {
                 .productDirection(productDTO.getProductDirection())
                 .productPhoto(imageFilePathListStr.toString())
                 .productAnimal(productDTO.getProductAnimal())
+                .productSeller(productSeller)
                 .build();
         productRepository.save(product);
 
@@ -127,66 +135,44 @@ public class ProductServiceImpl implements ProductService {
         return true;
     }
 
+    //entity -> dto
+    private <DTO, ENTITY> DTO parseFromEntityToDTO(ENTITY entity, Class<DTO> className){
+        return modelMapper.map(entity, className);
+    }
+
     @Override
-    public Map<String, Object> detailProduct(int productIndex) {
+    public ProductDetailDTO detailProduct(int productIndex) throws JsonProcessingException {
         Product product = productRepository.findByProductIndex(productIndex);
+
         if (product == null) {
             return null;
-        } else {
-            //TODO: 이거 안 됨?? Building building = product.getBuilding();
-            Building building = buildingRepository.findByBuildingIndex(product.getBuilding().getBuildingIndex());
-            Options options = optionsRepository.findByOptionIndex(product.getOptions().getOptionIndex());
-            Map<String, Object> map = new HashMap<>();
-
-            //TODO: map.put(user&&photo)
-            map.put("productManageCost", (int) 3);
-            map.put("productDetail", (String) product.getProductDetail());
-            map.put("productFloor", (String) product.getProductFloor());
-            map.put("productType", (String) product.getProductType());
-            map.put("productPrice", (String) product.getProductPrice());
-            map.put("productSize", (String) product.getProductSize());
-            map.put("productRooms", (String) product.getProductRooms());
-            map.put("productDirection", (String) product.getProductDirection());
-//            map.put("productPhoto", (String) product.getPhoto());
-            map.put("productAnimal", (String) product.getProductAnimal());
-//            map.put("building", (Building) product.getBuilding());
-//            map.put("option", (Option) product.getOption());
-//            map.put("user", (User) product.getUser());
-
-            //이거 안 됨?
-//            User user =product.getUser();
-            User user = userRepository.findByUserIndex(product.getProductSeller().getUserIndex());
-            map.put("userIndex", (int) user.getUserIndex());
-            map.put("userId", (String) user.getUserId());
-            map.put("userPhone", (String) user.getUserPhone());
-            map.put("userName", (String) user.getUserName());
-            map.put("userCorporationRegistrationNumber", (String) user.getCorporateRegistrationNumber());
-            map.put("userAddress", (String) user.getUserAddress());
-            map.put("buildingAddress", (String) building.getBuildingAddress());
-            map.put("buildingName", (String) building.getBuildingName());
-            map.put("buildingRoadAddress", (String) building.getBuildingRoadAddress());
-            map.put("buildingIndex", (int) building.getBuildingIndex());
-            map.put("buildingElevator", building.isBuildingElevator());
-            map.put("buildingParking", building.isBuildingParking());
-            map.put("optionIndex", (int) options.getOptionIndex());
-            map.put("optionAirConditioner", options.isOptionAirConditioner());
-            map.put("optionBed", options.isOptionBed());
-            map.put("optionCloset", options.isOptionCloset());
-            map.put("optionDesk", options.isOptionDesk());
-            map.put("optionFridge", options.isOptionFridge());
-            map.put("optionGasStove", options.isOptionGasStove());
-            map.put("optionInduction", options.isOptionInduction());
-            map.put("optionMicrowave", options.isOptionMicroWave());
-            map.put("optionWashingMachine", options.isOptionWashingMachine());
-            map.put("optionWifi", options.isOptionWifi());
-
-            //TODO: 이거 됨??
-//            map.put("user", (User) user);
-//            map.put("product", (Product) product);
-//            map.put("building", (Building) building);
-//            map.put("option", (Option) option);
-            return map;
         }
+
+        ProductDetailDTO productDetailDTO = new ProductDetailDTO();
+
+        //product to json string
+        ProductDTO productDTO = modelMapper.map(product, ProductDTO.class);
+        productDetailDTO.setProduct(productDTO);
+
+        //building to json string
+        int buildingIndex = product.getBuilding().getBuildingIndex();
+        Building buildingEntity = buildingRepository.findByBuildingIndex(buildingIndex);
+        BuildingDTO building = parseFromEntityToDTO(buildingEntity, BuildingDTO.class);
+        productDetailDTO.setBuilding(building);
+
+        //options to json string
+        int optionIndex = product.getOptions().getOptionIndex();
+        Options optionsEntity = optionsRepository.findByOptionIndex(optionIndex);
+        OptionsDTO options = parseFromEntityToDTO(optionsEntity, OptionsDTO.class);
+        productDetailDTO.setOptions(options);
+
+        //seller to json string
+        int sellerIndex = product.getProductSeller().getUserIndex();
+        User seller = userRepository.findByUserIndex(sellerIndex);
+        ProductSellerDTO productSellerDTO = parseFromEntityToDTO(seller, ProductSellerDTO.class);
+        productDetailDTO.setSeller(productSellerDTO);
+
+        return productDetailDTO;
     }
 
 //    @Override
