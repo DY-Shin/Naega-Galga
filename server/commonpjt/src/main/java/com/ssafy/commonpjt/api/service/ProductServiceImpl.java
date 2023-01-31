@@ -156,12 +156,16 @@ public class ProductServiceImpl implements ProductService {
         if (product == null) {
             return null;
         }
-
         ProductDetailDTO productDetailDTO = new ProductDetailDTO();
+        
+        //이미지 파일 경로
+        String[] imagePaths = product.getProductPhoto().split(",");
+        productDetailDTO.setImagePaths(imagePaths);
 
         //product to json string
         ProductDTO productDTO = modelMapper.map(product, ProductDTO.class);
         productDetailDTO.setProduct(productDTO);
+
 
         //building to json string
         int buildingIndex = product.getBuilding().getBuildingIndex();
