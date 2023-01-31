@@ -34,22 +34,6 @@
             <div class="home-price">{{ item.price }}</div>
           </div>
         </div>
-
-        <button v-if="wishList[index]" id="heart-btn">
-          <img
-            src="@/assets/image/icon-heart-filled.png"
-            width="20"
-            height="20"
-            @click="clickHeart(index)"
-          /></button
-        ><button v-else id="heart-btn">
-          <img
-            src="@/assets/image/icon-heart.png"
-            width="20"
-            height="20"
-            @click="clickHeart(index)"
-          />
-        </button>
       </div>
     </el-scrollbar>
   </el-aside>
@@ -58,12 +42,7 @@
 <script lang="ts">
 import { reactive, ref, defineComponent, onBeforeUpdate } from "vue";
 import { Search } from "@element-plus/icons-vue";
-import {
-  SearchProduct,
-  addProductWish,
-  deleteProductWish,
-} from "@/api/productApi";
-import ResponseStatus from "@/api/responseStatus";
+import { SearchProduct } from "@/api/productApi";
 
 export default defineComponent({
   setup(_, context) {
@@ -80,30 +59,6 @@ export default defineComponent({
       presentation: boolean;
     }
     let input = ref("");
-    const userIndex = 1;
-
-    const clickHeart = async index => {
-      console.log(wishList[index]);
-      let response;
-
-      if (!wishList[index]) {
-        response = await addProductWish(
-          productList[index].productIndex,
-          userIndex
-        );
-      } else {
-        response = await deleteProductWish(
-          productList[index].productIndex,
-          userIndex
-        );
-      }
-      if ((response.status = ResponseStatus.InternalServerError)) {
-        alert("서버 오류로 요청을 처리할 수 없습니다.");
-      }
-
-      wishList[index] = !wishList[index];
-      console.log(wishList[index]);
-    };
 
     // const beforeInput = ref("");
     const { emit } = context;
@@ -111,7 +66,6 @@ export default defineComponent({
       emit("addr_idx", index);
     };
     let productList = reactive<Array<Product>>([]);
-    let wishList = reactive<Array<boolean>>([false, true, true, false, true]);
 
     const getList = async () => {
       const list = await SearchProduct(input.value);
@@ -136,13 +90,11 @@ export default defineComponent({
 
     return {
       input,
-      clickHeart,
       productList,
       getList,
       whereIs,
       Search,
       onBeforeUpdate,
-      wishList,
     };
   },
 });
@@ -160,14 +112,6 @@ export default defineComponent({
   padding: 20px;
 }
 
-#heart-btn {
-  position: relative;
-  border: none;
-  background: none;
-  bottom: 60px;
-  /* padding-bottom: 200px; */
-  padding-left: 400px;
-}
 .home-info-box {
   height: 100px;
   padding: 40px 0;
