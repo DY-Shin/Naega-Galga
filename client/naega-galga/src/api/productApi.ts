@@ -55,10 +55,18 @@ async function deleteProductWish(productIndex: number, userIndex: number) {
   return response;
 }
 
-async function addProductBook(time): Promise<number> {
+async function addProductReserve(
+  owner: number,
+  guest: number,
+  date: Date
+): Promise<number> {
   const response: AxiosResponse = await apiTokenInstance.post(
-    "/api/product/book",
-    time,
+    `/api/reserve/${date}`,
+    {
+      owner: owner,
+      guest: guest,
+      date: date,
+    },
     {
       headers: { "Content-Type": "multipart/form-data" },
     }
@@ -73,5 +81,5 @@ export {
   getProduct,
   addProductWish,
   deleteProductWish,
-  addProductBook,
+  addProductReserve,
 };

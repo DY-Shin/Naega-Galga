@@ -172,7 +172,7 @@ export default defineComponent({
       chatbtn.className = "chatbtn";
       chatbtn.appendChild(document.createTextNode("문의하기"));
       chatbtn.onclick = function () {
-        emit("productIndex", product.productIndex);
+        emit("chatProduct", product);
       };
 
       topbox.appendChild(rooms);

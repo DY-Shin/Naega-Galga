@@ -39,7 +39,7 @@
       ><CircleCloseFilled
     /></el-icon>
     <div id="chatTitle" style="font-size: 20px; margin: 10px 15px 0">
-      {{ chatList[list_idx].buildingName }}
+      {{ chatList[listIdx].buildingName }}
     </div>
     <div>
       <div class="chat-content">
@@ -70,21 +70,21 @@
         style="padding: 3px 7px"
       />
     </div>
-    <div id="clock-icon" @click="OpenBook">
+    <div id="clock-icon" @click="OpenReserve">
       <img src="@/assets/image/icon-clock.png" width="30" />
     </div>
   </div>
   <!-- --------------chat room end-------------- -->
-  <!-- --------------book start-------------- -->
-  <div v-if="isOpenBook" class="BookWindow">
+  <!-- --------------reserve start-------------- -->
+  <div v-if="isOpenReserve" class="reserveWindow">
     <div style="text-align: center">
       <el-calendar v-model="dateValue" @click="getDate" />
-      <form id="bookForm">
+      <form id="reserveForm">
         <div style="padding: 5px 10px 15px">
           {{ year }}년 {{ month }}월 {{ date }}일
         </div>
         <div style="padding-left: 10px">
-          <el-select v-model="typeValue" placeholder="오전" style="width: 75px">
+          <el-select v-model="ampm" placeholder="오전" style="width: 75px">
             <el-option
               v-for="item in timeOptions"
               :key="item"
@@ -92,7 +92,7 @@
             /> </el-select
           ><el-select
             class="m-1"
-            v-model="hourValue"
+            v-model="hour"
             placeholder="시"
             style="width: 60px; margin-left: 5px"
           >
@@ -102,7 +102,7 @@
               :value="item"
             /> </el-select
           ><el-select
-            v-model="minuteValue"
+            v-model="minute"
             placeholder="분"
             style="width: 60px; margin-left: 5px"
           >
@@ -114,7 +114,7 @@
           </el-select>
           <el-button
             type="primary"
-            @click="onClickBook"
+            @click="onClickReserve"
             style="margin-left: 5px"
             >예약하기</el-button
           >
@@ -122,22 +122,29 @@
       </form>
     </div>
   </div>
-  <!-- --------------book end-------------- -->
+  <!-- --------------reserve end-------------- -->
 </template>
 <script lang="ts">
 import { defineComponent, ref, watch } from "vue";
 import { Plus, Promotion } from "@element-plus/icons-vue";
-import { addProductBook } from "@/api/productApi";
+import { addProductReserve } from "@/api/productApi";
 import ResponseStatus from "@/api/responseStatus";
 
 export default defineComponent({
   props: {
-    GetProductIndex: { type: Number },
+    GetProduct: { type: Object },
   },
   setup(props) {
-    const timeValue = ref("");
-    const hourValue = ref();
-    const minuteValue = ref();
+    watch(
+      () => props.GetProduct,
+      () => {
+        console.log(props.GetProduct);
+      }
+    );
+
+    const ampm = ref("");
+    const hour = ref();
+    const minute = ref();
     const timeOptions = ["오전", "오후"];
     const hourOptions = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
     const minuteOptions = [0, 10, 20, 30, 40, 50];
@@ -184,24 +191,25 @@ export default defineComponent({
     });
 
     const chatList: chatListInfo[] = [
-      { buildingName: "싸피부동산", productIndex: 1 },
-      { buildingName: "에듀부동산", productIndex: 2 },
-      { buildingName: "와우정부동산", productIndex: 3 },
-      { buildingName: "싸싸부동산", productIndex: 4 },
-      { buildingName: "피피부동산", productIndex: 5 },
-      { buildingName: "피피2부동산", productIndex: 6 },
-      { buildingName: "피피3부동산", productIndex: 7 },
+      { buildingName: "싸피부동산", productIndex: 1, sellerIndex: 1 },
+      { buildingName: "에듀부동산", productIndex: 2, sellerIndex: 2 },
+      { buildingName: "와우정부동산", productIndex: 3, sellerIndex: 3 },
+      { buildingName: "싸싸부동산", productIndex: 4, sellerIndex: 4 },
+      { buildingName: "피피부동산", productIndex: 5, sellerIndex: 5 },
+      { buildingName: "피피2부동산", productIndex: 6, sellerIndex: 6 },
+      { buildingName: "피피3부동산", productIndex: 7, sellerIndex: 7 },
     ];
 
     interface chatListInfo {
       buildingName: string;
       productIndex: number;
+      sellerIndex: number;
     }
 
-    const list_idx = ref(0);
+    const listIdx = ref(0);
     const isOpenList = ref(false);
     const isOpenChat = ref(false);
-    const isOpenBook = ref(false);
+    const isOpenReserve = ref(false);
 
     const OpenChatList = () => {
       isOpenList.value = !isOpenList.value;
@@ -209,79 +217,75 @@ export default defineComponent({
 
     watch(
       //지도 커스텀 어레이에서 문의하기 눌렀을 때 채팅방 어케 띄우지
-      () => props.GetProductIndex,
+      () => props.GetProduct,
       () => {
-        console.log(props.GetProductIndex);
+        console.log(props.GetProduct);
       }
     );
+    // const chatProduct = ref();
     const OpenChat = (index: number) => {
-      console.log(list_idx.value);
-      list_idx.value = index;
+      console.log(listIdx.value);
+      listIdx.value = index;
       isOpenChat.value = true;
       isOpenList.value = false;
     };
 
     const CloseChat = () => {
       isOpenChat.value = false;
-      isOpenBook.value = false;
+      isOpenReserve.value = false;
+      dateValue.value = new Date();
+      ampm.value = "";
+      hour.value = "";
+      minute.value = "";
     };
 
-    const OpenBook = () => {
-      isOpenBook.value = !isOpenBook.value;
+    const OpenReserve = () => {
+      //예약 창 열기
+      isOpenReserve.value = !isOpenReserve.value;
     };
 
     // 예약 등록
-    const onClickBook = async () => {
-      console.log(
-        year.value +
-          "년 " +
-          month.value +
-          "월 " +
-          date.value +
-          "일 " +
-          timeValue.value +
-          " " +
-          hourValue.value +
-          "시 " +
-          minuteValue.value +
-          "분"
-      );
-      interface time {
-        year: number;
-        month: number;
-        date: number;
-        type: string;
-        hour: number;
-        minute: number;
+    const onClickReserve = async () => {
+      if (ampm.value == "" || hour.value == "" || minute.value == "") {
+        alert("시간을 입력해주세요");
+        return;
       }
-      const data: time = {
-        year: year.value,
-        month: month.value,
-        date: date.value,
-        type: timeValue.value,
-        hour: hourValue.value,
-        minute: minuteValue.value,
-      };
-      const status = await addProductBook(data);
+
+      const data = new Date( //Date 형식으로 보냄
+        year.value,
+        month.value,
+        date.value,
+        hour.value,
+        minute.value
+      );
+
+      const userIndex = 1; //나중에 로그인 정보로 바꾸기
+
+      const status = await addProductReserve(
+        chatList[listIdx.value].sellerIndex,
+        userIndex,
+        data
+      );
+
       if (status == ResponseStatus.Ok) {
         alert("에약 완료");
       }
 
       dateValue.value = new Date();
-      timeValue.value = "";
-      hourValue.value = "";
-      minuteValue.value = "";
+      ampm.value = "";
+      hour.value = "";
+      minute.value = "";
     };
     return {
       input,
       chatList,
       OpenChatList,
       OpenChat,
-      OpenBook,
+      OpenReserve,
       isOpenList,
       isOpenChat,
-      isOpenBook,
-      list_idx,
+      isOpenReserve,
+      listIdx,
       CloseChat,
       chatHistory,
       Plus,
@@ -293,12 +297,12 @@ export default defineComponent({
       month,
       typeValue,
       timeOptions,
-      timeValue,
+      ampm,
       hourOptions,
       minuteOptions,
-      hourValue,
-      minuteValue,
-      onClickBook,
+      hour,
+      minute,
+      onClickReserve,
     };
   },
 });
@@ -338,7 +342,7 @@ export default defineComponent({
   height: 40px;
 }
 /* -----------------달력 css end----------------- */
-.BookWindow {
+.reserveWindow {
   background: rgb(255, 255, 255);
   border: 1px solid rgb(184, 184, 184);
   box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
