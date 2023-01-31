@@ -1,87 +1,130 @@
 import apiInstance from "@/api/apiInstance";
 import apiTokenInstance from "@/api/apiTokenInstance";
+import localStorageManager from "@/utils/localStorageManager";
+import router from "@/router";
 
 const state = {
   user_info: {
-    user_name: "창식이",
-    user_id: "sige_tank",
-    user_phone: "010-9169-5671",
-    user_address: "그레이빌 206호",
+    user_index: "",
+    user_id: "",
+    user_phone: "",
+    user_name: "",
+    user_address: "",
+    corporate_registration_number: null,
   },
-  token: null,
 };
 
-const getters = {};
+const getters = {
+  userIndex(state) {
+    return state.user_info.user_index;
+  },
+
+  isLogin(localStorageManager) {
+    return localStorageManager.getAccessToken() ? true : false;
+  },
+};
 
 const mutations = {
-  SAVE_TOKEN(state, token) {
-    state.token = token;
-  },
-  LOGOUT(state) {
-    state.token = null;
-  },
-
   GET_USER_INFO(state, user_info) {
-    state.user_info = user_info;
+    state.user_info.user_name = user_info.userName;
+    state.user_info.user_id = user_info.userId;
+    state.user_info.user_phone = user_info.userPhone;
+    state.user_info.user_address = user_info.userAddress;
   },
 
   USER_INFO_CHANGE(state, changeform) {
-    state.user_name = changeform.name;
-    state.user_id = changeform.user_id;
-    state.user_phone_number = changeform.user_phone_number;
-    state.user_address = changeform.user_address;
+    state.user_info.user_name = changeform.user_name;
+    state.user_info.user_id = changeform.user_id;
+    state.user_info.user_phone = changeform.user_phone;
+    state.user_info.user_address = changeform.user_address;
   },
 };
 
 const actions = {
   join(context, joinform) {
     apiInstance
-      .post(`/api/v1/join`, {
-        data: {
-          id: joinform.id,
-          password1: joinform.password1,
-          password2: joinform.password2,
-          name: joinform.name,
-          phone_number: joinform.phone_number,
-          register_number: joinform.register_number,
-        },
+      .post("/api/users", {
+        userId: joinform.user_id,
+        userPassword: joinform.user_password,
+        userName: joinform.user_name,
+        userPhone: joinform.user_phone,
+        corporateRegistrationNumber: joinform.corporate_registration_number,
+        userAddress: joinform.user_address,
       })
       .then(res => {
-        context.commit("SAVE_TOKEN", res.data.key);
+        console.log(res);
       })
       .catch(err => {
         console.log(err);
       });
   },
-  logout(context) {
-    apiTokenInstance.post(`api/v1/logout`).then(res => {
-      context.commit("LOGOUT", res.data.key).catch(err => {
-        console.log(err);
-      });
-    });
-  },
 
-  passwordCheck() {
-    apiTokenInstance.post(`/api/users/checkpassword`);
-  },
-
-  userDelete(context) {
-    apiInstance.delete(`/api/users/delete`).then(res => {
-      context.commit("LOGOUT", res.data.key).catch(err => {
-        console.log(err);
-      });
-    });
-  },
-
-  get_user_info(context) {
+  login(context, loginform) {
     apiInstance
-      .get(`api/v1/user`)
+      .post("/api/users/login", {
+        userId: loginform.id,
+        userPassword: loginform.password,
+      })
       .then(res => {
-        context.commit("GET_USER_INFO", res.data.key);
+        localStorageManager.setAccessToken(res.data.accessToken);
+        localStorageManager.setRefreshToken(res.data.refreshToken);
+        router.push({ path: "/" });
       })
       .catch(err => {
         console.log(err);
       });
+  },
+
+  logout() {
+    apiInstance
+      .post("/api/users/logout", {
+        accessToken: localStorageManager.getAccessToken(),
+        refreshToken: localStorageManager.getRefreshToken(),
+      })
+      .then(res => {
+        console.log(res);
+        localStorageManager.setAccessToken("");
+        localStorageManager.setRefreshToken("");
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  },
+
+  getUserInfo(context) {
+    apiTokenInstance
+      .get("/api/users")
+      .then(res => {
+        context.commit("GET_USER_INFO", res.data);
+      })
+      .catch(error => {
+        if (error) {
+          console.log(error);
+        }
+      });
+  },
+
+  userDelete(context, passwordForm) {
+    apiInstance
+      .post("/api/users/delete", {
+        accessToken: localStorageManager.getAccessToken(),
+        refreshToken: localStorageManager.getRefreshToken(),
+        checkPassword: passwordForm.password,
+      })
+      .then(res => {
+        console.log(res);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  },
+
+  userInfoChange(context) {
+    apiInstance.put(`/api/users/change`).then(res => {
+      context.commit("USER_INFO_CHANGE", res.data.key).catch(err => {
+        console.log(err);
+      });
+    });
   },
 };
 
