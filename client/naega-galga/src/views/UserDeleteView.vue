@@ -1,13 +1,15 @@
 <template>
   <div>비밀번호를 입력하세요</div>
-  <el-input v-model="password" placeholder="Please input" />
-  <button @click="checkpassword">비밀번호 확인</button>
+  <el-input v-model="passwordForm.password" placeholder="" />
+  <button @click="checkPassword">비밀번호 확인</button>
+  <!-- 정말로 삭제 할지 한번 묻고 진짜 회원탈퇴 진행 -->
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from "vue";
+import { defineComponent, reactive, ref } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
+import apiTokenInstance from "@/api/apiTokenInstance";
 
 export default defineComponent({
   name: "UserDeleteView",
@@ -15,18 +17,32 @@ export default defineComponent({
     const store = useStore();
     const router = useRouter();
 
-    const password = ref("");
+    const passwordForm = reactive({
+      password: "",
+    });
 
-    const checkpassword = () => {
-      store.dispatch("passwordCheck");
+    let isChecked = ref(false);
+
+    const checkPassword = () => {
+      apiTokenInstance
+        .post(`api/users/password`, {
+          checkPassword: passwordForm.password,
+        })
+        .then(res => {
+          isChecked.value = res.data;
+          passwordForm.password = "";
+        })
+        .catch(err => {
+          console.log(err);
+        });
     };
 
     const userdelete = () => {
-      store.dispatch("userDelete");
+      store.dispatch("userStore/userDelete");
       router.push({ path: "" });
     };
 
-    return { password, checkpassword, userdelete };
+    return { passwordForm, checkPassword, userdelete, isChecked };
   },
 });
 </script>

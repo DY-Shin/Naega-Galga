@@ -27,6 +27,6 @@
     "tests/**/*.tsx",
     "src/api/test.js",
     "src/api/index.js"
-  ],
+, "src/api/apiTokenInstance.js", "src/store/userStore.ts"  ],
   "exclude": ["node_modules"]
 }
