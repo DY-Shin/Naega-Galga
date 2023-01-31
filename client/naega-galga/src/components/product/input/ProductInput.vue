@@ -491,7 +491,7 @@ export default defineComponent({
       //등록
       const status = await addProduct(data);
       if (status === ResponseStatus.Ok) {
-        router.back();
+        router.replace("/");
       }
       if (status === ResponseStatus.Conflict) {
         alert("이미 등록된 매물입니다");

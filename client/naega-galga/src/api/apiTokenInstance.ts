@@ -3,6 +3,9 @@ import ResponseStatus from "./responseStatus";
 import localStorageManager from "@/utils/localStorageManager";
 
 // 토큰 쓰는 객체
+axios.defaults.withCredentials = true;
+axios.defaults.headers["Access-Control-Allow-Origin"] = "*";
+
 const apiTokenInstance: AxiosInstance = axios.create({
   baseURL: process.env.VUE_APP_API_BASE_URL,
   headers: {

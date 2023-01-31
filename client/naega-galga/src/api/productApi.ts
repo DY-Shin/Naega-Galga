@@ -1,4 +1,5 @@
 import { AxiosResponse } from "axios";
+//나중에 token instance로 바꿀것
 import apiTokenInstance from "./apiInstance";
 
 async function addProduct(product): Promise<number> {

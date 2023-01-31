@@ -44,7 +44,6 @@ export default {
   },
   setup() {
     interface Product {
-      productIndex: number;
       sellerIndex: number;
       productType: string;
       price: string;
@@ -68,8 +67,9 @@ export default {
     const router = useRouter();
     const route = useRoute();
 
+    const productIndex = parseInt(route.params.id[0]);
+
     const product: Product = {
-      productIndex: 1,
       sellerIndex: 1,
       productType: "월세",
       price: "1000/30",
@@ -94,8 +94,7 @@ export default {
     const userIndex = 1;
 
     onMounted(async () => {
-      const productId = parseInt(route.params.id[0]);
-      const response = await getProduct(productId);
+      const response = await getProduct(productIndex);
       if (response.status === ResponseStatus.Ok) {
         //product 값 갱신
       }
@@ -105,7 +104,7 @@ export default {
     });
 
     const summaryValue = computed(() => ({
-      productIndex: product.productIndex,
+      productIndex: productIndex,
       productType: product.productType,
       price: product.price,
       floor: product.floor,
@@ -117,16 +116,16 @@ export default {
     }));
 
     const moveToEdit = () => {
-      router.push(`/product/edit/${product.productIndex}`);
+      router.push(`/product/edit/${productIndex}`);
     };
     const onClickDeleteProduct = async () => {
       if (!confirm("정말 삭제하시겠습니까?")) {
         return;
       }
-      const status = await deleteProduct(product.productIndex);
+      const status = await deleteProduct(productIndex);
       if (status === ResponseStatus.Ok) {
         alert("삭제되었습니다");
-        router.back();
+        router.replace("/");
       }
       if (status === ResponseStatus.NoContent) {
         alert("잘못된 요청입니다");
