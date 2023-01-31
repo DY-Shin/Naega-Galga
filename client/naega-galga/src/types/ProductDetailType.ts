@@ -40,6 +40,7 @@ interface ProductInfo {
   building: Building;
   product: Product;
   options: Options;
+  imagePaths: string[];
 }
 
 export { Seller, Building, Product, Options, ProductInfo };

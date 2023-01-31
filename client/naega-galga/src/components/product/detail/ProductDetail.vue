@@ -1,6 +1,8 @@
 <template>
   <div class="image-list">
-    <product-image-list></product-image-list>
+    <product-image-list
+      :imagePaths="productInfo.imagePaths"
+    ></product-image-list>
   </div>
   <el-row>
     <el-col :span="16"></el-col>
@@ -91,6 +93,7 @@ export default {
         optionCloset: 0,
         optionBed: 0,
       },
+      imagePaths: [],
     });
 
     onMounted(async () => {
@@ -103,6 +106,7 @@ export default {
           productInfo.product = data.product;
           productInfo.building = data.building;
           productInfo.options = data.options;
+          productInfo.imagePaths = data.imagePaths;
         }
       } catch (error) {
         alert("서버 오류로 실행할 수 없습니다\n잠시 후 다시 시도 해주세요");
