@@ -14,7 +14,15 @@ const state = {
   },
 };
 
-const getters = {};
+const getters = {
+  userIndex(state) {
+    return state.user_info.user_index;
+  },
+
+  isLogin(localStorageManager) {
+    return localStorageManager.getAccessToken() ? true : false;
+  },
+};
 
 const mutations = {
   GET_USER_INFO(state, user_info) {
