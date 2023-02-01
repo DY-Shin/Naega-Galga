@@ -62,6 +62,26 @@ async function SearchProduct(keyword: string) {
   return response;
 }
 
+async function addProductReserve(
+  owner: number,
+  guest: number,
+  date: string
+): Promise<number> {
+  console.log(owner + " " + guest + " " + date + " !!!");
+  const response: AxiosResponse = await apiTokenInstance.post(
+    `/api/reserve/${date}`,
+    {
+      owner: owner,
+      guest: guest,
+      date: date,
+    },
+    {
+      headers: { "Content-Type": "multipart/form-data" },
+    }
+  );
+  return response.status;
+}
+
 export {
   addProduct,
   editProduct,
@@ -69,5 +89,6 @@ export {
   getProduct,
   addProductWish,
   deleteProductWish,
+  addProductReserve,
   SearchProduct,
 };
