@@ -315,6 +315,7 @@ export default defineComponent({
       minute,
       onClickReserve,
       chatProduct,
+      chatRooms,
     };
   },
 });
