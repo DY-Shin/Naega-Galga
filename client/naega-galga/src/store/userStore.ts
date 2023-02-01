@@ -1,7 +1,6 @@
 import apiInstance from "@/api/apiInstance";
 import apiTokenInstance from "@/api/apiTokenInstance";
 import localStorageManager from "@/utils/localStorageManager";
-import router from "@/router";
 
 const state = {
   user_info: {
@@ -12,6 +11,7 @@ const state = {
     user_address: "",
     corporate_registration_number: null,
   },
+  isToken: false,
 };
 
 const getters = {
@@ -19,9 +19,7 @@ const getters = {
     return state.user_info.user_index;
   },
 
-  isLogin(localStorageManager) {
-    return localStorageManager.getAccessToken() ? true : false;
-  },
+  isLogin: state => state.isToken,
 };
 
 const mutations = {
@@ -30,6 +28,8 @@ const mutations = {
     state.user_info.user_id = user_info.userId;
     state.user_info.user_phone = user_info.userPhone;
     state.user_info.user_address = user_info.userAddress;
+    state.user_info.corporate_registration_number =
+      user_info.corporateRegistrationNumber;
   },
 
   USER_INFO_CHANGE(state, changeform) {
@@ -37,6 +37,17 @@ const mutations = {
     state.user_info.user_id = changeform.user_id;
     state.user_info.user_phone = changeform.user_phone;
     state.user_info.user_address = changeform.user_address;
+    state.user_info.corporate_registration_number =
+      changeform.corporate_registration_number;
+  },
+
+  TOKEN_TRUE(state) {
+    state.isToken = true;
+    // console.log(state);
+    // console.log(state.isToken);
+  },
+  TOKEN_FALSE(state) {
+    state.isToken = false;
   },
 };
 
@@ -68,14 +79,16 @@ const actions = {
       .then(res => {
         localStorageManager.setAccessToken(res.data.accessToken);
         localStorageManager.setRefreshToken(res.data.refreshToken);
-        router.push({ path: "/" });
+        console.log(state.isToken);
+        context.commit("TOKEN_TRUE");
+        console.log(state.isToken);
       })
       .catch(err => {
         console.log(err);
       });
   },
 
-  logout() {
+  logout(context) {
     apiInstance
       .post("/api/users/logout", {
         accessToken: localStorageManager.getAccessToken(),
@@ -85,6 +98,7 @@ const actions = {
         console.log(res);
         localStorageManager.setAccessToken("");
         localStorageManager.setRefreshToken("");
+        context.commit("TOKEN_FALSE");
       })
       .catch(err => {
         console.log(err);
@@ -104,27 +118,21 @@ const actions = {
       });
   },
 
-  userDelete(context, passwordForm) {
-    apiInstance
-      .post("/api/users/delete", {
-        accessToken: localStorageManager.getAccessToken(),
-        refreshToken: localStorageManager.getRefreshToken(),
-        checkPassword: passwordForm.password,
+  userInfoChange(context, changeform) {
+    apiTokenInstance
+      .put(`/api/users`, {
+        userName: changeform.user_name,
+        userId: changeform.user_id,
+        userPhone: changeform.user_phone,
+        userAddress: changeform.user_address,
+        corporateRegistrationNumber: changeform.corporate_registration_number,
       })
       .then(res => {
-        console.log(res);
+        context.commit("USER_INFO_CHANGE", res.data);
       })
       .catch(err => {
         console.log(err);
       });
-  },
-
-  userInfoChange(context) {
-    apiInstance.put(`/api/users/change`).then(res => {
-      context.commit("USER_INFO_CHANGE", res.data.key).catch(err => {
-        console.log(err);
-      });
-    });
   },
 };
 
