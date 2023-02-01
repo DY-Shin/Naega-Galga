@@ -3,7 +3,7 @@
   <!-- --------------chat icon start-------------- -->
   <el-button
     id="chat-btn"
-    @click="OpenChatList"
+    @click="OpenChatRooms"
     circle
     color="#393B44"
     size="large"
@@ -14,10 +14,10 @@
   </el-button>
   <!-- --------------chat icon end-------------- -->
   <!-- --------------chat list start-------------- -->
-  <el-scrollbar v-show="isOpenList" class="chat-list" height="300px">
-    <div v-for="(item, index) in chatList" :key="item.productIndex">
+  <el-scrollbar v-show="isOpenChatRooms" class="chat-list" height="400px">
+    <div v-for="(item, index) in chatRooms" :key="item.chatRoomIndex">
       <button @click="OpenChat(index)" class="chat-list-item">
-        {{ item.buildingName }}
+        {{ item.name }}
       </button>
     </div>
   </el-scrollbar>
@@ -38,9 +38,7 @@
       "
       ><CircleCloseFilled
     /></el-icon>
-    <div id="chatTitle" style="font-size: 20px; margin: 10px 15px 0">
-      <!-- {{ chatProduct.roadAddr.value }}  자꾸 에러 나는데 이유를 알 수 없음 -->
-    </div>
+    <div id="chatTitle" style="font-size: 20px; margin: 10px 15px 0">{{}}</div>
     <div>
       <div class="chat-content">
         <div v-for="item in chatHistory" :key="item.time" class="msg">
@@ -125,8 +123,9 @@
   <!-- --------------reserve end-------------- -->
 </template>
 <script lang="ts">
-import { defineComponent, ref, watch } from "vue";
+import { defineComponent, ref, watch, reactive } from "vue";
 import { Plus, Promotion } from "@element-plus/icons-vue";
+import { getChatRooms } from "@/api/productApi";
 import { addProductReserve } from "@/api/productApi";
 import ResponseStatus from "@/api/responseStatus";
 
@@ -204,26 +203,18 @@ export default defineComponent({
       type: "get",
       content: "nice to meet youzdfgfdgzfgzgfzfgf",
     });
-
-    const chatList: chatListInfo[] = [
-      { buildingName: "싸피부동산", productIndex: 1, sellerIndex: 1 },
-      { buildingName: "에듀부동산", productIndex: 2, sellerIndex: 2 },
-      { buildingName: "와우정부동산", productIndex: 3, sellerIndex: 3 },
-      { buildingName: "싸싸부동산", productIndex: 4, sellerIndex: 4 },
-      { buildingName: "피피부동산", productIndex: 5, sellerIndex: 5 },
-      { buildingName: "피피2부동산", productIndex: 6, sellerIndex: 6 },
-      { buildingName: "피피3부동산", productIndex: 7, sellerIndex: 7 },
-    ];
-
-    interface chatListInfo {
-      buildingName: string;
-      productIndex: number;
-      sellerIndex: number;
+    interface chatRoom {
+      chatRoomIndex: number;
+      name: string;
     }
 
-    const OpenChatList = () => {
-      // 채팅 아이콘 누르면
-      isOpenList.value = !isOpenList.value;
+    const isOpenChatRooms = ref(false);
+    let chatRooms = reactive<Array<chatRoom>>([]);
+
+    const OpenChatRooms = async () => {
+      const list = await getChatRooms();
+      list.data.forEach((product: chatRoom) => chatRooms.push(product));
+      isOpenChatRooms.value = !isOpenChatRooms.value;
     };
 
     const chatProduct = ref();
@@ -231,7 +222,7 @@ export default defineComponent({
       // 채팅 목록에서 누르면
       listIdx.value = index;
       isOpenChat.value = true;
-      isOpenList.value = false;
+      isOpenChatRooms.value = false;
     };
 
     const CloseChat = () => {
@@ -277,7 +268,7 @@ export default defineComponent({
         data.getMinutes().toString(10).padStart(2, "0");
 
       const userIndex = 1; // 나중에 로그인 정보로 바꾸기
-      chatProduct.value = chatList[listIdx.value];
+      chatProduct.value = chatRooms[listIdx.value];
       const status = await addProductReserve(
         chatProduct.value.sellerIndex,
         userIndex,
@@ -297,9 +288,10 @@ export default defineComponent({
     };
     return {
       input,
-      chatList,
-      OpenChatList,
+      // list,
+      OpenChatRooms,
       OpenChat,
+      isOpenChatRooms,
       OpenReserve,
       isOpenList,
       isOpenChat,
@@ -323,6 +315,7 @@ export default defineComponent({
       minute,
       onClickReserve,
       chatProduct,
+      chatRooms,
     };
   },
 });
