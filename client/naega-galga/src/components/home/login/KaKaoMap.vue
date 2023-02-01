@@ -1,5 +1,12 @@
 <template>
-  <el-container style="height: 103%"><el-main id="map"></el-main></el-container>
+  <el-container
+    style="
+      height: 103%;
+      border-top: 1px solid #bdbdbd;
+      border-left: 1px solid #bdbdbd;
+    "
+    ><el-main id="map"></el-main
+  ></el-container>
 </template>
 
 <style scoped>
@@ -10,7 +17,7 @@
 
 <script lang="ts">
 import { defineComponent, onMounted, watch } from "@vue/runtime-core";
-
+import { useRouter } from "vue-router";
 declare global {
   interface Window {
     kakao: any;
@@ -26,6 +33,7 @@ export default defineComponent({
 
   setup(props, context) {
     const { emit } = context;
+    const router = useRouter();
 
     watch(
       () => props.GetIdx,
@@ -43,19 +51,6 @@ export default defineComponent({
       },
       { deep: true }
     );
-
-    const markerPositions1: object[] = [
-      {
-        address: "경상북도 구미시 인동6길 26-2",
-        a: 36.1020372425131,
-        b: 128.420294611527,
-      },
-      {
-        address: "부산 동래구 충렬대로 255",
-        a: 35.2014786272255,
-        b: 129.087166169007,
-      },
-    ];
 
     const latitude = 36.1020372425131;
     const longitude = 128.420294611527;
@@ -85,59 +80,55 @@ export default defineComponent({
 
     const displayMarker = (map, markerList) => {
       // 매물 목록 검색 결과 마커 표시함
+      markers.splice(0);
+      overlays.splice(0);
+
       if (markers.length > 0) {
         for (let i = 0; i < markers.length; i++) {
-          markers[i].setMap(null);
+          // markers[i].setMap(null);
         }
       }
       let num = 0;
       let bounds = new window.kakao.maps.LatLngBounds();
       let geocoder = new window.kakao.maps.services.Geocoder();
       for (let i = 0; i < markerList.length; i++) {
-        geocoder.addressSearch(
-          markerList[i].address,
-          function (result, status) {
-            // 정상적으로 검색이 완료됐으면
-            if (status === window.kakao.maps.services.Status.OK) {
-              let coords = new window.kakao.maps.LatLng(
-                result[0].y,
-                result[0].x
-              );
-              nums[i] = num;
-              let imageSrc =
-                  "https://cdn-icons-png.flaticon.com/512/7976/7976202.png",
-                imageSize = new window.kakao.maps.Size(40, 40),
-                imageOption = { offset: new window.kakao.maps.Point(20, 40) };
-              let markerImage = new window.kakao.maps.MarkerImage(
-                  imageSrc,
-                  imageSize,
-                  imageOption
-                ),
-                markerPosition = coords;
+        geocoder.addressSearch(markerList[i].addr, function (result, status) {
+          // 정상적으로 검색이 완료됐으면
+          if (status === window.kakao.maps.services.Status.OK) {
+            let coords = new window.kakao.maps.LatLng(result[0].y, result[0].x);
+            nums[i] = num;
+            let imageSrc =
+                "https://cdn-icons-png.flaticon.com/512/7976/7976202.png",
+              imageSize = new window.kakao.maps.Size(40, 40),
+              imageOption = { offset: new window.kakao.maps.Point(20, 40) };
+            let markerImage = new window.kakao.maps.MarkerImage(
+                imageSrc,
+                imageSize,
+                imageOption
+              ),
+              markerPosition = coords;
 
-              let marker = new window.kakao.maps.Marker({
-                map: map,
-                position: markerPosition,
-                image: markerImage,
-              });
+            let marker = new window.kakao.maps.Marker({
+              map: map,
+              position: markerPosition,
+              image: markerImage,
+            });
+            setOverlay(coords, marker, markerList[i]); // 상세 정보 창 만들어주고
 
-              setOverlay(coords, marker, markerList[i]); // 상세 정보 창 만들어주고
+            marker.setMap(map);
+            markers[num] = marker;
 
-              marker.setMap(map);
-              markers[num] = marker;
-
-              bounds.extend(coords);
-            }
-            num++;
-            if (num == markerList.length) {
-              setBounds(bounds);
-            }
+            bounds.extend(coords);
           }
-        );
+          num++;
+          if (num == markerList.length) {
+            setBounds(bounds);
+          }
+        });
       }
     };
     const setBounds = bounds => {
-      // 모든 마커 범위 포함하게 지도 범위 재설정
+      // 모든 마커 범위 포함하도록 지도 범위 재설정
       window.map.setBounds(bounds);
     };
     const setOverlay = (coords, marker, product) => {
@@ -167,12 +158,22 @@ export default defineComponent({
       let detailbtn = document.createElement("button");
       detailbtn.className = "detailbtn";
       detailbtn.appendChild(document.createTextNode("상세보기"));
+      detailbtn.onclick = function () {
+        moveToDetail();
+      };
+
+      const moveToDetail = () => {
+        // 상세보기 페이지 이동
+        console.log(product.index);
+        router.push(`/product/${product.index}`);
+      };
 
       let chatbtn = document.createElement("button");
       chatbtn.className = "chatbtn";
       chatbtn.appendChild(document.createTextNode("문의하기"));
       chatbtn.onclick = function () {
-        emit("chatOpen", true);
+        console.log(product);
+        emit("chatProduct", product);
       };
 
       topbox.appendChild(rooms);
@@ -229,7 +230,6 @@ export default defineComponent({
     };
 
     return {
-      markerPositions1,
       changeCenter,
       props,
     };

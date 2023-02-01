@@ -39,6 +39,7 @@ async function getProduct(productId: number) {
 }
 
 async function addProductWish(productid: number, userId: number) {
+  console.log(productid + " " + userId);
   const response: AxiosResponse = await apiTokenInstance.post(
     `/api/products/wish`,
     {
@@ -55,6 +56,32 @@ async function deleteProductWish(productIndex: number, userIndex: number) {
   );
   return response;
 }
+async function SearchProduct(keyword: string) {
+  const response: AxiosResponse = await apiTokenInstance.get(
+    `/api/search?address=${keyword}`
+  );
+  return response;
+}
+
+async function addProductReserve(
+  owner: number,
+  guest: number,
+  date: string
+): Promise<number> {
+  console.log(owner + " " + guest + " " + date + " !!!");
+  const response: AxiosResponse = await apiTokenInstance.post(
+    `/api/reserve/${date}`,
+    {
+      owner: owner,
+      guest: guest,
+      date: date,
+    },
+    {
+      headers: { "Content-Type": "multipart/form-data" },
+    }
+  );
+  return response.status;
+}
 
 export {
   addProduct,
@@ -63,4 +90,6 @@ export {
   getProduct,
   addProductWish,
   deleteProductWish,
+  addProductReserve,
+  SearchProduct,
 };

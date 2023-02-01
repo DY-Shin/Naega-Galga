@@ -5,7 +5,7 @@
         <el-input v-model="loginform.id" />
       </el-form-item>
       <el-form-item label="비밀번호">
-        <el-input v-model="loginform.password" />
+        <el-input v-model="loginform.password" type="password" />
       </el-form-item>
       <el-button class="signup-button" @click="signup">회원가입</el-button>
       <el-button class="login-button" @click="login">로그인</el-button>
@@ -21,24 +21,23 @@ import { useRouter } from "vue-router";
 export default defineComponent({
   name: "LoginFunction",
   setup() {
+    const store = useStore();
+    const router = useRouter();
+
     const loginform = reactive({
       id: "",
       password: "",
     });
 
-    const store = useStore();
-    const router = useRouter();
-
-    const login = () => {
-      store.dispatch("login", loginform);
-      router.push({ path: "/user" });
-    };
-
     const signup = () => {
       router.push({ path: "/join" });
     };
 
-    return { loginform, login, signup };
+    const login = () => {
+      store.dispatch("userStore/login", loginform);
+    };
+
+    return { loginform, signup, login };
   },
 });
 </script>
