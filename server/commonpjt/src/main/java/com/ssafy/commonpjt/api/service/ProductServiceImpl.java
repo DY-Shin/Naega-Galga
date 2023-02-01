@@ -177,6 +177,7 @@ public class ProductServiceImpl implements ProductService {
         int buildingIndex = product.getBuilding().getBuildingIndex();
         Building buildingEntity = buildingRepository.findByBuildingIndex(buildingIndex);
         BuildingDTO building = parseFromEntityToDTO(buildingEntity, BuildingDTO.class);
+        building.setBuildingJibunAddress(buildingEntity.getBuildingAddress());
         productDetailDTO.setBuilding(building);
 
         //options to json string
