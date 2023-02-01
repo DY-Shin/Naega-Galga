@@ -76,7 +76,13 @@ public class ProductServiceImpl implements ProductService {
 
             Path path = Paths.get(realPath.toString());
             Files.createDirectories(path);
-            tmpSb.append(i).append(".png");
+
+            String[] fileExtensionSplit = fileList.get(i).getContentType().split("/");
+            String fileExtension = fileExtensionSplit[1];
+
+            tmpSb.append(i).append(".").append(fileExtension);
+            log.info("file extension : " + fileExtension);
+            log.info("file path : " + tmpSb.toString());
 
             imageFilePathListStr.append(tmpSb.toString());
             //마지막 파일이 아니면 구분자 추가
