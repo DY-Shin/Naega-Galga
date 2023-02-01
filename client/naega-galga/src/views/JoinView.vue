@@ -1,55 +1,61 @@
 <template>
-  <div class="grid">
-    <div />
+  <div class="wrapper">
     <el-form
       ref="joinformRef"
       :model="joinform"
       :rules="rules"
       class="joinform"
-      style="min-width: 400px"
+      label-width="29%"
       status-icon
       scroll-to-error
+      label-position="left"
+      min-width="2000px"
     >
-      <el-form-item>
-        <el-form-item prop="user_id" style="width: 50%">
-          <p class="p-tag-design">아이디</p>
-          <el-input v-model="joinform.user_id" />
-        </el-form-item>
+      <div class="center-div">
+        <img
+          class="center-item logo"
+          fit:fill
+          src="@/assets/image/logo/NGGG.png"
+          style="width: 100px; height: 100px"
+        />
+      </div>
 
-        <el-form-item prop="user_name" style="width: 50%">
-          <p class="p-tag-design">이름</p>
-          <el-input v-model="joinform.user_name"></el-input>
-        </el-form-item>
+      <el-form-item label="아이디" prop="user_id">
+        <el-input v-model="joinform.user_id" />
       </el-form-item>
 
-      <el-form-item prop="user_password">
-        <p class="p-tag-design">비밀번호</p>
+      <el-form-item label="비밀번호" prop="user_password">
         <el-input v-model="joinform.user_password" type="password"></el-input>
       </el-form-item>
 
-      <el-form-item prop="password_confirm">
-        <p class="p-tag-design">비밀번호 확인</p>
+      <el-form-item label="비밀번호 확인" prop="password_confirm">
         <el-input
           v-model="joinform.password_confirm"
           type="password"
         ></el-input>
       </el-form-item>
 
-      <el-form-item prop="user_phone">
-        <p class="p-tag-design">핸드폰 번호</p>
-        <el-input v-model="joinform.user_phone"></el-input>
+      <el-form-item label="이름" prop="user_name">
+        <el-input v-model="joinform.user_name"></el-input>
       </el-form-item>
 
-      <el-form-item prop="user_address">
-        <p class="p-tag-design">주소</p>
+      <el-form-item label="핸드폰 번호" prop="user_phone">
+        <el-input v-model="joinform.user_phone"></el-input>
+        <!-- <el-input></el-input>
+        <el-input></el-input> -->
+      </el-form-item>
+
+      <el-form-item style="margin: 0px">
         <address-search-button
           class="address-search-button"
           @getRoadAddress="setRoadAddress"
         ></address-search-button>
+      </el-form-item>
 
-        <el-input v-model="address_info.road_address" readonly></el-input>
+      <el-form-item label="주소" prop="user_address">
+        <el-input v-model="full_address.road_address" readonly></el-input>
         <el-input
-          v-model="address_info.sebu_address"
+          v-model="full_address.sebu_address"
           placeholder="상세 주소를 입력해주세요."
         ></el-input>
       </el-form-item>
@@ -62,15 +68,17 @@
         <el-input
           v-show="visible"
           v-model="joinform.corporate_registration_number"
+          placeholder="사업자 번호를 입력해주세요."
         ></el-input>
       </el-form-item>
 
-      <el-form-item>
-        <el-button @click="submitForm(joinformRef)"> 가입하기 </el-button>
-        <el-button @click="cancel"> 취소하기 </el-button>
-      </el-form-item>
+      <div class="center-div">
+        <el-button class="center-item" @click="submitForm(joinformRef)">
+          가입하기
+        </el-button>
+        <el-button calss="center-item" @click="cancel"> 취소하기 </el-button>
+      </div>
     </el-form>
-    <div />
   </div>
 </template>
 
@@ -95,16 +103,16 @@ export default defineComponent({
     const joinformRef = ref<FormInstance>();
 
     const setRoadAddress = (address: string) => {
-      address_info.road_address = address;
+      full_address.road_address = address;
     };
 
-    const address_info = reactive({
+    const full_address = reactive({
       road_address: "",
       sebu_address: "",
     });
 
     const user_address = ref(
-      address_info.road_address + " " + address_info.sebu_address
+      full_address.road_address + " " + full_address.sebu_address
     );
 
     const joinform = reactive({
@@ -170,6 +178,10 @@ export default defineComponent({
           message: "비밀번호는 16글자 이하로 만들어주세요.",
           trigger: "blur",
         },
+        {
+          validator: password_confirm,
+          message: "비밀번호는 같아야 한다 이녀석아",
+        },
       ],
       password_confirm: [
         {
@@ -192,6 +204,13 @@ export default defineComponent({
           message: "비밀번호는 같아야 한다 이녀석아",
         },
       ],
+      user_address: [
+        {
+          required: true,
+          message: "주소를 반드시 입력해주세요.",
+          trigger: "blur",
+        },
+      ],
       user_phone: [
         {
           required: true,
@@ -203,7 +222,7 @@ export default defineComponent({
 
     const submitForm = async (formEl: FormInstance | undefined) => {
       user_address.value =
-        address_info.road_address + " " + address_info.sebu_address;
+        full_address.road_address + " " + full_address.sebu_address;
       if (!formEl) {
         return;
       }
@@ -226,40 +245,46 @@ export default defineComponent({
       joinformRef,
       joinform,
       rules,
+      setRoadAddress,
+      full_address,
       submitForm,
       cancel,
-      setRoadAddress,
-      address_info,
-      user_address,
     };
   },
 });
 </script>
 
 <style scoped>
-.grid {
-  display: grid;
-  grid-template-columns: 7fr 9fr 7fr;
-  padding-top: 50px;
-}
-
 .joinform {
-  padding-top: 70px;
-  padding-bottom: 50px;
-  padding-left: 70px;
-  padding-right: 70px;
+  width: 33%;
 
+  padding-bottom: 60px;
+  padding-left: 50px;
+  padding-right: 50px;
+
+  border-radius: 10px;
   box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.24);
-  border: 1px solid;
-  border-color: #555555;
 }
 
-.p-tag-design {
-  margin: 0px;
+.logo {
+  margin: 10px;
 }
 
 .address-search-button {
+  margin-bottom: 0px;
   margin-left: auto;
-  margin-bottom: 1px;
+}
+
+.center-div {
+  text-align: center;
+}
+.center-item {
+  display: inline-block;
+}
+
+.wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>

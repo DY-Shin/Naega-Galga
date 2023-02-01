@@ -5,7 +5,7 @@ export default [
     children: [
       {
         path: "",
-        component: import("@/components/user/mypage/UserInfo.vue"),
+        component: import("@/components/user/mypage/userInfo/UserInfo.vue"),
       },
       {
         path: "reservation",
