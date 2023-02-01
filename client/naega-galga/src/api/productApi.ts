@@ -64,11 +64,6 @@ async function SearchProduct(keyword: string) {
   return response;
 }
 
-async function getChatRooms() {
-  console.log("!");
-  const response: AxiosResponse = await apiTokenInstance.get(`/api/chat/rooms`);
-  return response;
-}
 async function addProductReserve(
   owner: number,
   guest: number,
@@ -97,5 +92,4 @@ export {
   deleteProductWish,
   addProductReserve,
   SearchProduct,
-  getChatRooms,
 };
