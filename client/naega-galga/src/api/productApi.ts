@@ -56,6 +56,7 @@ async function deleteProductWish(productIndex: number, userIndex: number) {
   );
   return response;
 }
+
 async function SearchProduct(keyword: string) {
   const response: AxiosResponse = await apiTokenInstance.get(
     `/api/search?address=${keyword}`
@@ -63,6 +64,11 @@ async function SearchProduct(keyword: string) {
   return response;
 }
 
+async function getChatRooms() {
+  console.log("!");
+  const response: AxiosResponse = await apiTokenInstance.get(`/api/chat/rooms`);
+  return response;
+}
 async function addProductReserve(
   owner: number,
   guest: number,
@@ -82,7 +88,6 @@ async function addProductReserve(
   );
   return response.status;
 }
-
 export {
   addProduct,
   editProduct,
@@ -92,4 +97,5 @@ export {
   deleteProductWish,
   addProductReserve,
   SearchProduct,
+  getChatRooms,
 };
