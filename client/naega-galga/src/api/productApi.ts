@@ -65,8 +65,9 @@ async function SearchProduct(keyword: string) {
 async function addProductReserve(
   owner: number,
   guest: number,
-  date: Date
+  date: string
 ): Promise<number> {
+  console.log(owner + " " + guest + " " + date + " !!!");
   const response: AxiosResponse = await apiTokenInstance.post(
     `/api/reserve/${date}`,
     {

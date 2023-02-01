@@ -264,25 +264,36 @@ export default defineComponent({
         hour.value,
         minute.value
       );
+      //"2023-02-01 12:00:00"
+      const str =
+        data.getFullYear() +
+        "-" +
+        data.getMonth().toString(10).padStart(2, "0") +
+        "-" +
+        data.getDate().toString(10).padStart(2, "0") +
+        " " +
+        data.getHours().toString(10).padStart(2, "0") +
+        ":" +
+        data.getMinutes().toString(10).padStart(2, "0");
 
       const userIndex = 1; // 나중에 로그인 정보로 바꾸기
       chatProduct.value = chatList[listIdx.value];
       const status = await addProductReserve(
         chatProduct.value.sellerIndex,
         userIndex,
-        data
+        str
       );
 
       if (status == ResponseStatus.Ok) {
-        alert("에약 완료");
+        alert("예약 완료");
         isOpenReserve.value = false;
       } else {
         alert("다시 시도");
-        dateValue.value = new Date(); // 예약 형식 초기화해줌
-        ampm.value = "";
-        hour.value = "";
-        minute.value = "";
       }
+      dateValue.value = new Date(); // 예약 형식 초기화해줌
+      ampm.value = "";
+      hour.value = "";
+      minute.value = "";
     };
     return {
       input,
