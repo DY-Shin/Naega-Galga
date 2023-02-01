@@ -1,6 +1,8 @@
 <template>
   <div class="image-list">
-    <product-image-list></product-image-list>
+    <product-image-list
+      :imagePaths="productInfo.imagePaths"
+    ></product-image-list>
   </div>
   <el-row>
     <el-col :span="16"></el-col>
@@ -16,10 +18,14 @@
   <div>
     <right-summary-box :summary-value="summaryValue"></right-summary-box>
     <h1 class="margin-bottom-large semi-bold">매물 정보</h1>
-    <product-info :info="product"></product-info>
+    <product-info
+      :product="productInfo.product"
+      :building="productInfo.building"
+      :seller="productInfo.seller"
+    ></product-info>
     <h1 class="margin-top-large margin-bottom-large semi-bold">옵션</h1>
     <product-option-list
-      :options="product.options"
+      :options="productInfo.options"
       class="margin-bottom-large"
     ></product-option-list>
   </div>
@@ -29,8 +35,8 @@
 import ProductImageList from "@/components/product/detail/ProductImageList.vue";
 import ProductOptionList from "@/components/product/detail/ProductOptionList.vue";
 import RightSummaryBox from "@/components/product/detail/RightSummaryBox.vue";
-import ProductInfo from "@/components/product/detail/ProductInfo.vue";
-import { computed, onMounted } from "@vue/runtime-core";
+import ProductInfoComponent from "@/components/product/detail/ProductInfo.vue";
+import { computed, onMounted, reactive } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { deleteProduct, getProduct } from "@/api/productApi";
 import ResponseStatus from "@/api/responseStatus";
@@ -40,93 +46,96 @@ export default {
     ProductImageList,
     ProductOptionList,
     RightSummaryBox,
-    ProductInfo,
+    ProductInfo: ProductInfoComponent,
   },
   setup() {
-    interface Product {
-      productIndex: number;
-      sellerIndex: number;
-      productType: string;
-      price: string;
-      managePrice: number;
-      roomSize: number;
-      roomDirection: string;
-      floor: string;
-      roomType: string;
-      parking: number;
-      animal: string;
-      elevator: boolean;
-      sellerId: string;
-      roadAddress: string;
-      jibunAddress: string;
-      buildingName: string;
-      roomHo: string;
-      options: Array<string>;
-      isWish: boolean;
-      explanationDate: string;
-    }
     const router = useRouter();
     const route = useRoute();
 
-    const product: Product = {
-      productIndex: 1,
-      sellerIndex: 1,
-      productType: "월세",
-      price: "1000/30",
-      managePrice: 5,
-      roomSize: 29.5,
-      roomDirection: "남",
-      floor: "10층/3층",
-      roomType: "원룸",
-      parking: 0,
-      animal: "가능",
-      elevator: false,
-      sellerId: "싸피부동산",
-      roadAddress: "경상북도 구미시 진평동 13",
-      jibunAddress: "겅상북도 구미시 진평길 13-2",
-      buildingName: "싸피빌라",
-      roomHo: "302",
-      options: ["에어컨", "냉장고"],
-      isWish: false,
-      explanationDate: "2023.1.20",
-    };
-
+    const productIndex = parseInt(route.params.id[0]);
+    //TODO : userStore 정리되면 적용
     const userIndex = 1;
+    const isMine = computed(() => productInfo.seller.userIndex === userIndex);
+
+    let productInfo = reactive({
+      seller: {
+        userIndex: -1,
+        userId: "",
+        userName: "",
+      },
+      building: {
+        buildingPark: 0,
+        buildingRoadAddress: "",
+        buildingJibunAddress: "",
+        buildingName: "",
+        buildingElevator: 0,
+      },
+      product: {
+        productType: "",
+        productPrice: "",
+        productManageCost: 0,
+        productSize: "",
+        productDirection: "",
+        productFloor: "",
+        productRooms: "",
+        productAnimal: "",
+        productDetail: "",
+      },
+      options: {
+        optionAirConditioner: 0,
+        optionFridge: 0,
+        optionWashingMachine: 0,
+        optionGasStove: 0,
+        optionInduction: 0,
+        optionMicrowave: 0,
+        optionWifi: 0,
+        optionDesk: 0,
+        optionCloset: 0,
+        optionBed: 0,
+      },
+      imagePaths: [],
+    });
 
     onMounted(async () => {
-      const productId = parseInt(route.params.id[0]);
-      const response = await getProduct(productId);
-      if (response.status === ResponseStatus.Ok) {
-        //product 값 갱신
-      }
-      if (response.status === ResponseStatus.InternalServerError) {
-        alert("서버 오류로 실행할 수 없습니다");
+      try {
+        const response = await getProduct(productIndex);
+        if (response.status === ResponseStatus.Ok) {
+          //product 값 갱신
+          const data = response.data;
+          productInfo.seller = data.seller;
+          productInfo.product = data.product;
+          productInfo.building = data.building;
+          productInfo.options = data.options;
+          productInfo.imagePaths = data.imagePaths;
+        }
+      } catch (error) {
+        alert("서버 오류로 실행할 수 없습니다\n잠시 후 다시 시도 해주세요");
       }
     });
 
     const summaryValue = computed(() => ({
-      productIndex: product.productIndex,
-      productType: product.productType,
-      price: product.price,
-      floor: product.floor,
-      managePrice: product.managePrice,
-      sellerId: product.sellerId,
-      sellerIndex: product.sellerIndex,
-      explanationDate: product.explanationDate,
-      isWish: product.isWish,
+      productIndex: productIndex,
+      productType: productInfo.product.productType,
+      price: productInfo.product.productPrice,
+      floor: productInfo.product.productFloor,
+      managePrice: productInfo.product.productManageCost,
+      sellerIndex: productInfo.seller.userIndex,
+      sellerId: productInfo.seller.userId,
+      //TODO : 예약 완료하고 여기 값 넣을것
+      explanationDate: "2022.01.31",
     }));
 
     const moveToEdit = () => {
-      router.push(`/product/edit/${product.productIndex}`);
+      router.push(`/product/edit/${productIndex}`);
     };
     const onClickDeleteProduct = async () => {
       if (!confirm("정말 삭제하시겠습니까?")) {
         return;
       }
-      const status = await deleteProduct(product.productIndex);
+      const status = await deleteProduct(productIndex);
       if (status === ResponseStatus.Ok) {
         alert("삭제되었습니다");
-        router.back();
+        router.replace("/");
       }
       if (status === ResponseStatus.NoContent) {
         alert("잘못된 요청입니다");
@@ -137,11 +146,11 @@ export default {
     };
 
     return {
-      product,
+      productInfo,
       summaryValue,
       moveToEdit,
       onClickDeleteProduct,
-      isMine: product.sellerIndex === userIndex,
+      isMine,
     };
   },
 };

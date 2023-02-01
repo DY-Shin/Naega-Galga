@@ -23,21 +23,28 @@
 </template>
 
 <script lang="ts">
-import { ref } from "@vue/reactivity";
+import { PropType, computed, toRef } from "vue";
 
 export default {
-  setup() {
-    const imageList = ref([
-      {
-        src: "https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg",
-      },
-      {
-        src: "https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg",
-      },
-      {
-        src: "https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg",
-      },
-    ]);
+  props: {
+    imagePaths: {
+      type: Array as PropType<string[]>,
+    },
+  },
+  setup(props) {
+    interface ImageData {
+      src: string;
+    }
+    const imagePathsRef = toRef(props, "imagePaths");
+    const imageList = computed(() => {
+      const arr: ImageData[] = [];
+      imagePathsRef.value?.forEach(path => {
+        arr.push({
+          src: `${process.env.VUE_APP_API_BASE_URL}image/display?path=${path}`,
+        });
+      });
+      return arr;
+    });
 
     return {
       imageList,
