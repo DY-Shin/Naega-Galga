@@ -68,21 +68,21 @@
         style="padding: 3px 7px"
       />
     </div>
-    <div id="clock-icon" @click="OpenBook">
+    <div id="clock-icon" @click="OpenReserve">
       <img src="@/assets/image/icon-clock.png" width="30" />
     </div>
   </div>
   <!-- --------------chat room end-------------- -->
-  <!-- --------------book start-------------- -->
-  <div v-if="isOpenBook" class="BookWindow">
+  <!-- --------------reserve start-------------- -->
+  <div v-if="isOpenReserve" class="reserveWindow">
     <div style="text-align: center">
       <el-calendar v-model="dateValue" @click="getDate" />
-      <form id="bookForm">
+      <form id="reserveForm">
         <div style="padding: 5px 10px 15px">
           {{ year }}년 {{ month }}월 {{ date }}일
         </div>
         <div style="padding-left: 10px">
-          <el-select v-model="timeValue" placeholder="오전" style="width: 75px">
+          <el-select v-model="ampm" placeholder="오전" style="width: 75px">
             <el-option
               v-for="item in timeOptions"
               :key="item"
@@ -90,7 +90,7 @@
             /> </el-select
           ><el-select
             class="m-1"
-            v-model="hourValue"
+            v-model="hour"
             placeholder="시"
             style="width: 60px; margin-left: 5px"
           >
@@ -100,7 +100,7 @@
               :value="item"
             /> </el-select
           ><el-select
-            v-model="minuteValue"
+            v-model="minute"
             placeholder="분"
             style="width: 60px; margin-left: 5px"
           >
@@ -110,28 +110,53 @@
               :value="item"
             />
           </el-select>
-          <el-button type="primary" @click="book" style="margin-left: 5px"
+          <el-button
+            type="primary"
+            @click="onClickReserve"
+            style="margin-left: 5px"
             >예약하기</el-button
           >
         </div>
       </form>
     </div>
   </div>
-  <!-- --------------book end-------------- -->
+  <!-- --------------reserve end-------------- -->
 </template>
 <script lang="ts">
 import { defineComponent, ref, watch, reactive } from "vue";
 import { Plus, Promotion } from "@element-plus/icons-vue";
-// import { getChatRooms } from "@/api/productApi";
+import { getChatRooms } from "@/api/productApi";
+import { addProductReserve } from "@/api/productApi";
+import ResponseStatus from "@/api/responseStatus";
 
 export default defineComponent({
   props: {
-    GetOpen: { type: Boolean },
+    GetProduct: { type: Object },
   },
   setup(props) {
-    const timeValue = ref("");
-    const hourValue = ref();
-    const minuteValue = ref();
+    const listIdx = ref(0); // 목록에서 클릭한 채팅 인덱스
+    const isOpenList = ref(false);
+    const isOpenChat = ref(false);
+    const isOpenReserve = ref(false);
+    watch(
+      () => isOpenChat.value,
+      () => {
+        console.log("isOpenChat " + isOpenChat.value);
+      },
+      { deep: true }
+    );
+    watch(
+      () => props.GetProduct,
+      () => {
+        chatProduct.value = props.GetProduct;
+        isOpenChat.value = true;
+      },
+      { deep: true }
+    );
+
+    const ampm = ref("");
+    const hour = ref();
+    const minute = ref();
     const timeOptions = ["오전", "오후"];
     const hourOptions = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
     const minuteOptions = [0, 10, 20, 30, 40, 50];
@@ -140,35 +165,15 @@ export default defineComponent({
     const year = ref(dateValue.value.getFullYear());
     const month = ref(dateValue.value.getMonth() + 1);
     const date = ref(dateValue.value.getDate());
-    const time = ref("");
+
+    const typeValue = ref("");
+
     const getDate = () => {
-      console.log(dateValue);
       year.value = dateValue.value.getFullYear();
       month.value = dateValue.value.getMonth() + 1;
       date.value = dateValue.value.getDate();
-      console.log(date.value);
     };
 
-    const book = () => {
-      console.log(
-        year.value +
-          "년 " +
-          month.value +
-          "월 " +
-          date.value +
-          "일 " +
-          timeValue.value +
-          " " +
-          hourValue.value +
-          "시 " +
-          minuteValue.value +
-          "분"
-      );
-      dateValue.value = new Date();
-      timeValue.value = "";
-      hourValue.value = "";
-      minuteValue.value = "";
-    };
     const input = ref("");
     interface chat {
       time: string;
@@ -203,49 +208,95 @@ export default defineComponent({
       name: string;
     }
 
-    const list_idx = ref(-1);
     const isOpenChatRooms = ref(false);
-    const isOpenChat = ref(false);
-    const isOpenBook = ref(false);
     let chatRooms = reactive<Array<chatRoom>>([]);
 
     const OpenChatRooms = async () => {
-      // const list = await getChatRooms();
-      // list.data.forEach((product: chatRoom) => chatRooms.push(product));
+      const list = await getChatRooms();
+      list.data.forEach((product: chatRoom) => chatRooms.push(product));
       isOpenChatRooms.value = !isOpenChatRooms.value;
     };
 
-    watch(
-      () => props.GetOpen,
-      () => {
-        isOpenChat.value = props.GetOpen;
-      }
-    );
+    const chatProduct = ref();
     const OpenChat = (index: number) => {
-      list_idx.value = index;
+      // 채팅 목록에서 누르면
+      listIdx.value = index;
       isOpenChat.value = true;
       isOpenChatRooms.value = false;
     };
 
     const CloseChat = () => {
+      // 채팅 닫기 버튼
       isOpenChat.value = false;
-      isOpenBook.value = false;
+      isOpenReserve.value = false;
+      dateValue.value = new Date();
+      ampm.value = "";
+      hour.value = "";
+      minute.value = "";
     };
 
-    const OpenBook = () => {
-      isOpenBook.value = !isOpenBook.value;
+    const OpenReserve = () => {
+      // 예약 창 열기
+      isOpenReserve.value = !isOpenReserve.value;
     };
 
+    // 예약 등록
+    const onClickReserve = async () => {
+      if (ampm.value == "" || hour.value == "" || minute.value == "") {
+        // 빈칸 안돼
+        alert("시간을 입력해주세요");
+        return;
+      }
+
+      const data = new Date( // Date 형식으로 보냄
+        year.value,
+        month.value,
+        date.value,
+        hour.value,
+        minute.value
+      );
+      //"2023-02-01 12:00:00"
+      const str =
+        data.getFullYear() +
+        "-" +
+        data.getMonth().toString(10).padStart(2, "0") +
+        "-" +
+        data.getDate().toString(10).padStart(2, "0") +
+        " " +
+        data.getHours().toString(10).padStart(2, "0") +
+        ":" +
+        data.getMinutes().toString(10).padStart(2, "0");
+
+      const userIndex = 1; // 나중에 로그인 정보로 바꾸기
+      chatProduct.value = chatRooms[listIdx.value];
+      const status = await addProductReserve(
+        chatProduct.value.sellerIndex,
+        userIndex,
+        str
+      );
+
+      if (status == ResponseStatus.Ok) {
+        alert("예약 완료");
+        isOpenReserve.value = false;
+      } else {
+        alert("다시 시도");
+      }
+      dateValue.value = new Date(); // 예약 형식 초기화해줌
+      ampm.value = "";
+      hour.value = "";
+      minute.value = "";
+    };
     return {
       input,
       // list,
       OpenChatRooms,
       OpenChat,
-      OpenBook,
       isOpenChatRooms,
+      OpenReserve,
+      isOpenList,
       isOpenChat,
-      isOpenBook,
-      list_idx,
+      isOpenReserve,
+      listIdx,
       CloseChat,
       chatHistory,
       Plus,
@@ -255,15 +306,15 @@ export default defineComponent({
       date,
       year,
       month,
-      time,
+      typeValue,
       timeOptions,
-      timeValue,
+      ampm,
       hourOptions,
       minuteOptions,
-      hourValue,
-      minuteValue,
-      book,
-      chatRooms,
+      hour,
+      minute,
+      onClickReserve,
+      chatProduct,
     };
   },
 });
@@ -303,7 +354,7 @@ export default defineComponent({
   height: 40px;
 }
 /* -----------------달력 css end----------------- */
-.BookWindow {
+.reserveWindow {
   background: rgb(255, 255, 255);
   border: 1px solid rgb(184, 184, 184);
   box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
@@ -416,7 +467,7 @@ export default defineComponent({
   bottom: 140px;
   right: 50px;
   width: 250px;
-  height: 309px;
+  height: 300px;
   background-color: rgb(255, 255, 255);
   border-radius: 15px;
 }
