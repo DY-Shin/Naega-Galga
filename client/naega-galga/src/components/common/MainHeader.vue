@@ -81,34 +81,48 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
-
+import { defineComponent, ref, computed } from "vue";
+import { useStore } from "vuex";
 export default defineComponent({
-  data() {
-    return {
-      isLog: true,
-      isMenu: false,
-      showButton: true,
-      isHeaderShow: true,
+  setup() {
+    const isLog = ref(true);
+    const isMenu = ref(false);
+    const showButton = ref(true);
+    const isHeaderShow = ref(true);
+
+    const store = useStore();
+    console.log(computed(() => store.getters["userStore/isLogin"]).value);
+
+    isLog.value = computed(() => store.getters["userStore/isLogin"]).value;
+    // console.log(isLog.value);
+
+    const OpenMenu = () => {
+      isMenu.value = true;
     };
-  },
-  methods: {
-    OpenMenu(): void {
-      this.isMenu = true;
-    },
-    close() {
+    const close = () => {
       // this.showButton = false;
-    },
-    Logout() {
-      this.isLog = false;
-    },
-    changeEmpty(): void {
+    };
+    const Logout = () => {
+      isLog.value = false;
+    };
+    const changeEmpty = () => {
       // window.open("../assets/image/icon-heart.png");
       let icon2 = document.querySelector("#icon");
       // icon?.setAttribute("src", "../assets/image/icon-heart.png");
       icon2?.setAttribute("src", "/icon-heart.png");
-    },
+    };
+    return {
+      isLog,
+      isMenu,
+      showButton,
+      isHeaderShow,
+      OpenMenu,
+      close,
+      Logout,
+      changeEmpty,
+    };
   },
+
   watch: {
     $route(to) {
       if (
