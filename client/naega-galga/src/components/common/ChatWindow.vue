@@ -123,11 +123,12 @@
   <!-- --------------reserve end-------------- -->
 </template>
 <script lang="ts">
-import { defineComponent, ref, watch, reactive } from "vue";
+import { defineComponent, ref, watch, reactive, computed } from "vue";
 import { Plus, Promotion } from "@element-plus/icons-vue";
-import { getChatRooms } from "@/api/productApi";
+import { getChatRooms } from "@/api/chatApi";
 import { addProductReserve } from "@/api/productApi";
 import ResponseStatus from "@/api/responseStatus";
+import { useStore } from "vuex";
 
 export default defineComponent({
   props: {
@@ -210,9 +211,13 @@ export default defineComponent({
 
     const isOpenChatRooms = ref(false);
     let chatRooms = reactive<Array<chatRoom>>([]);
-
+    const store = useStore();
     const OpenChatRooms = async () => {
-      const list = await getChatRooms();
+      const userIndex = computed(
+        () => store.getters["userStore/userIndex"]
+      ).value;
+      console.log(userIndex);
+      const list = await getChatRooms(userIndex);
       list.data.forEach((product: chatRoom) => chatRooms.push(product));
       isOpenChatRooms.value = !isOpenChatRooms.value;
     };
