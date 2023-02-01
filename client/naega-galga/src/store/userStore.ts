@@ -43,8 +43,6 @@ const mutations = {
 
   TOKEN_TRUE(state) {
     state.isToken = true;
-    // console.log(state);
-    // console.log(state.isToken);
   },
   TOKEN_FALSE(state) {
     state.isToken = false;
@@ -52,6 +50,14 @@ const mutations = {
 };
 
 const actions = {
+  testToken(context) {
+    if (localStorageManager.getAccessToken()) {
+      context.commit("TOKEN_TRUE");
+    } else {
+      context.commit("TOKEN_FALSE");
+    }
+  },
+
   join(context, joinform) {
     apiInstance
       .post("/api/users", {
