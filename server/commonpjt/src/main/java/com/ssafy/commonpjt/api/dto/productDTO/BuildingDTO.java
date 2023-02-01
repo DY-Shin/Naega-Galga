@@ -8,10 +8,9 @@ import lombok.ToString;
 @Setter
 @ToString
 public class BuildingDTO {
-    private int buildingIndex;
-    private String buildingAddress;
+    private int buildingParking;
     private String buildingRoadAddress;
+    private String buildingJibunAddress;
     private String buildingName;
     private int buildingElevator;
-    private int buildingParking;
 }
