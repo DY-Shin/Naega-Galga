@@ -127,9 +127,9 @@ public class ProductController {
 //    }
 //
     @DeleteMapping("/{productIndex}")
-    public ResponseEntity<?> deleteProduct(@PathVariable String productIndex) throws Exception {
+    public ResponseEntity<?> deleteProduct(@PathVariable int productIndex) throws Exception {
         try {
-            boolean deleted = productService.deleteProduct(Integer.parseInt(productIndex));
+            boolean deleted = productService.deleteProduct(productIndex);
 
             if (deleted) {
                 return new ResponseEntity<Void>(HttpStatus.OK);
