@@ -55,10 +55,17 @@ async function deleteProductWish(productIndex: number, userIndex: number) {
   );
   return response;
 }
+
 async function SearchProduct(keyword: string) {
   const response: AxiosResponse = await apiTokenInstance.get(
     `/api/search?address=${keyword}`
   );
+  return response;
+}
+
+async function getChatRooms() {
+  console.log("!");
+  const response: AxiosResponse = await apiTokenInstance.get(`/api/chat/rooms`);
   return response;
 }
 
@@ -70,4 +77,5 @@ export {
   addProductWish,
   deleteProductWish,
   SearchProduct,
+  getChatRooms,
 };

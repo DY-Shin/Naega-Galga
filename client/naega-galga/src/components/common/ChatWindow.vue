@@ -3,7 +3,7 @@
   <!-- --------------chat icon start-------------- -->
   <el-button
     id="chat-btn"
-    @click="OpenChatList"
+    @click="OpenChatRooms"
     circle
     color="#393B44"
     size="large"
@@ -14,10 +14,10 @@
   </el-button>
   <!-- --------------chat icon end-------------- -->
   <!-- --------------chat list start-------------- -->
-  <el-scrollbar v-show="isOpenList" class="chat-list" height="400px">
-    <div v-for="(item, index) in list" :key="item">
+  <el-scrollbar v-show="isOpenChatRooms" class="chat-list" height="400px">
+    <div v-for="(item, index) in chatRooms" :key="item.chatRoomIndex">
       <button @click="OpenChat(index)" class="chat-list-item">
-        {{ item }}
+        {{ item.name }}
       </button>
     </div>
   </el-scrollbar>
@@ -38,9 +38,7 @@
       "
       ><CircleCloseFilled
     /></el-icon>
-    <div id="chatTitle" style="font-size: 20px; margin: 10px 15px 0">
-      {{ list[list_idx] }}
-    </div>
+    <div id="chatTitle" style="font-size: 20px; margin: 10px 15px 0">{{}}</div>
     <div>
       <div class="chat-content">
         <div v-for="item in chatHistory" :key="item.time" class="msg">
@@ -122,8 +120,9 @@
   <!-- --------------book end-------------- -->
 </template>
 <script lang="ts">
-import { defineComponent, ref, watch } from "vue";
+import { defineComponent, ref, watch, reactive } from "vue";
 import { Plus, Promotion } from "@element-plus/icons-vue";
+// import { getChatRooms } from "@/api/productApi";
 
 export default defineComponent({
   props: {
@@ -199,29 +198,21 @@ export default defineComponent({
       type: "get",
       content: "nice to meet youzdfgfdgzfgzgfzfgf",
     });
-
-    // const list = ["싸피부동산"];
-    const list: string[] = [
-      "싸피부동산",
-      "에듀부동산",
-      "와우정부동산",
-      "싸싸부동산",
-      "피피부동산",
-      "와우정부동산",
-      "싸싸부동산",
-      "피피부동산",
-      "와우정부동산",
-      "싸싸부동산",
-      "피피부동산",
-    ];
+    interface chatRoom {
+      chatRoomIndex: number;
+      name: string;
+    }
 
     const list_idx = ref(-1);
-    const isOpenList = ref(false);
+    const isOpenChatRooms = ref(false);
     const isOpenChat = ref(false);
     const isOpenBook = ref(false);
+    let chatRooms = reactive<Array<chatRoom>>([]);
 
-    const OpenChatList = () => {
-      isOpenList.value = !isOpenList.value;
+    const OpenChatRooms = async () => {
+      // const list = await getChatRooms();
+      // list.data.forEach((product: chatRoom) => chatRooms.push(product));
+      isOpenChatRooms.value = !isOpenChatRooms.value;
     };
 
     watch(
@@ -233,7 +224,7 @@ export default defineComponent({
     const OpenChat = (index: number) => {
       list_idx.value = index;
       isOpenChat.value = true;
-      isOpenList.value = false;
+      isOpenChatRooms.value = false;
     };
 
     const CloseChat = () => {
@@ -247,11 +238,11 @@ export default defineComponent({
 
     return {
       input,
-      list,
-      OpenChatList,
+      // list,
+      OpenChatRooms,
       OpenChat,
       OpenBook,
-      isOpenList,
+      isOpenChatRooms,
       isOpenChat,
       isOpenBook,
       list_idx,
@@ -272,6 +263,7 @@ export default defineComponent({
       hourValue,
       minuteValue,
       book,
+      chatRooms,
     };
   },
 });
