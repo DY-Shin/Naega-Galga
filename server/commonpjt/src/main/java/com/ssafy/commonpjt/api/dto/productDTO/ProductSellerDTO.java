@@ -7,12 +7,8 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class UserDTO {
+public class ProductSellerDTO {
     private int userIndex;
     private String userId;
-    private String userPassword;
-    private String userPhone;
     private String userName;
-    private String userCorporationRegistrationNumber;
-    private String userAddress;
 }

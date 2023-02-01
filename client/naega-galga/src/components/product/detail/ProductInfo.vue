@@ -3,62 +3,64 @@
     <tbody>
       <tr>
         <td width="200px" class="text-bold text-large">
-          {{ productInfo?.productType }}
+          {{ productValue?.productType }}
         </td>
-        <td class="text-large">{{ productInfo?.price }}</td>
+        <td class="text-large">{{ productValue?.productPrice }}</td>
       </tr>
       <tr>
         <td width="200px" class="text-bold text-large">관리비</td>
-        <td class="text-large">{{ productInfo?.managePrice }}</td>
+        <td class="text-large">{{ manageCostStr }}</td>
       </tr>
       <tr>
         <td width="200px" class="text-bold text-large">면적</td>
-        <td class="text-large">{{ productInfo.roomSize }}m<sup>2</sup></td>
+        <td class="text-large">{{ productValue?.productSize }}m<sup>2</sup></td>
       </tr>
       <tr>
         <td width="200px" class="text-bold text-large">방 방향</td>
-        <td class="text-large">{{ productInfo.roomDirection }}향</td>
+        <td class="text-large">
+          {{ productValue?.productDirection }}
+        </td>
       </tr>
       <tr>
         <td width="200px" class="text-bold text-large">층수</td>
-        <td class="text-large">{{ productInfo?.floor }}</td>
+        <td class="text-large">{{ productValue?.productFloor }}</td>
       </tr>
       <tr>
         <td width="200px" class="text-bold text-large">방 종류</td>
-        <td class="text-large">{{ productInfo?.roomType }}</td>
+        <td class="text-large">{{ productValue?.productRooms }}</td>
       </tr>
       <tr>
         <td width="200px" class="text-bold text-large">주차</td>
-        <td class="text-large">{{ productInfo.parking }}</td>
+        <td class="text-large">{{ parkingStr }}</td>
       </tr>
       <tr>
         <td width="200px" class="text-bold text-large">반려동물</td>
-        <td class="text-large">{{ productInfo.animal }}</td>
+        <td class="text-large">{{ productValue?.productAnimal }}</td>
       </tr>
       <tr>
         <td width="200px" class="text-bold text-large">엘리베이터</td>
-        <td class="text-large">{{ productInfo.elevator }}</td>
+        <td class="text-large">{{ elevatorStr }}</td>
       </tr>
       <tr>
         <td width="200px" class="text-bold text-large">판매자</td>
-        <td class="text-large">{{ productInfo.sellerId }}</td>
+        <td class="text-large">{{ sellerValue?.userId }}</td>
       </tr>
       <tr>
         <td width="200px" class="text-bold text-large">주소</td>
         <td class="text-large">
           <tr>
             {{
-              productInfo.roadAddress
+              buildingValue?.buildingRoadAddress
+            }}
+          </tr>
+          <tr v-if="buildingValue?.buildingJibunAddress">
+            {{
+              buildingValue?.buildingJibunAddress
             }}
           </tr>
           <tr>
             {{
-              productInfo.jibunAddress
-            }}
-          </tr>
-          <tr>
-            {{
-              `${productInfo.buildingName} ${productInfo.roomHo}`
+              `${buildingValue?.buildingName} ${productValue?.productDetail}호`
             }}
           </tr>
         </td>
@@ -68,46 +70,52 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "@vue/runtime-core";
+import { computed, PropType, toRefs } from "vue";
+import {
+  Seller,
+  Building,
+  Product,
+  ProductInfo,
+} from "@/types/ProductDetailType";
 
-export default defineComponent({
+export default {
   props: {
-    info: {
-      type: Object,
-      value: {
-        productType: String,
-        price: String,
-        managePrice: Number,
-        roomSize: Number,
-        roomDirection: String,
-        floor: Number,
-        roomType: String,
-        parking: [Number, String],
-        animal: Boolean,
-        elevator: Boolean,
-        roadAddress: String,
-        jibunAddress: String,
-        buildingName: String,
-        roomHo: String,
-        sellerId: String,
-      },
+    type: Object as PropType<ProductInfo>,
+    product: {
+      type: Object as PropType<Product>,
+    },
+    building: {
+      type: Object as PropType<Building>,
+    },
+    seller: {
+      type: Object as PropType<Seller>,
     },
   },
   setup(props) {
-    const productInfo = { ...props.info };
-    productInfo.managePrice = `월 ${productInfo.managePrice}만`;
-    const booleanToString = (value: boolean): string =>
-      value ? "가능" : "불가능";
+    const { product, building, seller } = toRefs(props);
+    const manageCostStr = computed(() => {
+      const str = `월 ${props.product?.productManageCost}만`;
+      return str;
+    });
 
-    productInfo.parking =
-      productInfo.parking === 0 ? "불가능" : productInfo.parking;
-    productInfo.parking = booleanToString(productInfo.parking);
-    productInfo.animal = booleanToString(productInfo.animal);
-    productInfo.elevator = booleanToString(productInfo.elevator);
+    const parkingStr =
+      props.building?.buildingPark === 0
+        ? "불가능"
+        : props.building?.buildingPark;
 
-    return { productInfo };
+    const elevatorStr: string =
+      props.building?.buildingElevator === 0 ? "없음" : "있음";
+
+    return {
+      productValue: product,
+      buildingValue: building,
+      sellerValue: seller,
+      manageCostStr,
+      parkingStr,
+      elevatorStr,
+    };
   },
-});
+};
 </script>
 
 <style scoped>
