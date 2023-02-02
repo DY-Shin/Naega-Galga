@@ -1,6 +1,7 @@
 import apiInstance from "@/api/apiInstance";
 import apiTokenInstance from "@/api/apiTokenInstance";
 import localStorageManager from "@/utils/localStorageManager";
+import router from "../router";
 
 const state = {
   user_info: {
@@ -50,7 +51,7 @@ const mutations = {
 };
 
 const actions = {
-  testToken(context) {
+  isToken(context) {
     if (localStorageManager.getAccessToken()) {
       context.commit("TOKEN_TRUE");
     } else {
@@ -85,9 +86,9 @@ const actions = {
       .then(res => {
         localStorageManager.setAccessToken(res.data.accessToken);
         localStorageManager.setRefreshToken(res.data.refreshToken);
-        console.log(state.isToken);
         context.commit("TOKEN_TRUE");
-        console.log(state.isToken);
+
+        router.push({ path: "/" });
       })
       .catch(err => {
         console.log(err);

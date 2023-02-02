@@ -1,5 +1,5 @@
 <template>
-  <div id="mypagesidebar">
+  <div class="sidebar">
     <div @click="goToMyPage">내 정보</div>
     <div @click="goToReservation">예약 목록</div>
     <div @click="goToWish">찜 목록</div>
@@ -34,8 +34,8 @@ export default defineComponent({
 });
 </script>
 
-<style>
-#mypagesidebar {
+<style scoped>
+.sidebar {
   border-radius: 0.5rem;
   border: 2px solid;
   padding: 2rem;
