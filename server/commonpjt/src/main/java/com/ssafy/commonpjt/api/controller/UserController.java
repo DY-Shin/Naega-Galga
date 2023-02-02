@@ -1,6 +1,6 @@
 package com.ssafy.commonpjt.api.controller;
 
-import com.ssafy.commonpjt.api.dto.user.*;
+import com.ssafy.commonpjt.api.dto.userDTO.*;
 import com.ssafy.commonpjt.api.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,8 +10,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
-import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @RestController

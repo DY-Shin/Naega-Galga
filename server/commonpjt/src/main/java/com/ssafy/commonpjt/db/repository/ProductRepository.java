@@ -1,7 +1,6 @@
 package com.ssafy.commonpjt.db.repository;
 
-import com.ssafy.commonpjt.api.dto.product.ProductDTO;
-import com.ssafy.commonpjt.api.dto.user.UserInfoDTO;
+import com.ssafy.commonpjt.api.dto.productDTO.ProductInfoDTO;
 import com.ssafy.commonpjt.db.entity.Product;
 import com.ssafy.commonpjt.db.entity.User;
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -23,7 +22,7 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
     @EntityGraph(attributePaths = {"building","options"}, type = EntityGraph.EntityGraphType.LOAD)
     Product findByProductIndex(Integer productIndex);
 
-    List<ProductDTO> findAllByProductSeller(User user);
+    List<ProductInfoDTO> findAllByProductSeller(User user);
 
     Product findByProductDetailAndBuildingBuildingAddress(String productDetail, String buildingAddress);
 

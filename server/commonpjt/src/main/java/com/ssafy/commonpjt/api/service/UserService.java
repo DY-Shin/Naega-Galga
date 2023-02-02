@@ -1,6 +1,6 @@
 package com.ssafy.commonpjt.api.service;
 
-import com.ssafy.commonpjt.api.dto.user.*;
+import com.ssafy.commonpjt.api.dto.userDTO.*;
 
 import java.util.List;
 
@@ -14,7 +14,7 @@ public interface UserService {
     UserInfoDTO getInfo(String userId) throws Exception;
     UserInfoDTO getMyInfo() throws Exception;
     void delete(UserLogoutDTO logout) throws Exception;
-    List<?> wishList(String userId) throws Exception;
+//    List<?> wishList(String userId) throws Exception;
     List<?> getMyProductList() throws Exception;
     List<?> getUserProductList(String userId) throws Exception;
     List<?> findMyUserId(String name) throws Exception;

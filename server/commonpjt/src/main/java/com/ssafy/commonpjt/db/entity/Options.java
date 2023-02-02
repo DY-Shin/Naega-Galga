@@ -54,6 +54,6 @@ public class Options {
     @ColumnDefault("false")
     private boolean optionBed;
 
-    @OneToOne(mappedBy = "options")
+    @OneToOne(mappedBy = "options", orphanRemoval = true)
     private Product product;
 }

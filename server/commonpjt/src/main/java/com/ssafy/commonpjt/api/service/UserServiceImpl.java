@@ -1,6 +1,6 @@
 package com.ssafy.commonpjt.api.service;
 
-import com.ssafy.commonpjt.api.dto.user.*;
+import com.ssafy.commonpjt.api.dto.userDTO.*;
 import com.ssafy.commonpjt.common.enums.Authority;
 import com.ssafy.commonpjt.common.jwt.JwtTokenProvider;
 import com.ssafy.commonpjt.common.security.SecurityUtil;
@@ -148,12 +148,12 @@ public class UserServiceImpl implements UserService {
     }
 
     // 내 관심 목록 조회
-    @Override
-    public List<?> wishList(String userId) throws Exception {
-        User user = userRepository.findByUserId(SecurityUtil.getLoginUsername()).orElseThrow(() -> new Exception("No User Exists"));
-        Integer userIndex = user.getUserIndex();
-        return wishListRepository.findAllByUser(userIndex);
-    }
+//    @Override
+//    public List<?> wishList(String userId) throws Exception {
+//        User user = userRepository.findByUserId(SecurityUtil.getLoginUsername()).orElseThrow(() -> new Exception("No User Exists"));
+//        Integer userIndex = user.getUserIndex();
+//        return wishListRepository.findAllByUser(userIndex);
+//    }
 
     // 내가 등록한 매물 목록 조회
     @Override
@@ -166,9 +166,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<?> getUserProductList(String userId) throws Exception {
         User user = userRepository.findByUserId(userId).orElseThrow(() -> new Exception("No User Exists"));
-        Integer userIndex = user.getUserIndex();
-//        return productRepository.findAllByProductSeller(userIndex);
-        return null;
+        return productRepository.findAllByProductSeller(user);
     }
 
     // 아이디 찾기
