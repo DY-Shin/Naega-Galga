@@ -39,12 +39,12 @@
       </el-form-item>
 
       <el-form-item label="핸드폰 번호" prop="user_phone">
-        <el-input v-model="full_user_phone.first_user_phone"></el-input>
+        <el-input v-model="fullUserPhone.first_user_phone"></el-input>
       </el-form-item>
       <el-form-item>
-        <el-input v-model="full_user_phone.second_user_phone"></el-input>
+        <el-input v-model="fullUserPhone.second_user_phone"></el-input>
 
-        <el-input v-model="full_user_phone.third_user_phone"></el-input>
+        <el-input v-model="fullUserPhone.third_user_phone"></el-input>
       </el-form-item>
 
       <el-form-item style="margin: 0px">
@@ -55,12 +55,12 @@
       </el-form-item>
 
       <el-form-item label="주소" style="margin-bottom: 1px">
-        <el-input v-model="full_address.road_address" readonly></el-input>
+        <el-input v-model="fullAddress.roadAddress" readonly></el-input>
       </el-form-item>
 
       <el-form-item prop="user_address">
         <el-input
-          v-model="full_address.sebu_address"
+          v-model="fullAddress.detailAddress"
           placeholder="상세 주소를 입력해주세요."
         ></el-input>
       </el-form-item>
@@ -125,30 +125,30 @@ export default defineComponent({
     const joinformRef = ref<FormInstance>();
 
     const setRoadAddress = (address: string) => {
-      full_address.road_address = address;
+      fullAddress.roadAddress = address;
     };
 
-    const full_user_phone = reactive({
+    const fullUserPhone = reactive({
       first_user_phone: "",
       second_user_phone: "",
       third_user_phone: "",
     });
 
     const user_phone = ref(
-      full_user_phone.first_user_phone +
+      fullUserPhone.first_user_phone +
         "-" +
-        full_user_phone.second_user_phone +
+        fullUserPhone.second_user_phone +
         "-" +
-        full_user_phone.third_user_phone
+        fullUserPhone.third_user_phone
     );
 
-    const full_address = reactive({
-      road_address: "",
-      sebu_address: "",
+    const fullAddress = reactive({
+      roadAddress: "",
+      detailAddress: "",
     });
 
     const user_address = ref(
-      full_address.road_address + " " + full_address.sebu_address
+      fullAddress.roadAddress + " " + fullAddress.detailAddress
     );
 
     const joinform = reactive({
@@ -258,7 +258,7 @@ export default defineComponent({
 
     const submitForm = async (formEl: FormInstance | undefined) => {
       user_address.value =
-        full_address.road_address + " " + full_address.sebu_address;
+        fullAddress.roadAddress + " " + fullAddress.detailAddress;
       if (!formEl) {
         return;
       }
@@ -282,8 +282,8 @@ export default defineComponent({
       joinform,
       rules,
       setRoadAddress,
-      full_user_phone,
-      full_address,
+      fullUserPhone,
+      fullAddress,
       submitForm,
       cancel,
       terms_check,

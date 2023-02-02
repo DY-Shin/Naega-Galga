@@ -29,7 +29,7 @@
         <p class="content-change-button">
           {{ info.corporate_registration_number }}
         </p>
-        <el-button @click="put_user_info">수정하기</el-button>
+        <el-button @click="putUserInfo">수정하기</el-button>
       </el-form-item>
     </el-form>
 
@@ -69,7 +69,7 @@
           class="content-change-button"
           v-model="changeform.corporate_registration_number"
         ></el-input>
-        <el-button @click="save_change_info">저장하기</el-button>
+        <el-button @click="saveChangeInfo">저장하기</el-button>
       </el-form-item>
     </el-form>
   </div>
@@ -125,12 +125,12 @@ export default defineComponent({
       corporate_registration_number: "",
     });
 
-    const put_user_info = () => {
+    const putUserInfo = () => {
       isChange.value = true;
       // event.preventDefault();
     };
 
-    const save_change_info = () => {
+    const saveChangeInfo = () => {
       store.dispatch("userStore/userInfoChange", changeform);
       isChange.value = false;
       // event.preventDefault();
@@ -144,8 +144,8 @@ export default defineComponent({
       info,
       changeform,
       isChange,
-      put_user_info,
-      save_change_info,
+      putUserInfo,
+      saveChangeInfo,
       logout,
       loginCheck,
     };

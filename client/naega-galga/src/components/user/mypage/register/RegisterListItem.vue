@@ -6,12 +6,12 @@
         class="image"
       />
       <div id="card_explain">
-        <p>{{ RegistItem.productFloor }}</p>
-        <p>{{ RegistItem.productType }}</p>
-        <p>{{ RegistItem.productPrice }}</p>
-        <p>{{ RegistItem.productManageCost }}</p>
-        <p>{{ RegistItem.productSize }}</p>
-        <p>{{ RegistItem.productPhoto }}</p>
+        <p>{{ registItem.productFloor }}</p>
+        <p>{{ registItem.productType }}</p>
+        <p>{{ registItem.productPrice }}</p>
+        <p>{{ registItem.productManageCost }}</p>
+        <p>{{ registItem.productSize }}</p>
+        <p>{{ registItem.productPhoto }}</p>
       </div>
     </el-card>
   </el-col>
@@ -26,9 +26,9 @@ export default defineComponent({
     regist: { type: Object },
   },
   setup(props) {
-    const RegistItem = { ...props.regist };
-    console.log(RegistItem);
-    return { RegistItem };
+    const registItem = { ...props.regist };
+    console.log(registItem);
+    return { registItem };
   },
 });
 </script>

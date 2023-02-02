@@ -1,7 +1,7 @@
 <template>
   <h1>찜 목록</h1>
-  <div>{{ maemul }}</div>
-  <div>{{ maemul.productIndex }}</div>
+  <div>{{ allProduct }}</div>
+  <div>{{ allProduct.productIndex }}</div>
   <button @click="getProduct">유저정보내놔</button>
   <hr />
   <el-row :gutter="20">
@@ -24,18 +24,16 @@ export default defineComponent({
       apiTokenInstance
         .get(`api/users/me/products`)
         .then(res => {
-          maemul.productIndex = res.data[0].productIndex;
+          allProduct.productIndex = res.data[0].productIndex;
         })
         .catch(err => {
           console.log(err);
         });
     };
 
-    const maemul = reactive({
+    const allProduct = reactive({
       productIndex: "",
     });
-
-    console.log(maemul);
 
     const wishList: any = [
       {
@@ -70,7 +68,7 @@ export default defineComponent({
     return {
       wishList,
       getProduct,
-      maemul,
+      allProduct,
     };
   },
 });

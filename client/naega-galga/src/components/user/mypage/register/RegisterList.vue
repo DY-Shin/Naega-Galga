@@ -2,7 +2,7 @@
   <h1>등록된 매물</h1>
   <hr />
   <!-- <div>{{ registList }}</div> -->
-  <button @click="getRegistProduct">ㅁ ㅐ물주셈</button>
+  <button @click="getRegistProduct">매물목록을 가져오는 버튼</button>
   <el-row :gutter="20">
     <register-list-item
       v-for="regist in registList.all"
