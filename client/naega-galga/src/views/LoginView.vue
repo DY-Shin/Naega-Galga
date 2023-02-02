@@ -50,7 +50,6 @@ export default defineComponent({
 
     const login = () => {
       store.dispatch("userStore/login", loginform);
-      router.push({ path: "/user" });
     };
 
     return { loginform, signup, login, url };
@@ -62,8 +61,8 @@ export default defineComponent({
 .loginForm {
   width: 25%;
 
-  padding-top: 10px;
-  padding-bottom: 60px;
+  padding-top: 30px;
+  padding-bottom: 30px;
   padding-left: 30px;
   padding-right: 30px;
 
@@ -77,5 +76,7 @@ export default defineComponent({
   display: flex;
   justify-content: center;
   align-items: center;
+
+  height: 80vh;
 }
 </style>
