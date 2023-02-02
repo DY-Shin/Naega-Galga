@@ -16,8 +16,8 @@
   <!-- --------------chat list start-------------- -->
   <el-scrollbar v-show="isOpenChatRooms" class="chat-list" height="400px">
     <div v-for="(item, index) in chatRooms" :key="item.chatRoomIndex">
-      <button @click="OpenChat(index)" class="chat-list-item">
-        {{ item.OpName }}
+      <button @click="openChat(index)" class="chat-list-item">
+        {{ item.opName }}
       </button>
     </div>
   </el-scrollbar>
@@ -68,7 +68,7 @@
         style="padding: 3px 7px"
       />
     </div>
-    <div id="clock-icon" @click="OpenReserve">
+    <div id="clock-icon" @click="openReserve">
       <img src="@/assets/image/icon-clock.png" width="30" />
     </div>
   </div>
@@ -173,8 +173,8 @@ export default defineComponent({
 
     interface chatRoom {
       chatRoomIndex: number;
-      OpIndex: number;
-      OpName: string;
+      opIndex: number;
+      opName: string;
     }
 
     interface chatContent {
@@ -197,10 +197,10 @@ export default defineComponent({
     let chatContents = reactive<Array<chatContent>>([]);
 
     const setOpIndex = (index: number) => {
-      nowOpIndex.value = chatRooms[index].OpIndex;
+      nowOpIndex.value = chatRooms[index].opIndex;
     };
 
-    const OpenChat = async (index: number) => {
+    const openChat = async (index: number) => {
       // 채팅방 컨텐츠 요청
       isOpenChat.value = true;
       if (index != -1) {
@@ -248,7 +248,7 @@ export default defineComponent({
       date.value = dateValue.value.getDate();
     };
 
-    const OpenReserve = () => {
+    const openReserve = () => {
       // 예약 창 열기
       isOpenReserve.value = !isOpenReserve.value;
     };
@@ -304,9 +304,9 @@ export default defineComponent({
     return {
       inputMsg,
       OpenChatRooms,
-      OpenChat,
+      openChat,
       isOpenChatRooms,
-      OpenReserve,
+      openReserve,
       isOpenList,
       isOpenChat,
       isOpenReserve,

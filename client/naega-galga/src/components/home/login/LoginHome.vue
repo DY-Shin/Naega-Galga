@@ -17,8 +17,8 @@
       </el-container>
     </el-container>
     <chat-window
-      :GetProduct="productProxy"
-      :GetChatOpen="chatOpenProxy"
+      :getProduct="productProxy"
+      :getChatOpen="chatOpenProxy"
     ></chat-window>
   </div>
 </template>
