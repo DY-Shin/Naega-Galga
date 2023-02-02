@@ -24,13 +24,13 @@ public class ChatServiceImpl implements ChatService{
                 .findByUserId(SecurityUtil.getLoginUsername())
                 .orElseThrow(() -> new Exception("No User Exists"));
         int loginUserIndex = loginUser.getUserIndex();
-        String loginUserName = loginUser.getUserName();
+        String loginUserName = loginUser.getName();
         List<ChatRoom> roomList = chatRoomRepository.findChatRoomByUser(loginUserIndex);
 
         List<ChatRoomResponseDTO> result = new ArrayList<>();
         for(ChatRoom room : roomList) {
             int OpIndex = room.getBuyer().getUserIndex() != loginUserIndex ? room.getBuyer().getUserIndex() : room.getSeller().getUserIndex();
-            String OpName = room.getBuyer().getUsername().equals(loginUserName) ? room.getBuyer().getUsername() : room.getSeller().getUsername();
+            String OpName = !room.getBuyer().getName().equals(loginUserName) ? room.getBuyer().getName() : room.getSeller().getName();
             ChatRoomResponseDTO dto = ChatRoomResponseDTO.builder()
                     .roomIndex(room.getChatIndex())
                     .OpIndex(OpIndex)

@@ -66,6 +66,7 @@
         width="30"
         height="30"
         style="padding: 3px 7px"
+        @click="sendMessage"
       />
     </div>
     <div id="clock-icon" @click="openReserve">
@@ -129,6 +130,8 @@ import { getChatRooms, getChatContent, getChatRoomInfo } from "@/api/chatApi";
 import { addProductReserve } from "@/api/productApi";
 import ResponseStatus from "@/api/responseStatus";
 import { useStore } from "vuex";
+import Stomp from "webstomp-client";
+import SockJS from "sockjs-client";
 
 export default defineComponent({
   props: {
@@ -158,6 +161,64 @@ export default defineComponent({
       { deep: true }
     );
 
+    watch(
+      () => props.getProduct,
+      () => {
+        chatProduct.value = props.getProduct;
+        isOpenChat.value = true;
+      },
+      { deep: true }
+    );
+    // ----------------------메세지 전송 start----------------------
+    const userName = "";
+    const msgInput = ref("");
+    const recvList: any[] = [];
+    const serverURL = "http://localhost:8080";
+    let socket = new SockJS(serverURL);
+    // let stomp = Stomp.over(socket);
+
+    const connect = () => {
+      socket.stompClient = Stomp.over(socket);
+      console.log(`소켓 연결을 시도 -> 서버 주소: ${serverURL}`);
+      socket.stompClient.connect(
+        {},
+        frame => {
+          socket.connected = true;
+          console.log("소켓 연결 성공 : ", frame); // 이런형태를 pub sub 구조라고 합니다.
+          socket.stompClient.subscribe("/send", res => {
+            console.log("구독으로 받은 메시지 : ", res.body); // 받은 데이터를 json으로 파싱하고 리스트에 넣어줍니다.
+            let str = JSON.parse(res.body);
+            recvList.push(str);
+          });
+        },
+        error => {
+          // 소켓 연결 실패
+          console.log("소켓 연결 실패 : ", error);
+          socket.connected = false;
+        }
+      );
+    };
+
+    const sendMessage = e => {
+      if (e.keyCode === 13 && userName !== "" && msgInput.value !== "") {
+        send();
+        msgInput.value = "";
+      }
+    };
+
+    const send = () => {
+      console.log("Send message :" + msgInput.value);
+      if (socket.stompClient && socket.stompClient.connected) {
+        const msg = {
+          senderIndex: userIndex.value,
+          message: inputMsg.value,
+          time: Date.now(),
+        };
+        socket.stompClient.send("/receive", JSON.stringify(msg), {});
+      }
+    };
+
+    // ----------------------메세지 전송 end----------------------
     const requestChatRoomInfo = async () => {
       isOpenChat.value = true;
       nowChatRoomInfo.value = await getChatRoomInfo(
@@ -171,7 +232,7 @@ export default defineComponent({
 
     // ------------------------------------채팅 start------------------------------------
 
-    interface chatRoom {
+    interface chatRoomsItem {
       chatRoomIndex: number;
       opIndex: number;
       opName: string;
@@ -185,11 +246,13 @@ export default defineComponent({
     }
 
     const isOpenChatRooms = ref(false);
-    let chatRooms = reactive<Array<chatRoom>>([]);
+    let chatRooms = reactive<Array<chatRoomsItem>>([]);
     const OpenChatRooms = async () => {
       // 채팅방 목록 요청
-      const list = await getChatRooms(userIndex.value);
-      list.data.forEach((product: chatRoom) => chatRooms.push(product));
+      chatRooms.splice(0);
+      const list = await getChatRooms();
+      list.data.forEach((product: chatRoomsItem) => chatRooms.push(product));
+
       isOpenChatRooms.value = !isOpenChatRooms.value;
     };
 
@@ -202,6 +265,7 @@ export default defineComponent({
 
     const openChat = async (index: number) => {
       // 채팅방 컨텐츠 요청
+      connect();
       isOpenChat.value = true;
       if (index != -1) {
         nowChatProduct.value = chatRooms[index];
@@ -329,6 +393,7 @@ export default defineComponent({
       chatProduct,
       chatRooms,
       chatContents,
+      sendMessage,
       setOpIndex,
       userIndex,
     };
