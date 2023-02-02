@@ -5,7 +5,6 @@ import apiTokenInstance from "./apiInstance";
 async function getChatRooms() {
   console.log("getRooms");
   const response: AxiosResponse = await apiTokenInstance.get(`/api/chat/rooms`);
-  console.log(response.status);
   return response;
 }
 

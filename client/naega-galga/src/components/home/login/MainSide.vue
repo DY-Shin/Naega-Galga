@@ -69,8 +69,8 @@ export default defineComponent({
     let productList = reactive<Array<Product>>([]);
 
     const getList = async () => {
-      const list = await SearchProduct(input.value);
       productList.splice(0);
+      const list = await SearchProduct(input.value);
 
       list.data.forEach((product: Product) => productList.push(product));
       console.log(productList);
