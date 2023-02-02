@@ -2,7 +2,6 @@
   <div>비밀번호를 입력하세요</div>
   <el-input v-model="passwordForm.password" placeholder="" />
   <button @click="checkPassword">비밀번호 확인</button>
-  <!-- 정말로 삭제 할지 한번 묻고 진짜 회원탈퇴 진행 -->
   <button @click="userdelete">탈퇴버튼</button>
 </template>
 

@@ -6,7 +6,12 @@
         class="image"
       />
       <div id="card_explain">
-        <p>{{ RegistItem.rent }}</p>
+        <p>{{ RegistItem.productFloor }}</p>
+        <p>{{ RegistItem.productType }}</p>
+        <p>{{ RegistItem.productPrice }}</p>
+        <p>{{ RegistItem.productManageCost }}</p>
+        <p>{{ RegistItem.productSize }}</p>
+        <p>{{ RegistItem.productPhoto }}</p>
       </div>
     </el-card>
   </el-col>
@@ -22,6 +27,7 @@ export default defineComponent({
   },
   setup(props) {
     const RegistItem = { ...props.regist };
+    console.log(RegistItem);
     return { RegistItem };
   },
 });

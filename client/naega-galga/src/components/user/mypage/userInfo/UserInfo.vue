@@ -29,7 +29,7 @@
         <p class="content-change-button">
           {{ info.corporate_registration_number }}
         </p>
-        <el-button @click="go_user_info_change">수정하기</el-button>
+        <el-button @click="put_user_info">수정하기</el-button>
       </el-form-item>
     </el-form>
 
@@ -69,7 +69,7 @@
           class="content-change-button"
           v-model="changeform.corporate_registration_number"
         ></el-input>
-        <el-button @click="user_info_change">저장하기</el-button>
+        <el-button @click="save_change_info">저장하기</el-button>
       </el-form-item>
     </el-form>
   </div>
@@ -85,7 +85,14 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, reactive, ref, onMounted } from "vue";
+import {
+  defineComponent,
+  computed,
+  reactive,
+  ref,
+  onMounted,
+  // onBeforeMount,
+} from "vue";
 import { useStore } from "vuex";
 import PasswordChange from "./PasswordChange.vue";
 import UserDeleteDialog from "./UserDeleteDialog.vue";
@@ -100,8 +107,13 @@ export default defineComponent({
     const store = useStore();
     const { state } = useStore();
 
-    const info = computed(() => state.userStore.user_info);
+    let info = computed(() => state.userStore.user_info);
     const loginCheck = computed(() => store.getters["userStore/isLogin"]);
+
+    onMounted(() => {
+      store.dispatch("userStore/getUserInfo");
+      store.dispatch("userStore/isToken");
+    });
 
     let isChange = ref(false);
 
@@ -113,22 +125,16 @@ export default defineComponent({
       corporate_registration_number: "",
     });
 
-    const go_user_info_change = () => {
+    const put_user_info = () => {
       isChange.value = true;
       // event.preventDefault();
     };
 
-    const user_info_change = () => {
+    const save_change_info = () => {
       store.dispatch("userStore/userInfoChange", changeform);
       isChange.value = false;
       // event.preventDefault();
     };
-
-    const getUserInfo = onMounted(() =>
-      store.dispatch("userStore/getUserInfo")
-    );
-
-    const amILogin = onMounted(() => store.dispatch("userStore/testToken"));
 
     const logout = () => {
       store.dispatch("userStore/logout");
@@ -138,10 +144,8 @@ export default defineComponent({
       info,
       changeform,
       isChange,
-      go_user_info_change,
-      user_info_change,
-      getUserInfo,
-      amILogin,
+      put_user_info,
+      save_change_info,
       logout,
       loginCheck,
     };
@@ -149,7 +153,7 @@ export default defineComponent({
 });
 </script>
 
-<style>
+<style scoped>
 .one-line {
   height: 60px;
   margin: 0px;

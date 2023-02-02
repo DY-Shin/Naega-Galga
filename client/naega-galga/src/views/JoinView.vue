@@ -9,7 +9,6 @@
       status-icon
       scroll-to-error
       label-position="left"
-      min-width="2000px"
     >
       <div class="center-div">
         <img
@@ -40,9 +39,12 @@
       </el-form-item>
 
       <el-form-item label="핸드폰 번호" prop="user_phone">
-        <el-input v-model="joinform.user_phone"></el-input>
-        <!-- <el-input></el-input>
-        <el-input></el-input> -->
+        <el-input v-model="full_user_phone.first_user_phone"></el-input>
+      </el-form-item>
+      <el-form-item>
+        <el-input v-model="full_user_phone.second_user_phone"></el-input>
+
+        <el-input v-model="full_user_phone.third_user_phone"></el-input>
       </el-form-item>
 
       <el-form-item style="margin: 0px">
@@ -52,8 +54,11 @@
         ></address-search-button>
       </el-form-item>
 
-      <el-form-item label="주소" prop="user_address">
+      <el-form-item label="주소" style="margin-bottom: 1px">
         <el-input v-model="full_address.road_address" readonly></el-input>
+      </el-form-item>
+
+      <el-form-item prop="user_address">
         <el-input
           v-model="full_address.sebu_address"
           placeholder="상세 주소를 입력해주세요."
@@ -72,8 +77,22 @@
         ></el-input>
       </el-form-item>
 
+      <el-scrollbar class="scrollbar">
+        <join-terms />
+      </el-scrollbar>
+
+      <el-form-item>
+        <el-checkbox class="address-search-button" v-model="terms_check"
+          >동의합니다.</el-checkbox
+        >
+      </el-form-item>
+
       <div class="center-div">
-        <el-button class="center-item" @click="submitForm(joinformRef)">
+        <el-button
+          class="center-item"
+          @click="submitForm(joinformRef)"
+          v-bind:disabled="!terms_check"
+        >
           가입하기
         </el-button>
         <el-button calss="center-item" @click="cancel"> 취소하기 </el-button>
@@ -89,22 +108,39 @@ import { useRouter } from "vue-router";
 import type { FormInstance, FormRules } from "element-plus";
 
 import AddressSearchButton from "@/components/common/AddressSearchButton.vue";
+import JoinTerms from "@/components/user/mypage/JoinTerms.vue";
 
 export default defineComponent({
   name: "JoinView",
   components: {
     AddressSearchButton,
+    JoinTerms,
   },
   setup() {
     const store = useStore();
     const router = useRouter();
     const visible = ref(false);
+    const terms_check = ref(false);
 
     const joinformRef = ref<FormInstance>();
 
     const setRoadAddress = (address: string) => {
       full_address.road_address = address;
     };
+
+    const full_user_phone = reactive({
+      first_user_phone: "",
+      second_user_phone: "",
+      third_user_phone: "",
+    });
+
+    const user_phone = ref(
+      full_user_phone.first_user_phone +
+        "-" +
+        full_user_phone.second_user_phone +
+        "-" +
+        full_user_phone.third_user_phone
+    );
 
     const full_address = reactive({
       road_address: "",
@@ -120,7 +156,7 @@ export default defineComponent({
       user_name: "",
       user_password: "",
       password_confirm: "",
-      user_phone: "",
+      user_phone,
       user_address,
       corporate_registration_number: null,
     });
@@ -180,7 +216,7 @@ export default defineComponent({
         },
         {
           validator: password_confirm,
-          message: "비밀번호는 같아야 한다 이녀석아",
+          message: "비밀번호가 서로 다릅니다",
         },
       ],
       password_confirm: [
@@ -204,17 +240,17 @@ export default defineComponent({
           message: "비밀번호는 같아야 한다 이녀석아",
         },
       ],
-      user_address: [
-        {
-          required: true,
-          message: "주소를 반드시 입력해주세요.",
-          trigger: "blur",
-        },
-      ],
       user_phone: [
         {
           required: true,
           message: "핸드폰 번호는 반드시 입력해주세요.",
+          trigger: "blur",
+        },
+      ],
+      user_address: [
+        {
+          required: true,
+          message: "주소는 반드시 입력해주세요.",
           trigger: "blur",
         },
       ],
@@ -246,9 +282,11 @@ export default defineComponent({
       joinform,
       rules,
       setRoadAddress,
+      full_user_phone,
       full_address,
       submitForm,
       cancel,
+      terms_check,
     };
   },
 });
@@ -257,6 +295,7 @@ export default defineComponent({
 <style scoped>
 .joinform {
   width: 33%;
+  min-width: 500px;
 
   padding-bottom: 60px;
   padding-left: 50px;
@@ -286,5 +325,13 @@ export default defineComponent({
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.scrollbar {
+  height: 100px;
+  border: 1px solid;
+  border-color: #dcdfe6;
+  border-radius: 4px;
+  text-align: "center";
 }
 </style>
