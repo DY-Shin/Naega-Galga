@@ -132,8 +132,8 @@ import { useStore } from "vuex";
 
 export default defineComponent({
   props: {
-    GetProduct: { type: Object },
-    GetChatOpen: { type: Boolean },
+    getProduct: { type: Object },
+    getChatOpen: { type: Boolean },
   },
   setup(props) {
     const store = useStore();
@@ -150,9 +150,9 @@ export default defineComponent({
     const inputMsg = ref("");
 
     watch(
-      () => props.GetChatOpen,
+      () => props.getChatOpen,
       () => {
-        nowChatProduct.value = props.GetProduct;
+        nowChatProduct.value = props.getProduct;
         requestChatRoomInfo();
       },
       { deep: true }
@@ -165,7 +165,7 @@ export default defineComponent({
       );
     };
 
-    if (props.GetChatOpen) {
+    if (props.getChatOpen) {
       isOpenChat.value = true;
     }
 
