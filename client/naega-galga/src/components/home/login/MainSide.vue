@@ -64,6 +64,7 @@ export default defineComponent({
     const { emit } = context;
     const whereIs = index => {
       emit("addr_idx", index);
+      emit("productClick", true);
     };
     let productList = reactive<Array<Product>>([]);
 
