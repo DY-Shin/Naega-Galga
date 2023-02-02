@@ -2,7 +2,8 @@
   <div id="mypagedetail">
     <h1>내 정보</h1>
 
-    <el-button v-show="loginCheck">hello</el-button>
+    <button v-show="loginCheck">로그인O</button>
+    <button v-show="!loginCheck">로그인X</button>
 
     <el-button @click="logout">로그아웃</el-button>
     <hr />
@@ -98,7 +99,9 @@ export default defineComponent({
   setup() {
     const store = useStore();
     const { state } = useStore();
+
     const info = computed(() => state.userStore.user_info);
+    const loginCheck = computed(() => store.getters["userStore/isLogin"]);
 
     let isChange = ref(false);
 
@@ -125,11 +128,11 @@ export default defineComponent({
       store.dispatch("userStore/getUserInfo")
     );
 
+    const amILogin = onMounted(() => store.dispatch("userStore/testToken"));
+
     const logout = () => {
       store.dispatch("userStore/logout");
     };
-
-    const loginCheck = computed(() => store.getters["userStore/isLogin"]);
 
     return {
       info,
@@ -138,6 +141,7 @@ export default defineComponent({
       go_user_info_change,
       user_info_change,
       getUserInfo,
+      amILogin,
       logout,
       loginCheck,
     };
