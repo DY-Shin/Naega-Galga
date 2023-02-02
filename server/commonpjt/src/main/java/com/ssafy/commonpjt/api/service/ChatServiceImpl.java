@@ -30,7 +30,7 @@ public class ChatServiceImpl implements ChatService{
         List<ChatRoomResponseDTO> result = new ArrayList<>();
         for(ChatRoom room : roomList) {
             int OpIndex = room.getBuyer().getUserIndex() != loginUserIndex ? room.getBuyer().getUserIndex() : room.getSeller().getUserIndex();
-            String OpName = room.getBuyer().getName().equals(loginUserName) ? room.getBuyer().getName() : room.getSeller().getName();
+            String OpName = !room.getBuyer().getName().equals(loginUserName) ? room.getBuyer().getName() : room.getSeller().getName();
             ChatRoomResponseDTO dto = ChatRoomResponseDTO.builder()
                     .roomIndex(room.getChatIndex())
                     .OpIndex(OpIndex)
