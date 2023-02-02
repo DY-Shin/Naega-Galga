@@ -30,8 +30,14 @@ public class Meeting {
     private Timestamp reserveAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "owner_index", referencedColumnName = "user_index", nullable = false)
     private User owner;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "guest_index", referencedColumnName = "user_index")
     private User guest;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_index", referencedColumnName = "product_index")
+    private Product product;
 }
