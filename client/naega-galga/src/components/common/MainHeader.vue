@@ -95,13 +95,12 @@ import { defineComponent, ref, computed } from "vue";
 import { useStore } from "vuex";
 export default defineComponent({
   setup() {
-    const isLog = ref(true);
+    const isLog = computed(() => store.getters["userStore/isLogin"]);
     const isMenu = ref(false);
     const showButton = ref(true);
     const isHeaderShow = ref(true);
 
     const store = useStore();
-    isLog.value = computed(() => store.getters["userStore/isLogin"]).value;
 
     // isLog.value = computed(() => store.getters["userStore/isLogin"]).value;
     // console.log(isLog.value);
