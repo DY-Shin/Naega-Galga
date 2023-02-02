@@ -16,7 +16,7 @@
 </style>
 
 <script lang="ts">
-import { defineComponent, onMounted, watch } from "@vue/runtime-core";
+import { defineComponent, onMounted, watch, ref } from "@vue/runtime-core";
 import { useRouter } from "vue-router";
 declare global {
   interface Window {
@@ -27,24 +27,30 @@ declare global {
 
 export default defineComponent({
   props: {
-    GetIdx: { type: Number },
-    GetList: { type: Array },
+    getIdx: { type: Number },
+    getList: { type: Array },
+    getClick: { type: Boolean },
   },
 
   setup(props, context) {
     const { emit } = context;
     const router = useRouter();
-
     watch(
-      () => props.GetIdx,
+      () => props.getClick,
       () => {
-        changeCenter(props.GetIdx);
+        changeCenter(props.getIdx);
       }
     );
     watch(
-      () => props.GetList,
+      () => props.getIdx,
       () => {
-        displayMarker(window.map, props.GetList);
+        changeCenter(props.getIdx);
+      }
+    );
+    watch(
+      () => props.getList,
+      () => {
+        displayMarker(window.map, props.getList);
         for (let i = 0; i < overlays.length; i++) {
           overlays[i].setMap(null);
         }
@@ -92,45 +98,53 @@ export default defineComponent({
       let bounds = new window.kakao.maps.LatLngBounds();
       let geocoder = new window.kakao.maps.services.Geocoder();
       for (let i = 0; i < markerList.length; i++) {
-        geocoder.addressSearch(markerList[i].addr, function (result, status) {
-          // 정상적으로 검색이 완료됐으면
-          if (status === window.kakao.maps.services.Status.OK) {
-            let coords = new window.kakao.maps.LatLng(result[0].y, result[0].x);
-            nums[i] = num;
-            let imageSrc =
-                "https://cdn-icons-png.flaticon.com/512/7976/7976202.png",
-              imageSize = new window.kakao.maps.Size(40, 40),
-              imageOption = { offset: new window.kakao.maps.Point(20, 40) };
-            let markerImage = new window.kakao.maps.MarkerImage(
-                imageSrc,
-                imageSize,
-                imageOption
-              ),
-              markerPosition = coords;
+        geocoder.addressSearch(
+          markerList[i].roadAddr,
+          function (result, status) {
+            // 정상적으로 검색이 완료됐으면
+            if (status === window.kakao.maps.services.Status.OK) {
+              let coords = new window.kakao.maps.LatLng(
+                result[0].y,
+                result[0].x
+              );
+              nums[i] = num;
+              let imageSrc =
+                  "https://cdn-icons-png.flaticon.com/512/7976/7976202.png",
+                imageSize = new window.kakao.maps.Size(40, 40),
+                imageOption = { offset: new window.kakao.maps.Point(20, 40) };
+              let markerImage = new window.kakao.maps.MarkerImage(
+                  imageSrc,
+                  imageSize,
+                  imageOption
+                ),
+                markerPosition = coords;
 
-            let marker = new window.kakao.maps.Marker({
-              map: map,
-              position: markerPosition,
-              image: markerImage,
-            });
-            setOverlay(coords, marker, markerList[i]); // 상세 정보 창 만들어주고
+              let marker = new window.kakao.maps.Marker({
+                map: map,
+                position: markerPosition,
+                image: markerImage,
+              });
+              setOverlay(coords, marker, markerList[i]); // 상세 정보 창 만들어주고
 
-            marker.setMap(map);
-            markers[num] = marker;
+              marker.setMap(map);
+              markers[num] = marker;
 
-            bounds.extend(coords);
+              bounds.extend(coords);
+            }
+            num++;
+            if (num == markerList.length) {
+              setBounds(bounds);
+            }
           }
-          num++;
-          if (num == markerList.length) {
-            setBounds(bounds);
-          }
-        });
+        );
       }
     };
     const setBounds = bounds => {
       // 모든 마커 범위 포함하도록 지도 범위 재설정
       window.map.setBounds(bounds);
     };
+    const isOpen = ref(false);
+
     const setOverlay = (coords, marker, product) => {
       let customOverlay = new window.kakao.maps.CustomOverlay({
         position: coords,
@@ -151,9 +165,25 @@ export default defineComponent({
 
       let topbox = document.createElement("div");
       topbox.className = "topbox";
+
       let rooms = document.createElement("div");
       rooms.className = "overlay-rooms";
       rooms.appendChild(document.createTextNode(product.rooms));
+      topbox.appendChild(rooms);
+
+      let price = document.createElement("div");
+      price.className = "overlay-price";
+      price.appendChild(document.createTextNode(product.price));
+      topbox.appendChild(price);
+
+      let type = document.createElement("div");
+      type.className = "overlay-type";
+      type.appendChild(document.createTextNode(product.type));
+      topbox.appendChild(type);
+
+      content.appendChild(topbox);
+
+      let bottombox = document.createElement("div");
 
       let detailbtn = document.createElement("button");
       detailbtn.className = "detailbtn";
@@ -161,56 +191,43 @@ export default defineComponent({
       detailbtn.onclick = function () {
         moveToDetail();
       };
+      bottombox.appendChild(detailbtn);
 
       const moveToDetail = () => {
         // 상세보기 페이지 이동
-        console.log(product.index);
         router.push(`/product/${product.index}`);
       };
 
       let chatbtn = document.createElement("button");
       chatbtn.className = "chatbtn";
       chatbtn.appendChild(document.createTextNode("문의하기"));
+
       chatbtn.onclick = function () {
-        console.log(product);
         emit("chatProduct", product);
+        emit("chatOpen", isOpen);
+        isOpen.value = !isOpen.value;
       };
-
-      topbox.appendChild(rooms);
-      topbox.appendChild(chatbtn);
-      topbox.appendChild(detailbtn);
-
-      content.appendChild(topbox);
+      bottombox.appendChild(chatbtn);
 
       let clearbox = document.createElement("div");
       clearbox.className = "clear-box";
       content.appendChild(clearbox);
 
-      let priceinfo = document.createElement("div");
-      let type = document.createElement("div");
-      type.className = "overlay-type";
-      type.appendChild(document.createTextNode(product.type));
-
-      let price = document.createElement("div");
-      price.className = "overlay-price";
-      price.appendChild(document.createTextNode(product.price));
-
       let closebtnbox = document.createElement("div");
+
       closebtnbox.onclick = () => {
         customOverlay.setMap(null);
       };
+
       let closebtn = document.createElement("img");
       closebtn.className = "overlay-icon";
       closebtn.src = "https://cdn-icons-png.flaticon.com/512/1828/1828665.png";
       closebtn.width = 15;
       closebtn.height = 15;
       closebtnbox.appendChild(closebtn);
+      content.appendChild(closebtnbox);
 
-      priceinfo.appendChild(type);
-      priceinfo.appendChild(price);
-      priceinfo.appendChild(closebtnbox);
-
-      content.appendChild(priceinfo);
+      content.appendChild(bottombox);
 
       window.kakao.maps.event.addListener(marker, "click", function () {
         customOverlay.setMap(window.map);
@@ -245,19 +262,25 @@ export default defineComponent({
   box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 }
 .overlay-rooms {
+  /*원룸*/
+  font-size: 20px;
+  font-weight: 1000;
   float: left;
-  margin: 10px 20px;
+  margin: 7px 0 5px 20px;
 }
 .overlay-type {
-  float: left;
-  padding: 0 20px 0 20px;
+  /* 월세 */
+  float: right;
+  margin: 10px 10px 0 0;
 }
 .overlay-price {
-  float: left;
+  /* 100만원 */
+  float: right;
+  margin: 10px 10px 0 0;
 }
 .overlay-icon {
   float: right;
-  padding: 0 15px;
+  padding: 10px 15px;
 }
 .overlayimg {
   border-radius: 15px 15px 0 0;
@@ -270,24 +293,22 @@ export default defineComponent({
 }
 .detailbtn {
   cursor: pointer;
-  float: right;
-  padding: 3px 10px;
-  margin-top: 5px;
-  margin-right: 10px;
+  float: left;
+  padding: 3px 20px;
+  margin: 5px 10px 0 15px;
   background: none;
   border: none;
-  border-radius: 3px;
+  border-radius: 5px;
   box-shadow: rgba(0, 0, 0, 0.2) 0px 5px 15px;
 }
 .chatbtn {
   cursor: pointer;
-  float: right;
-  padding: 3px 10px;
-  margin-top: 5px;
-  margin-right: 10px;
+  float: left;
+  padding: 3px 20px;
+  margin: 5px 10px 0 0;
   background: none;
   border: none;
-  border-radius: 3px;
+  border-radius: 5px;
   box-shadow: rgba(0, 0, 0, 0.2) 0px 5px 15px;
 }
 </style>
