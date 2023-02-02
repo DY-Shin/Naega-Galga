@@ -8,9 +8,9 @@
       ></main-side>
       <el-container>
         <ka-kao-map
-          :GetIdx="idxProxy"
-          :GetList="listProxy"
-          :GetClick="clickProxy"
+          :getIdx="idxProxy"
+          :getList="listProxy"
+          :getClick="clickProxy"
           @chatProduct="sendProduct"
           @chatOpen="sendChatOpen"
         ></ka-kao-map>

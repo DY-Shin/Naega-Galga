@@ -27,30 +27,30 @@ declare global {
 
 export default defineComponent({
   props: {
-    GetIdx: { type: Number },
-    GetList: { type: Array },
-    GetClick: { type: Boolean },
+    getIdx: { type: Number },
+    getList: { type: Array },
+    getClick: { type: Boolean },
   },
 
   setup(props, context) {
     const { emit } = context;
     const router = useRouter();
     watch(
-      () => props.GetClick,
+      () => props.getClick,
       () => {
-        changeCenter(props.GetIdx);
+        changeCenter(props.getIdx);
       }
     );
     watch(
-      () => props.GetIdx,
+      () => props.getIdx,
       () => {
-        changeCenter(props.GetIdx);
+        changeCenter(props.getIdx);
       }
     );
     watch(
-      () => props.GetList,
+      () => props.getList,
       () => {
-        displayMarker(window.map, props.GetList);
+        displayMarker(window.map, props.getList);
         for (let i = 0; i < overlays.length; i++) {
           overlays[i].setMap(null);
         }
