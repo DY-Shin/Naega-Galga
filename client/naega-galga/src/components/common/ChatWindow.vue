@@ -249,8 +249,10 @@ export default defineComponent({
     let chatRooms = reactive<Array<chatRoomsItem>>([]);
     const OpenChatRooms = async () => {
       // 채팅방 목록 요청
-      const list = await getChatRooms(userIndex.value);
+      chatRooms.splice(0);
+      const list = await getChatRooms();
       list.data.forEach((product: chatRoomsItem) => chatRooms.push(product));
+
       isOpenChatRooms.value = !isOpenChatRooms.value;
     };
 

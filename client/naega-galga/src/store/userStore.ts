@@ -4,14 +4,14 @@ import localStorageManager from "@/utils/localStorageManager";
 
 const state = {
   user_info: {
-    user_index: "",
+    user_index: 1,
     user_id: "",
     user_phone: "",
     user_name: "",
     user_address: "",
     corporate_registration_number: null,
   },
-  isToken: false,
+  isToken: true,
 };
 
 const getters = {
