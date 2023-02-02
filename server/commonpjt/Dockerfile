@@ -1,3 +1,4 @@
 FROM openjdk:8-jre
-COPY ./server/commonpjt/build/libs/*.jar app.jar
+ARG JAR_FILE=build/libs/*.jar
+COPY ${JAR_FILE} app.jar
 ENTRYPOINT ["java", "-jar", "app.jar"]
