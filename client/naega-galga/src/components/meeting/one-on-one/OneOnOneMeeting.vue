@@ -53,7 +53,7 @@ import { useRoute, useRouter } from "vue-router";
 import { useStore } from "vuex";
 import { getOneOnOneMeetingInfo } from "@/api/meetingApi";
 import OvVideo from "./OvVideo.vue";
-import { OpenVidu } from "openvidu-browser";
+import { OpenVidu, SignalOptions } from "openvidu-browser";
 import ChatBox from "@/components/meeting/one-on-one/ChatBox.vue";
 import { Message } from "@/types/MeetingChatType";
 
@@ -63,7 +63,7 @@ export default {
     ChatBox,
   },
   setup() {
-    //화상 미팅방 정보
+    //--------------------------화상 미팅방 정보
     const store = useStore();
     const route = useRoute();
     const router = useRouter();
@@ -99,18 +99,19 @@ export default {
     const buyerVideo = document.querySelector("video#buyderVideo");
     let myVideo = buyerVideo;
 
-    const ov = ref();
-    const session = ref();
+    //--------------------------open-vidu things
+    let ov;
+    let session;
     const publisher = ref();
-    let subscriber = ref();
+    const subscriber = ref();
 
     const getSession = async () => {
-      ov.value = new OpenVidu();
-      session.value = ov.value.getSession();
+      ov = new OpenVidu();
+      session = ov.getSession();
 
       //새로운 stream을 받을때마다
       session.value.on("streamCreated", ({ stream }) => {
-        subscriber = session.value.subscribe(stream);
+        subscriber.value = session.subscribe(stream);
       });
       //stream이 끊어졌을때마다
       session.value.on("streamDestroyed", () => {
@@ -118,12 +119,21 @@ export default {
           subscriber.value = null;
         }
       });
-      session.value.on("exception", ({ exception }) => {
+      session.on("exception", ({ exception }) => {
         console.warn(exception);
       });
 
-      await session.value.connect(token);
-      publisher.value = ov.value.initPublisher(myVideo, {
+      session.on(`signal:chat`, event => {
+        const msg = JSON.parse(event.data).message;
+        messageList.push({
+          isMine: false,
+          text: msg,
+          sendedTime: new Date(),
+        });
+      });
+
+      await session.connect(token);
+      publisher.value = ov.initPublisher(myVideo, {
         audioSource: undefined,
         videoSource: undefined,
         publishAudio: true,
@@ -131,7 +141,7 @@ export default {
         insertMode: "APPEND",
         mirror: false,
       });
-      session.value.publish(publisher);
+      session.publish(publisher);
     };
 
     onMounted(async () => {
@@ -142,7 +152,7 @@ export default {
       getSession();
     });
 
-    //chat
+    //--------------------------chat
     const messageList: Array<Message> = reactive([]);
 
     //새로운 문자열이 추가될때마다 시간 기준으로 정렬
@@ -155,8 +165,13 @@ export default {
         )
     );
     const sendMessage = (message: Message) => {
-      //chat signal 전송
       messageList.push(message);
+      const signalOptions: SignalOptions = {
+        data: JSON.stringify({ message }),
+        type: "chat",
+        to: undefined,
+      };
+      session.value.signal(signalOptions);
     };
 
     //media control
