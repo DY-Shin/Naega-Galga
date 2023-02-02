@@ -42,7 +42,7 @@
 <script lang="ts">
 import { reactive, ref, defineComponent, onBeforeUpdate } from "vue";
 import { Search } from "@element-plus/icons-vue";
-import { SearchProduct } from "@/api/productApi";
+import { searchProduct } from "@/api/productApi";
 
 export default defineComponent({
   setup(_, context) {
@@ -69,8 +69,8 @@ export default defineComponent({
     let productList = reactive<Array<Product>>([]);
 
     const getList = async () => {
-      const list = await SearchProduct(input.value);
       productList.splice(0);
+      const list = await searchProduct(input.value);
 
       list.data.forEach((product: Product) => productList.push(product));
       console.log(productList);
