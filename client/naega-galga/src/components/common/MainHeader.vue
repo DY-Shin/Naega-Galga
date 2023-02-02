@@ -6,14 +6,14 @@
       <el-button
         id="login-btn"
         color="#b1b3b8"
-        size="large"
+        round
         @click="$router.push('/login')"
         >로그인</el-button
       >
       <el-button
         id="join-btn"
         color=" #b1b3b8"
-        size="large"
+        round
         @click="$router.push('/join')"
         >회원가입</el-button
       >
@@ -101,7 +101,7 @@ export default defineComponent({
     const isHeaderShow = ref(true);
 
     const store = useStore();
-    console.log(computed(() => store.getters["userStore/isLogin"]).value);
+    isLog.value = computed(() => store.getters["userStore/isLogin"]).value;
 
     // isLog.value = computed(() => store.getters["userStore/isLogin"]).value;
     // console.log(isLog.value);
@@ -246,7 +246,8 @@ export default defineComponent({
 #join-btn {
   /* float: right; */
   margin-left: 20px;
-  margin-top: 30px;
+  margin-top: 20px;
+  bottom: 30px;
   color: white;
 }
 
