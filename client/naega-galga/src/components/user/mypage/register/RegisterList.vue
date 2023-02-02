@@ -8,9 +8,11 @@
       :regist="regist"
     />
   </el-row>
+  <button @click="getRegist">매물 목록 가져와짐?</button>
 </template>
 
 <script lang="ts">
+import apiTokenInstance from "@/api/apiTokenInstance";
 import { defineComponent } from "vue";
 import RegisterListItem from "./RegisterListItem.vue";
 
@@ -38,8 +40,21 @@ export default defineComponent({
         rent: "4번",
       },
     ];
+
+    const getRegist = () => {
+      apiTokenInstance
+        .post(`api/products`)
+        .then(res => {
+          console.log(res);
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    };
+
     return {
       registList,
+      getRegist,
     };
   },
 });

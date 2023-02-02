@@ -1,12 +1,14 @@
 <template>
-  <el-aside style="height: 100%">
+  <el-aside>
     <!-- search bar start -->
-    <div class="search-bar" style="display: inline-flex">
+    <div class="search-bar" style="text-align: center">
       <el-input
         class="search-input"
         v-model="input"
         placeholder="검색"
+        size="large"
         @keyup.enter="getList()"
+        style="width: 100%"
       >
         <template #append>
           <el-button :icon="Search" @click="getList()" />
@@ -16,30 +18,22 @@
     <el-scrollbar :style="{ height: 'calc(100vh - 225px)' }">
       <div
         v-for="(item, index) in productList"
-        :key="item.type"
+        :key="item.productIndex"
         class="scrollbar-demo-item"
-        @click="whereIs(index)"
       >
-        <div class="img-content">
-          <div class="list-img"></div>
-          <div class="list-online-icon" v-if="item.explanationDate != null">
-            <div class="text">온라인 설명회</div>
+        <div class="right-box" @click="whereIs(index)">
+          <div class="img-content">
+            <div class="list-img"></div>
+            <div class="list-online-icon" v-if="item.presentation">
+              <div class="text">온라인 설명회</div>
+            </div>
+          </div>
+          <div class="home-info-box">
+            <div class="home-addr">{{ item.roadAddr }}</div>
+            <div class="home-rooms">{{ item.rooms }} {{ item.size }}</div>
+            <div class="home-price">{{ item.price }}</div>
           </div>
         </div>
-        <div class="home-info-box">
-          <div class="home-area">{{ item.address }}</div>
-          <div class="home-info">{{ item.rooms }}</div>
-          <div class="home-price">{{ item.type }} {{ item.price }}</div>
-        </div>
-        <button v-if="item.isWish" id="heart-btn" @click="clickHeart()">
-          <img
-            src="@/assets/image/icon-heart-filled.png"
-            width="20"
-            height="20"
-          /></button
-        ><button v-else id="heart-btn" @click="clickHeart()">
-          <img src="@/assets/image/icon-heart.png" width="20" height="20" />
-        </button>
       </div>
     </el-scrollbar>
   </el-aside>
@@ -48,123 +42,54 @@
 <script lang="ts">
 import { reactive, ref, defineComponent, onBeforeUpdate } from "vue";
 import { Search } from "@element-plus/icons-vue";
+import { SearchProduct } from "@/api/productApi";
 
 export default defineComponent({
   setup(_, context) {
+    interface Product {
+      productIndex: number;
+      sellerIndex: number;
+      sellerName: string;
+      roadAddr: string;
+      photo: string;
+      price: string;
+      type: string;
+      size: string;
+      rooms: string;
+      presentation: boolean;
+    }
     let input = ref("");
 
-    const isFavorite = ref(false);
-    const clickHeart = () => {
-      isFavorite.value = !isFavorite.value;
-    };
-
-    const searchWord = ref("");
+    // const beforeInput = ref("");
     const { emit } = context;
     const whereIs = index => {
       emit("addr_idx", index);
+      emit("productClick", true);
     };
-    let productList: Product[] = reactive([]);
+    let productList = reactive<Array<Product>>([]);
 
-    const getList = () => {
+    const getList = async () => {
+      const list = await SearchProduct(input.value);
+      productList.splice(0);
+
+      list.data.forEach((product: Product) => productList.push(product));
+      console.log(productList);
+      emit("productList", productList);
       //검색 ->  목록 가져오기
-      if (input.value === searchWord.value) {
-        searchWord.value = input.value;
-        return;
-      }
+      // if (input.value === beforeInput.value) {
+      //   beforeInput.value = input.value;
+      //   return;
+      // }
 
-      if (input.value == "1") {
-        productList.splice(0);
-        productList.push({
-          rooms: "원룸",
-          type: "월세",
-          price: "30/1500",
-          size: 10,
-          address: "부산 동래구 충렬대로 255",
-          explanationDate: null,
-          isWish: true,
-        });
-        productList.push({
-          rooms: "투룸",
-          type: "월세",
-          price: "60/1500",
-          size: 35,
-          address: "경상북도 구미시 인동6길 26-2",
-          explanationDate: "2023.1.30",
-          isWish: true,
-        });
-        productList.push({
-          rooms: "원룸",
-          type: "월세",
-          price: "30/1500",
-          size: 10,
-          address: "대전 서구 둔산로 100",
-          explanationDate: null,
-          isWish: true,
-        });
-        emit("productList", productList);
-      } else if (input.value == "2") {
-        productList.splice(0);
-
-        productList.push({
-          rooms: "투룸",
-          type: "월세",
-          price: "60/1500",
-          size: 35,
-          address: "경상북도 구미시 인동6길 26-2",
-          explanationDate: "2023.1.30",
-          isWish: true,
-        });
-        productList.push({
-          rooms: "원룸",
-          type: "월세",
-          price: "30/1500",
-          size: 10,
-          address: "대전 서구 둔산로 100",
-          explanationDate: null,
-          isWish: true,
-        });
-
-        emit("productList", productList);
-      } else if (input.value == "3") {
-        productList.splice(0);
-
-        productList.push({
-          rooms: "원룸",
-          type: "월세",
-          price: "30/2000",
-          size: 20,
-          address: "경상북도 구미시 인동6길 26-2",
-          explanationDate: "2023.1.30",
-          isWish: true,
-        });
-
-        emit("productList", productList);
-      } else {
-        productList.splice(0);
-      }
-
-      searchWord.value = input.value;
+      // beforeInput.value = input.value;
     };
-
-    interface Product {
-      rooms: string;
-      type: string;
-      price: string;
-      size: number;
-      address: string;
-      explanationDate: string | null;
-      isWish: boolean;
-    }
 
     return {
       input,
-      isFavorite,
-      clickHeart,
       productList,
       getList,
       whereIs,
       Search,
-      searchWord,
       onBeforeUpdate,
     };
   },
@@ -175,7 +100,7 @@ export default defineComponent({
 .search-bar {
   width: 100%;
   height: 80px;
-  border-bottom: 2px solid #73767a;
+  border-bottom: 1px solid #bdbdbd;
 }
 
 .search-input {
@@ -183,31 +108,29 @@ export default defineComponent({
   padding: 20px;
 }
 
-#heart-btn {
-  /* margin-left: 35px; */
-  margin-top: 85px;
-  margin-right: 10px;
-  border: none;
-  background: none;
-}
 .home-info-box {
-  width: 200px;
-  /* padding-left: 10px; */
+  height: 100px;
+  padding: 40px 0;
 }
-.home-area {
+.home-addr {
+  font-weight: 500;
   color: black;
   text-align: left;
-  /* margin: 20px 0; */
 }
 .home-price {
   color: black;
   text-align: left;
-  /* margin: 20px 0; */
 }
-.home-info {
+.home-rooms {
   color: black;
+  font-size: 20px;
   text-align: left;
   margin: 15px 0;
+}
+.home-size {
+  color: black;
+  float: right;
+  text-align: left;
 }
 .text {
   padding: 5px;
@@ -217,6 +140,10 @@ export default defineComponent({
   float: left;
   height: 100%;
   width: 50%;
+}
+
+.right-box {
+  /* float: left; */
 }
 
 .list-img {
@@ -244,8 +171,8 @@ export default defineComponent({
   box-shadow: 1px 2px 2px 2px rgb(147, 147, 147);
 }
 .scrollbar-demo-item {
-  border-bottom: 1px solid #575757;
-  display: flex;
+  border-top: 1px solid #bdbdbd;
+  /* display: flex; */
   align-items: center;
   height: 200px;
   text-align: center;
@@ -255,10 +182,6 @@ export default defineComponent({
 .el-aside {
   width: 500px;
   height: 100%;
-  border-top: 1px solid #73767a;
-  border-right: 1px solid #73767a;
-  /* border-left: 1px solid #73767a; */
-  /* border: 1px solid #73767a;
-  border-radius: 7px 0 0 7px; */
+  border-top: 1px solid #bdbdbd;
 }
 </style>

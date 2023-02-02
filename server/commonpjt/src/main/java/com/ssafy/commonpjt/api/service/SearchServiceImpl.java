@@ -1,17 +1,16 @@
 package com.ssafy.commonpjt.api.service;
 
 import com.ssafy.commonpjt.api.dto.searchDTO.KakaoAddressDTO;
-import com.ssafy.commonpjt.api.dto.searchDTO.SearchProductDTO;
+import com.ssafy.commonpjt.api.dto.searchDTO.SearchProductResponseDTO;
 import com.ssafy.commonpjt.api.dto.searchDTO.DetailSearchDTO;
-import com.ssafy.commonpjt.db.entity.Building;
 import com.ssafy.commonpjt.db.entity.Product;
-import com.ssafy.commonpjt.db.entity.Options;
 import com.ssafy.commonpjt.db.repository.BuildingRepository;
-import com.ssafy.commonpjt.db.repository.OptionsRepository;
+import com.ssafy.commonpjt.db.repository.MeetingRepository;
 import com.ssafy.commonpjt.db.repository.ProductRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -20,18 +19,18 @@ import reactor.core.publisher.Mono;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Service
+@RequiredArgsConstructor
 public class SearchServiceImpl implements SearchService{
 
     @Value("${kakao.restapi.key}")
     private String restApiKey;
 
-    @Autowired
-    private BuildingRepository buildingRepository;
-    @Autowired
-    private ProductRepository productRepository;
-    @Autowired
-    private OptionsRepository optionsRepository;
+    private final BuildingRepository buildingRepository;
+    private final ProductRepository productRepository;
+    private final MeetingRepository meetingRepository;
+
 
     /**
      * 카카오 로컬 api를 호출
@@ -86,7 +85,7 @@ public class SearchServiceImpl implements SearchService{
             addressList.add(kakaoAddressDTO);
         }
 
-        List<SearchProductDTO> searchResult = new ArrayList<>();
+        List<SearchProductResponseDTO> searchResult = new ArrayList<>();
         for(KakaoAddressDTO kakaoAddress : addressList) {
             String roadAddr = kakaoAddress.getRoadAddress();
             String addr = kakaoAddress.getAddress();
@@ -97,7 +96,7 @@ public class SearchServiceImpl implements SearchService{
             for(Integer idx : buildings) {
                 List<Product> product = productRepository.productFetchJoin(idx);
                 for(Product productInfo : product) {
-                    searchResult.add(SearchProductDTO.toDTO(productInfo));
+                    searchResult.add(SearchProductResponseDTO.toDTO(productInfo, meetingRepository.countByProduct(productInfo) != 0));
                 }
             }
         }

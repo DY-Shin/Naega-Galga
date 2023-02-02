@@ -1,5 +1,12 @@
 <template>
-  <el-container><el-main id="map"></el-main></el-container>
+  <el-container
+    style="
+      height: 103%;
+      border-top: 1px solid #bdbdbd;
+      border-left: 1px solid #bdbdbd;
+    "
+    ><el-main id="map"></el-main
+  ></el-container>
 </template>
 
 <style scoped>
@@ -9,8 +16,8 @@
 </style>
 
 <script lang="ts">
-import { defineComponent, onMounted, watch } from "@vue/runtime-core";
-
+import { defineComponent, onMounted, watch, ref } from "@vue/runtime-core";
+import { useRouter } from "vue-router";
 declare global {
   interface Window {
     kakao: any;
@@ -20,41 +27,36 @@ declare global {
 
 export default defineComponent({
   props: {
-    GetIdx: { type: Number },
-    GetList: { type: Array },
+    getIdx: { type: Number },
+    getList: { type: Array },
+    getClick: { type: Boolean },
   },
 
-  setup(props) {
+  setup(props, context) {
+    const { emit } = context;
+    const router = useRouter();
     watch(
-      () => props.GetIdx,
+      () => props.getClick,
       () => {
-        console.log(props.GetIdx);
-        changeCenter(props.GetIdx);
+        changeCenter(props.getIdx);
       }
     );
     watch(
-      () => props.GetList,
+      () => props.getIdx,
       () => {
-        displayMarker(window.map, props.GetList);
+        changeCenter(props.getIdx);
+      }
+    );
+    watch(
+      () => props.getList,
+      () => {
+        displayMarker(window.map, props.getList);
         for (let i = 0; i < overlays.length; i++) {
           overlays[i].setMap(null);
         }
       },
       { deep: true }
     );
-
-    const markerPositions1: object[] = [
-      {
-        address: "경상북도 구미시 인동6길 26-2",
-        a: 36.1020372425131,
-        b: 128.420294611527,
-      },
-      {
-        address: "부산 동래구 충렬대로 255",
-        a: 35.2014786272255,
-        b: 129.087166169007,
-      },
-    ];
 
     const latitude = 36.1020372425131;
     const longitude = 128.420294611527;
@@ -84,9 +86,12 @@ export default defineComponent({
 
     const displayMarker = (map, markerList) => {
       // 매물 목록 검색 결과 마커 표시함
+      markers.splice(0);
+      overlays.splice(0);
+
       if (markers.length > 0) {
         for (let i = 0; i < markers.length; i++) {
-          markers[i].setMap(null);
+          // markers[i].setMap(null);
         }
       }
       let num = 0;
@@ -94,7 +99,7 @@ export default defineComponent({
       let geocoder = new window.kakao.maps.services.Geocoder();
       for (let i = 0; i < markerList.length; i++) {
         geocoder.addressSearch(
-          markerList[i].address,
+          markerList[i].roadAddr,
           function (result, status) {
             // 정상적으로 검색이 완료됐으면
             if (status === window.kakao.maps.services.Status.OK) {
@@ -119,7 +124,6 @@ export default defineComponent({
                 position: markerPosition,
                 image: markerImage,
               });
-
               setOverlay(coords, marker, markerList[i]); // 상세 정보 창 만들어주고
 
               marker.setMap(map);
@@ -136,9 +140,11 @@ export default defineComponent({
       }
     };
     const setBounds = bounds => {
-      // 모든 마커 범위 포함하게 지도 범위 재설정
+      // 모든 마커 범위 포함하도록 지도 범위 재설정
       window.map.setBounds(bounds);
     };
+    const isOpen = ref(false);
+
     const setOverlay = (coords, marker, product) => {
       let customOverlay = new window.kakao.maps.CustomOverlay({
         position: coords,
@@ -157,36 +163,71 @@ export default defineComponent({
       img.className = "overlayimg";
       content.appendChild(img);
 
-      let rooms = document.createElement("h3");
+      let topbox = document.createElement("div");
+      topbox.className = "topbox";
+
+      let rooms = document.createElement("div");
       rooms.className = "overlay-rooms";
       rooms.appendChild(document.createTextNode(product.rooms));
-      content.appendChild(rooms);
-
-      let priceinfo = document.createElement("div");
-      let type = document.createElement("div");
-      type.className = "overlay-type";
-      type.appendChild(document.createTextNode(product.type));
+      topbox.appendChild(rooms);
 
       let price = document.createElement("div");
       price.className = "overlay-price";
       price.appendChild(document.createTextNode(product.price));
+      topbox.appendChild(price);
+
+      let type = document.createElement("div");
+      type.className = "overlay-type";
+      type.appendChild(document.createTextNode(product.type));
+      topbox.appendChild(type);
+
+      content.appendChild(topbox);
+
+      let bottombox = document.createElement("div");
+
+      let detailbtn = document.createElement("button");
+      detailbtn.className = "detailbtn";
+      detailbtn.appendChild(document.createTextNode("상세보기"));
+      detailbtn.onclick = function () {
+        moveToDetail();
+      };
+      bottombox.appendChild(detailbtn);
+
+      const moveToDetail = () => {
+        // 상세보기 페이지 이동
+        router.push(`/product/${product.index}`);
+      };
+
+      let chatbtn = document.createElement("button");
+      chatbtn.className = "chatbtn";
+      chatbtn.appendChild(document.createTextNode("문의하기"));
+
+      chatbtn.onclick = function () {
+        emit("chatProduct", product);
+        emit("chatOpen", isOpen);
+        isOpen.value = !isOpen.value;
+      };
+      bottombox.appendChild(chatbtn);
+
+      let clearbox = document.createElement("div");
+      clearbox.className = "clear-box";
+      content.appendChild(clearbox);
 
       let closebtnbox = document.createElement("div");
+
       closebtnbox.onclick = () => {
         customOverlay.setMap(null);
       };
+
       let closebtn = document.createElement("img");
       closebtn.className = "overlay-icon";
       closebtn.src = "https://cdn-icons-png.flaticon.com/512/1828/1828665.png";
       closebtn.width = 15;
       closebtn.height = 15;
       closebtnbox.appendChild(closebtn);
+      content.appendChild(closebtnbox);
 
-      priceinfo.appendChild(type);
-      priceinfo.appendChild(price);
-      priceinfo.appendChild(closebtnbox);
-
-      content.appendChild(priceinfo);
+      content.appendChild(bottombox);
 
       window.kakao.maps.event.addListener(marker, "click", function () {
         customOverlay.setMap(window.map);
@@ -196,18 +237,16 @@ export default defineComponent({
     };
 
     const changeCenter = addr_idx => {
-      console.log(nums);
       // 목록에서 선택 시 해당 위치로 지도 중심 이동, 상세 정보 창 열림
       let idx = nums[addr_idx];
       let marker = markers[idx];
       let coords = marker.getPosition();
       overlays[idx].setMap(window.map);
-      window.map.setCenter(coords);
       window.map.setLevel(1);
+      window.map.setCenter(coords);
     };
 
     return {
-      markerPositions1,
       changeCenter,
       props,
     };
@@ -215,21 +254,6 @@ export default defineComponent({
 });
 </script>
 <style>
-.info-window {
-  border: 1px solid red;
-  width: 150px;
-  height: 200px;
-  text-align: center;
-  padding: 6px 0;
-}
-.test {
-  text-align: center;
-  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
-  border: 1px solid rgb(203, 203, 203);
-  border-radius: 25px;
-  width: 300px;
-  height: 250px;
-}
 .overlaybox {
   width: 280px;
   height: 280px;
@@ -238,23 +262,53 @@ export default defineComponent({
   box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 }
 .overlay-rooms {
-  margin: 10px 20px;
+  /*원룸*/
+  font-size: 20px;
+  font-weight: 1000;
+  float: left;
+  margin: 7px 0 5px 20px;
 }
 .overlay-type {
-  float: left;
-  padding: 0 20px 0 20px;
+  /* 월세 */
+  float: right;
+  margin: 10px 10px 0 0;
 }
 .overlay-price {
-  float: left;
+  /* 100만원 */
+  float: right;
+  margin: 10px 10px 0 0;
 }
 .overlay-icon {
   float: right;
-  padding: 0 15px;
+  padding: 10px 15px;
 }
 .overlayimg {
   border-radius: 15px 15px 0 0;
 }
 .content {
   z-index: 1000;
+}
+.clear-box {
+  clear: both;
+}
+.detailbtn {
+  cursor: pointer;
+  float: left;
+  padding: 3px 20px;
+  margin: 5px 10px 0 15px;
+  background: none;
+  border: none;
+  border-radius: 5px;
+  box-shadow: rgba(0, 0, 0, 0.2) 0px 5px 15px;
+}
+.chatbtn {
+  cursor: pointer;
+  float: left;
+  padding: 3px 20px;
+  margin: 5px 10px 0 0;
+  background: none;
+  border: none;
+  border-radius: 5px;
+  box-shadow: rgba(0, 0, 0, 0.2) 0px 5px 15px;
 }
 </style>
