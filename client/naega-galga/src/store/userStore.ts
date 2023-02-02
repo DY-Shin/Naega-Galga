@@ -11,7 +11,7 @@ const state = {
     user_address: "",
     corporate_registration_number: null,
   },
-  isToken: true,
+  isToken: false,
 };
 
 const getters = {
