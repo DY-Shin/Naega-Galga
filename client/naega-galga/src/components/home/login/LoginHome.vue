@@ -1,16 +1,25 @@
 <template>
   <div class="common-layout">
     <el-container>
-      <main-side @addr_idx="sendIdx" @productList="sendList"></main-side>
+      <main-side
+        @addr_idx="sendIdx"
+        @productClick="sendClick"
+        @productList="sendList"
+      ></main-side>
       <el-container>
         <ka-kao-map
           :GetIdx="idxProxy"
           :GetList="listProxy"
+          :GetClick="clickProxy"
           @chatProduct="sendProduct"
+          @chatOpen="sendChatOpen"
         ></ka-kao-map>
       </el-container>
     </el-container>
-    <chat-window :GetProduct="productProxy"></chat-window>
+    <chat-window
+      :GetProduct="productProxy"
+      :GetChatOpen="chatOpenProxy"
+    ></chat-window>
   </div>
 </template>
 
@@ -29,19 +38,25 @@ export default defineComponent({
     const sendIdx = (sendIdx: number) => {
       idxProxy.value = sendIdx;
     };
+    let clickProxy = ref(false);
+    const sendClick = () => {
+      clickProxy.value = !clickProxy.value;
+    };
+
     let listProxy = ref([]);
     const sendList = (list: []) => {
       listProxy.value.splice(0);
       for (let i = 0; i < list.length; i++) {
         listProxy.value.push(list[i]);
       }
-      console.log(listProxy.value + "00000000000000");
     };
     const productProxy = ref();
     const sendProduct = (product: object) => {
-      // console.log(product.roadAddr);
       productProxy.value = product;
-      console.log(productProxy.value + " proxy " + product);
+    };
+    const chatOpenProxy = ref(false);
+    const sendChatOpen = (isOpen: boolean) => {
+      chatOpenProxy.value = isOpen;
     };
 
     return {
@@ -51,6 +66,10 @@ export default defineComponent({
       listProxy,
       sendProduct,
       productProxy,
+      sendChatOpen,
+      chatOpenProxy,
+      sendClick,
+      clickProxy,
     };
   },
 });
