@@ -105,16 +105,16 @@ export default {
     const publisher = ref();
     const subscriber = ref();
 
-    const getSession = async () => {
+    const setSession = async () => {
       ov = new OpenVidu();
-      session = ov.getSession();
+      session = ov.initSession();
 
       //새로운 stream을 받을때마다
-      session.value.on("streamCreated", ({ stream }) => {
+      session.on("streamCreated", ({ stream }) => {
         subscriber.value = session.subscribe(stream);
       });
       //stream이 끊어졌을때마다
-      session.value.on("streamDestroyed", () => {
+      session.on("streamDestroyed", () => {
         if (subscriber.value) {
           subscriber.value = null;
         }
@@ -149,7 +149,7 @@ export default {
       index.meeting = computed(() => parseInt(route.params.id[0])).value;
 
       await getMeetingInfo(index.meeting);
-      getSession();
+      setSession();
     });
 
     //--------------------------chat
@@ -171,7 +171,7 @@ export default {
         type: "chat",
         to: undefined,
       };
-      session.value.signal(signalOptions);
+      session.signal(signalOptions);
     };
 
     //media control
@@ -187,11 +187,11 @@ export default {
 
     //exit
     const leaveSession = () => {
-      if (session.value) {
-        session.value.disconnect();
+      if (session) {
+        session.disconnect();
       }
 
-      session.value = undefined;
+      session = undefined;
       publisher.value = undefined;
       subscriber.value = null;
       ov.value = undefined;
