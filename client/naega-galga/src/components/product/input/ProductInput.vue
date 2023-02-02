@@ -222,20 +222,19 @@
       <el-button v-if="!isEditMode" type="primary" @click="onClickAdd">
         등록
       </el-button>
-      <el-button v-else type="primary" @click="onClickEdit">수정</el-button>
       <el-button type="warning" @click="cancelEditProduct">취소</el-button>
     </el-col>
   </el-row>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onMounted, reactive } from "vue";
+import { computed, defineComponent, reactive } from "vue";
 import ProductImageInput from "@/components/product/input/ProductImageInput.vue";
 import AddressSearchButton from "@/components/common/AddressSearchButton.vue";
 import { useRoute } from "vue-router";
 import router from "@/router";
 import type { UploadFile } from "element-plus";
-import { addProduct, editProduct, getProduct } from "@/api/productApi";
+import { addProduct } from "@/api/productApi";
 import ResponseStatus from "@/api/responseStatus";
 
 export default defineComponent({
@@ -247,7 +246,6 @@ export default defineComponent({
     //edit일때 product index
     const route = useRoute();
     const isEditMode = route.params.id ? true : false;
-    const productIndex = computed(() => parseInt(route.params.id[0]));
 
     //이미지 파일
     const fileList: Array<UploadFile> = reactive([]);
@@ -308,82 +306,6 @@ export default defineComponent({
       selectedOptionList: [],
     });
 
-    const optionObjToArr = object => {
-      const arr: string[] = [];
-
-      if (object.optionFridge) {
-        arr.push("냉장고");
-      }
-      if (object.optionAirConditioner) {
-        arr.push("에어컨");
-      }
-      if (object.optionWashingMachine) {
-        arr.push("세탁기");
-      }
-      if (object.optionGasStove) {
-        arr.push("가스레인지");
-      }
-      if (object.optionInduction) {
-        arr.push("인덕션");
-      }
-      if (object.optionMicrowave) {
-        arr.push("전자레인지");
-      }
-      if (object.optionWifi) {
-        arr.push("와이파이");
-      }
-      if (object.optionDesk) {
-        arr.push("책상");
-      }
-      if (object.optionCloset) {
-        arr.push("옷장");
-      }
-      if (object.optionBed) {
-        arr.push("침대");
-      }
-      return arr;
-    };
-
-    //id값이 있으면 서버에서 product값을 받아온다
-    if (isEditMode) {
-      onMounted(async () => {
-        try {
-          const response = await getProduct(productIndex.value);
-          const { product, building, options } = response.data;
-
-          productInfo.productContractTypeRadio = product.productType;
-
-          const priceArr = product.productPrice.split("/");
-          productInfo.deposit = priceArr[0];
-          productInfo.price = priceArr[1];
-
-          productInfo.managePrice = product.productManageCost;
-          productInfo.roomSize = product.productSize;
-          productInfo.selectedRoomDirection = product.productDirection;
-
-          const floorArray = product.productFloor.split("/");
-          productInfo.maxFloor = floorArray[0].replace("층", "");
-          productInfo.productFloor = floorArray[1].replace("층", "");
-
-          productInfo.selectedOptionList = product.productRooms;
-          productInfo.parking = building.buildingParking;
-          productInfo.canAnimalRadio = product.productAnimal;
-          productInfo.elevatorRadio =
-            building.buildingElevator === 0 ? "없음" : "있음";
-          productInfo.roadAddress = building.buildingRoadAddress;
-          productInfo.jibunAddress = building.buildingJibunAddress;
-          productInfo.productHo = product.productDetail;
-          productInfo.selectedOptionList = optionObjToArr(options);
-        } catch (error) {
-          console.log(error);
-        }
-      });
-      //productInfo.imageList = [값];
-
-      productInfo.buildingName = "싸피빌라";
-      productInfo.productHo = "302";
-      productInfo.selectedOptionList = ["세탁기", "인덕션"];
-    }
     const depositAndPrice = computed(
       () =>
         productInfo.productContractTypeRadio === "월세"
@@ -556,19 +478,6 @@ export default defineComponent({
       }
     };
 
-    const onClickEdit = async () => {
-      //수정 요청
-      const data = makeObjForRequest();
-      const productId: number = parseInt(route.params.id[0]);
-      const status = await editProduct(data, productId);
-      if (status === ResponseStatus.Ok) {
-        router.replace("/");
-      }
-      if (status === ResponseStatus.InternalServerError) {
-        alert("서버 오류로 처리할 수 없습니다");
-      }
-    };
-
     const cancelEditProduct = () => {
       router.back();
     };
@@ -587,7 +496,6 @@ export default defineComponent({
       optionList,
       isEditMode,
       onClickAdd,
-      onClickEdit,
       cancelEditProduct,
     };
   },
