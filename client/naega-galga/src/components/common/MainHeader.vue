@@ -3,8 +3,18 @@
     <router-link to="/" id="title">내가갈가[家]</router-link>
     <div class="home-btn" v-if="isLog == false">
       <!-- 로그인 안 했을 때 -->
-      <el-button id="login-btn" color="#b1b3b8" size="large">로그인</el-button>
-      <el-button id="join-btn" color=" #b1b3b8" size="large"
+      <el-button
+        id="login-btn"
+        color="#b1b3b8"
+        round
+        @click="$router.push('/login')"
+        >로그인</el-button
+      >
+      <el-button
+        id="join-btn"
+        color=" #b1b3b8"
+        round
+        @click="$router.push('/join')"
         >회원가입</el-button
       >
     </div>
@@ -32,7 +42,7 @@
             "
             hide-on-click
           >
-            <router-link to="/" class="drop-text">
+            <router-link to="/user" class="drop-text">
               내 정보
             </router-link></el-dropdown-item
           >
@@ -42,7 +52,7 @@
               --el-dropdown-menuItem-hover-fill: #dedfe0;
               --el-dropdown-menuItem-hover-color: #73767a;
             "
-            ><router-link to="" class="drop-text"
+            ><router-link to="/user/register" class="drop-text"
               >등록된 매물</router-link
             ></el-dropdown-item
           >
@@ -52,7 +62,7 @@
               --el-dropdown-menuItem-hover-fill: #dedfe0;
               --el-dropdown-menuItem-hover-color: #73767a;
             "
-            ><router-link to="" class="drop-text"
+            ><router-link to="/user/reservation" class="drop-text"
               >예약 목록</router-link
             ></el-dropdown-item
           ><el-dropdown-item
@@ -61,7 +71,7 @@
               --el-dropdown-menuItem-hover-fill: #dedfe0;
               --el-dropdown-menuItem-hover-color: #73767a;
             "
-            ><router-link to="" class="drop-text"
+            ><router-link to="/user/wish" class="drop-text"
               >찜 목록</router-link
             ></el-dropdown-item
           ><el-dropdown-item
@@ -81,34 +91,49 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
-
+import { defineComponent, ref, computed } from "vue";
+import { useStore } from "vuex";
 export default defineComponent({
-  data() {
-    return {
-      isLog: true,
-      isMenu: false,
-      showButton: true,
-      isHeaderShow: true,
+  setup() {
+    const isLog = ref(true);
+    const isMenu = ref(false);
+    const showButton = ref(true);
+    const isHeaderShow = ref(true);
+
+    const store = useStore();
+    isLog.value = computed(() => store.getters["userStore/isLogin"]).value;
+
+    // isLog.value = computed(() => store.getters["userStore/isLogin"]).value;
+    // console.log(isLog.value);
+
+    const OpenMenu = () => {
+      isMenu.value = true;
     };
-  },
-  methods: {
-    OpenMenu(): void {
-      this.isMenu = true;
-    },
-    close() {
+    const close = () => {
       // this.showButton = false;
-    },
-    Logout() {
-      this.isLog = false;
-    },
-    changeEmpty(): void {
+    };
+    const Logout = () => {
+      store.dispatch("userStore/logout");
+      console.log("logout");
+    };
+    const changeEmpty = () => {
       // window.open("../assets/image/icon-heart.png");
       let icon2 = document.querySelector("#icon");
       // icon?.setAttribute("src", "../assets/image/icon-heart.png");
       icon2?.setAttribute("src", "/icon-heart.png");
-    },
+    };
+    return {
+      isLog,
+      isMenu,
+      showButton,
+      isHeaderShow,
+      OpenMenu,
+      close,
+      Logout,
+      changeEmpty,
+    };
   },
+
   watch: {
     $route(to) {
       if (
@@ -221,7 +246,8 @@ export default defineComponent({
 #join-btn {
   /* float: right; */
   margin-left: 20px;
-  margin-top: 30px;
+  margin-top: 20px;
+  bottom: 30px;
   color: white;
 }
 
