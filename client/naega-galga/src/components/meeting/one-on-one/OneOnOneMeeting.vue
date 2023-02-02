@@ -106,14 +106,14 @@ export default {
 
     const getSession = async () => {
       ov.value = new OpenVidu();
-      session.value.value = ov.value.getSession();
+      session.value = ov.value.getSession();
 
       //새로운 stream을 받을때마다
-      session.value.value.on("streamCreated", ({ stream }) => {
-        subscriber = session.value.value.subscribe(stream);
+      session.value.on("streamCreated", ({ stream }) => {
+        subscriber = session.value.subscribe(stream);
       });
       //stream이 끊어졌을때마다
-      session.value.value.on("streamDestroyed", () => {
+      session.value.on("streamDestroyed", () => {
         if (subscriber.value) {
           subscriber.value = null;
         }
