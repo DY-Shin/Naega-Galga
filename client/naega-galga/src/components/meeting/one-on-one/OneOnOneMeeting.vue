@@ -1,50 +1,29 @@
 <template>
   <div class="container">
     <div class="video-group">
-      <video
-        v-show="videoOn.seller"
+      <ov-video
         id="seller-video"
         class="border shadow"
         autoplay
         playinline
-      ></video>
-      <div v-show="!videoOn.seller" id="seller-video" class="border shadow">
-        <div class="no-video-text-position">비디오가 연결되지 않았습니다.</div>
-      </div>
+        :stream-manager="isSeller ? publisher : subscriber"
+      ></ov-video>
       <div>
-        <video
-          v-show="videoOn.buyer"
+        <ov-video
           id="buyer-video"
           class="border"
           autoplay
           playinline
-        ></video>
-        <div v-show="!videoOn.buyer" id="buyer-video" class="border">
-          <div class="no-video-text-buyer">비디오가 연결되지 않았습니다.</div>
-        </div>
+          :stream-manager="isSeller ? subscriber : publisher"
+        ></ov-video>
       </div>
     </div>
     <div class="flex-column">
       <div id="map" class="border shadow"></div>
-      <div id="chat-box" class="border shadow">
-        <div id="message-box" ref="messageBoxRef">
-          <div v-for="(message, index) in messageList" :key="index">
-            {{ message.text }}
-          </div>
-        </div>
-        <div id="message-input-box">
-          <textarea
-            v-model="messageInput"
-            rows="3"
-            cols="50"
-            class="message-input"
-            @keydown="onTextAreaKeyUp"
-          ></textarea>
-          <el-button type="primary" @click="onClickSendMessage">
-            <el-icon class="send-icon"><Promotion /></el-icon>
-          </el-button>
-        </div>
-      </div>
+      <chat-box
+        @sendMessage="sendMessage"
+        :message-list="messageList"
+      ></chat-box>
     </div>
   </div>
   <div class="control-buttons">
@@ -69,130 +48,166 @@
 </template>
 
 <script lang="ts">
-import { ref, reactive, Ref, onMounted, computed } from "vue";
-import { useRouter } from "vue-router";
+import { ref, reactive, onMounted, computed, watch } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { useStore } from "vuex";
+import { getOneOnOneMeetingInfo } from "@/api/meetingApi";
+import OvVideo from "./OvVideo.vue";
+import { OpenVidu } from "openvidu-browser";
+import ChatBox from "@/components/meeting/one-on-one/ChatBox.vue";
+import { Message } from "@/types/MeetingChatType";
 
 export default {
+  components: {
+    OvVideo,
+    ChatBox,
+  },
   setup() {
     //화상 미팅방 정보
-    // const store = useStore();
-    // const myInfo = computed(() => store.getters("userStore/GET_USER_INFO"));
-    const myIndex = 1;
-    const meetingInfo = {
-      sellerIndex: 2,
-      buyerIndex: 1,
-    };
-    const imSeller = computed(() => {
-      if (myIndex === meetingInfo.sellerIndex) {
-        return true;
+    const store = useStore();
+    const route = useRoute();
+    const router = useRouter();
+
+    let token: string;
+    const index = reactive({
+      my: -1,
+      seller: -1,
+      buyer: -1,
+      meeting: -1,
+    });
+    let isSeller = ref(false);
+
+    const getMeetingInfo = async (meetingIndex: number) => {
+      try {
+        const response = await getOneOnOneMeetingInfo(meetingIndex);
+        const data = response.data;
+
+        index.seller = data.sellerIndex;
+        index.buyer = data.buyderIndex;
+        token = data.token;
+
+        if (index.seller === index.my) {
+          isSeller.value = true;
+          myVideo = sellerVideo;
+        }
+      } catch (error) {
+        alert("서버 오류로 실행할 수 없습니다\n잠시 후 다시 시도해 주세요.");
       }
-      return false;
+    };
+
+    const sellerVideo = document.querySelector("video#sellerVideo");
+    const buyerVideo = document.querySelector("video#buyderVideo");
+    let myVideo = buyerVideo;
+
+    const ov = ref();
+    const session = ref();
+    const publisher = ref();
+    let subscriber = ref();
+
+    const getSession = async () => {
+      ov.value = new OpenVidu();
+      session.value.value = ov.value.getSession();
+
+      //새로운 stream을 받을때마다
+      session.value.value.on("streamCreated", ({ stream }) => {
+        subscriber = session.value.value.subscribe(stream);
+      });
+      //stream이 끊어졌을때마다
+      session.value.value.on("streamDestroyed", () => {
+        if (subscriber.value) {
+          subscriber.value = null;
+        }
+      });
+      session.value.on("exception", ({ exception }) => {
+        console.warn(exception);
+      });
+
+      await session.value.connect(token);
+      publisher.value = ov.value.initPublisher(myVideo, {
+        audioSource: undefined,
+        videoSource: undefined,
+        publishAudio: true,
+        publishVideo: true,
+        insertMode: "APPEND",
+        mirror: false,
+      });
+      session.value.publish(publisher);
+    };
+
+    onMounted(async () => {
+      index.my = computed(() => store.getters["userStore/userIndex"]).value;
+      index.meeting = computed(() => parseInt(route.params.id[0])).value;
+
+      await getMeetingInfo(index.meeting);
+      getSession();
     });
 
-    let sellerVideo;
-    let buyerVideo;
-    let myVideo;
-    let myVideoStream;
+    //chat
+    const messageList: Array<Message> = reactive([]);
+
+    //새로운 문자열이 추가될때마다 시간 기준으로 정렬
+    watch(
+      () => messageList.length,
+      () =>
+        messageList.sort(
+          (a: Message, b: Message) =>
+            a.sendedTime.valueOf() - b.sendedTime.valueOf()
+        )
+    );
+    const sendMessage = (message: Message) => {
+      //chat signal 전송
+      messageList.push(message);
+    };
 
     //media control
     const myMicMute = ref(false);
     const myVideoMute = ref(false);
 
-    const videoOn = reactive({ seller: false, buyer: false });
-
     const muteMic = () => {
-      myVideo.muted = myMicMute.value;
       myMicMute.value = !myMicMute.value;
     };
     const muteVideo = () => {
       myVideoMute.value = !myVideoMute.value;
-      const videoTracks = myVideoStream.getVideoTracks();
-      videoTracks.forEach(track => (track.enabled = myVideoMute.value));
     };
 
     //exit
-    const router = useRouter();
+    const leaveSession = () => {
+      if (session.value) {
+        session.value.disconnect();
+      }
+
+      session.value = undefined;
+      publisher.value = undefined;
+      subscriber.value = null;
+      ov.value = undefined;
+
+      window.removeEventListener("beforeunload", leaveSession);
+    };
+
     const onClickExit = () => {
       if (confirm("정말 나가시겠습니까?")) {
+        leaveSession();
         router.back();
       }
     };
 
-    //chat
-    interface Message {
-      isMine: boolean;
-      text: string;
-    }
-
-    const messageList: Ref<Array<Message>> = ref([]);
-    const inputtedMessage = ref("");
-    const messageBoxRef = ref();
-
-    // eslint-disable-next-line no-unused-vars
-    const sendMessage = (message: string) => {
-      //메세지 전송
-      messageList.value.push({
-        isMine: true,
-        text: inputtedMessage.value,
-      });
-      inputtedMessage.value = "";
-      messageBoxRef.value.scrollTop = messageBoxRef.value.scrollHeight;
-    };
-    const onClickSendMessage = () => {
-      sendMessage(inputtedMessage.value);
-    };
-
-    const onTextAreaKeyUp = event => {
-      if (event.key === "Enter") {
-        event.preventDefault();
-        //shift + enter
-        if (event.shiftKey) {
-          inputtedMessage.value += "\n";
-          return;
-        }
-        sendMessage(inputtedMessage.value);
-        return;
-      }
-    };
-
     //미디어 기기 가져오기
-    const openMediaDevices = async constraints =>
-      await navigator.mediaDevices.getUserMedia(constraints);
+    // const openMediaDevices = async constraints =>
+    //   await navigator.mediaDevices.getUserMedia(constraints);
 
-    onMounted(async () => {
-      sellerVideo = document.querySelector("video#seller-video");
-      buyerVideo = document.querySelector("video#buyer-video");
+    // onMounted(async () => {});
 
-      try {
-        myVideoStream = await openMediaDevices({ video: true, audio: true });
-        //내가 판매자라면 판매자 비디오에 스트림 연결
-        myMicMute.value = true;
-        myVideoMute.value = true;
-        if (imSeller.value) {
-          videoOn.seller = true;
-          sellerVideo.srcObject = myVideoStream;
-          myVideo = sellerVideo;
-          return;
-        }
-        videoOn.buyer = true;
-        buyerVideo.srcObject = myVideoStream;
-        myVideo = buyerVideo;
-      } catch (error) {
-        // alert("카메라와 마이크의 연결 상태를 확인해주세요");
-      }
-    });
     return {
+      isSeller,
+      publisher,
+      subscriber,
+      messageList,
+      sendMessage,
       myMicMute,
       myVideoMute,
-      videoOn,
       muteMic,
       muteVideo,
       onClickExit,
-      messageInput: inputtedMessage,
-      onClickSendMessage,
-      onTextAreaKeyUp,
-      messageList,
-      messageBoxRef,
     };
   },
 };
@@ -204,11 +219,7 @@ export default {
   flex-direction: row;
   height: 80vh;
 }
-.flex-column {
-  display: flex;
-  flex-direction: column;
-  margin-left: 1.5rem;
-}
+
 .video-group {
   position: relative;
 }
@@ -260,6 +271,12 @@ export default {
   height: 40vh;
 }
 
+.flex-column {
+  display: flex;
+  flex-direction: column;
+  margin-left: 1.5rem;
+}
+
 .button-size {
   width: 100px;
 }
@@ -278,38 +295,5 @@ export default {
   margin-right: 10px;
   font-size: var(--el-font-size-small);
   width: 30px;
-}
-
-#chat-box {
-  flex: 1;
-  margin-top: 1rem;
-  width: 28vw;
-  background-color: rgba(236, 245, 255, 0.5);
-}
-
-#message-box {
-  height: 17.8em;
-  overflow-y: auto;
-}
-
-#message-input-box {
-  display: flex;
-  flex-direction: row;
-  flex: 1;
-}
-
-.message-input {
-  border: none;
-  background-color: transparent;
-  width: 87%;
-  outline: none;
-}
-
-.message-input :focus {
-  outline: none;
-}
-
-.send-icon {
-  transform: rotate(50deg);
 }
 </style>
