@@ -112,7 +112,7 @@ img {
   text-align: center;
   padding: 150px 0;
   font-size: 40px;
-  background-color: #dedfe0;
+  background-color: #ececec;
 }
 .container-2 {
   text-align: center;
@@ -123,7 +123,7 @@ img {
   text-align: center;
   padding: 150px 0;
   font-size: 40px;
-  background-color: #dedfe0;
+  background-color: #ececec;
 }
 .container-4 {
   text-align: center;
@@ -134,7 +134,7 @@ img {
   text-align: center;
   padding: 200px 0;
   font-size: 40px;
-  background-color: #dedfe0;
+  background-color: #ececec;
 }
 .content {
   vertical-align: middle;

@@ -98,7 +98,6 @@
         />
         <span class="slash"> / </span>
         <el-input
-          v-if="isMonth"
           v-model="productInfo.productFloor"
           placeholder="매물의 층수"
           type="number"
@@ -230,13 +229,13 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, reactive } from "vue";
+import { computed, defineComponent, onMounted, reactive } from "vue";
 import ProductImageInput from "@/components/product/input/ProductImageInput.vue";
 import AddressSearchButton from "@/components/common/AddressSearchButton.vue";
 import { useRoute } from "vue-router";
 import router from "@/router";
 import type { UploadFile } from "element-plus";
-import { addProduct, editProduct } from "@/api/productApi";
+import { addProduct, editProduct, getProduct } from "@/api/productApi";
 import ResponseStatus from "@/api/responseStatus";
 
 export default defineComponent({
@@ -245,6 +244,12 @@ export default defineComponent({
     AddressSearchButton,
   },
   setup() {
+    //edit일때 product index
+    const route = useRoute();
+    const isEditMode = route.params.id ? true : false;
+    const productIndex = computed(() => parseInt(route.params.id[0]));
+
+    //이미지 파일
     const fileList: Array<UploadFile> = reactive([]);
 
     const fileAdd = (file: UploadFile): void => {
@@ -280,8 +285,6 @@ export default defineComponent({
       selectedOptionList: Array<string>;
     }
     //mode
-    const route = useRoute();
-    const isEditMode = route.params.id ? true : false;
 
     //월세, 전세 처리
     const productInfo: Product = reactive({
@@ -305,33 +308,87 @@ export default defineComponent({
       selectedOptionList: [],
     });
 
+    const optionObjToArr = object => {
+      const arr: string[] = [];
+
+      if (object.optionFridge) {
+        arr.push("냉장고");
+      }
+      if (object.optionAirConditioner) {
+        arr.push("에어컨");
+      }
+      if (object.optionWashingMachine) {
+        arr.push("세탁기");
+      }
+      if (object.optionGasStove) {
+        arr.push("가스레인지");
+      }
+      if (object.optionInduction) {
+        arr.push("인덕션");
+      }
+      if (object.optionMicrowave) {
+        arr.push("전자레인지");
+      }
+      if (object.optionWifi) {
+        arr.push("와이파이");
+      }
+      if (object.optionDesk) {
+        arr.push("책상");
+      }
+      if (object.optionCloset) {
+        arr.push("옷장");
+      }
+      if (object.optionBed) {
+        arr.push("침대");
+      }
+      return arr;
+    };
+
     //id값이 있으면 서버에서 product값을 받아온다
     if (isEditMode) {
+      onMounted(async () => {
+        try {
+          const response = await getProduct(productIndex.value);
+          const { product, building, options } = response.data;
+
+          productInfo.productContractTypeRadio = product.productType;
+
+          const priceArr = product.productPrice.split("/");
+          productInfo.deposit = priceArr[0];
+          productInfo.price = priceArr[1];
+
+          productInfo.managePrice = product.productManageCost;
+          productInfo.roomSize = product.productSize;
+          productInfo.selectedRoomDirection = product.productDirection;
+
+          const floorArray = product.productFloor.split("/");
+          productInfo.maxFloor = floorArray[0].replace("층", "");
+          productInfo.productFloor = floorArray[1].replace("층", "");
+
+          productInfo.selectedOptionList = product.productRooms;
+          productInfo.parking = building.buildingParking;
+          productInfo.canAnimalRadio = product.productAnimal;
+          productInfo.elevatorRadio =
+            building.buildingElevator === 0 ? "없음" : "있음";
+          productInfo.roadAddress = building.buildingRoadAddress;
+          productInfo.jibunAddress = building.buildingJibunAddress;
+          productInfo.productHo = product.productDetail;
+          productInfo.selectedOptionList = optionObjToArr(options);
+        } catch (error) {
+          console.log(error);
+        }
+      });
       //productInfo.imageList = [값];
-      productInfo.productContractTypeRadio = "월세";
-      const priceValue = "1000/50";
-      const priceArray = priceValue.split("/");
-      productInfo.deposit = priceArray[0];
-      productInfo.price = priceArray[1];
-      productInfo.managePrice = "5";
-      productInfo.roomSize = 20.5;
-      productInfo.selectedRoomDirection = "남향";
-      const floorValue = "10층/3층";
-      const floorArray = floorValue.split("/");
-      productInfo.maxFloor = floorArray[0].replace("층", "");
-      productInfo.productFloor = floorArray[1].replace("층", "");
-      productInfo.selectedProductType = "원룸";
-      productInfo.parking = 1;
-      productInfo.canAnimalRadio = "가능";
-      productInfo.elevatorRadio = "있음";
-      productInfo.roadAddress = "구미시 진평길 13-3";
-      productInfo.jibunAddress = "구미시 진평동 182";
+
       productInfo.buildingName = "싸피빌라";
       productInfo.productHo = "302";
       productInfo.selectedOptionList = ["세탁기", "인덕션"];
     }
     const depositAndPrice = computed(
-      () => `${productInfo.deposit}/${productInfo.price}`
+      () =>
+        productInfo.productContractTypeRadio === "월세"
+          ? `${productInfo.deposit}/${productInfo.price}` //월세면 보증금/월세
+          : productInfo.deposit //전세면 그냥 보증금만
     );
 
     const numberInputDefaultValue = computed(value =>
@@ -387,30 +444,33 @@ export default defineComponent({
       "옷장",
       "침대",
     ];
-    const makeObjForRequest = (): FormData => {
+    const makeObjForRequest = () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const formData: any = new FormData();
 
       const options: string[] = [];
       productInfo.selectedOptionList.forEach(item => options.push(item));
-      const files: Array<UploadFile> = [];
-      fileList.forEach((item: UploadFile) => files.push(item));
+
+      fileList.forEach((item: UploadFile) => {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, no-unused-vars, @typescript-eslint/no-unused-vars
+        const file: File = item.raw!;
+        formData.append("productPhoto", file);
+      });
 
       const floor = `${productInfo.maxFloor}층/${productInfo.productFloor}층`;
 
       const product = {
-        productPhoto: files,
         productType: productInfo.productContractTypeRadio,
-        productPrice: depositAndPrice,
-        productManageCost: productInfo.managePrice,
-        productSize: productInfo.roomSize,
+        productPrice: depositAndPrice.value,
+        productManageCost: parseInt(productInfo.managePrice),
+        productSize: productInfo.roomSize.toString(),
         productDirection: productInfo.selectedRoomDirection,
         productFloor: floor,
         productRooms: productInfo.selectedProductType,
         productAnimal: productInfo.canAnimalRadio,
         productDetail: productInfo.productHo,
       };
-      formData.append("product", product);
+      formData.append("product", JSON.stringify(product));
 
       const building = {
         buildingParking: productInfo.parking,
@@ -419,7 +479,7 @@ export default defineComponent({
         buildingName: productInfo.buildingName,
         buildingElevator: stringToBooleanInt("있음", productInfo.elevatorRadio),
       };
-      formData.append("building", building);
+      formData.append("building", JSON.stringify(building));
 
       const checkOption = (option: string) =>
         optionList.some(item => item === option);
@@ -441,10 +501,10 @@ export default defineComponent({
       productInfo.selectedOptionList.forEach(item => {
         if (checkOption(item)) {
           switch (item) {
-            case "냉장고":
-              option.optionFridge = 1;
-              break;
             case "에어컨":
+              option.optionAirConditioner = 1;
+              break;
+            case "냉장고":
               option.optionFridge = 1;
               break;
             case "세탁기":
@@ -474,7 +534,7 @@ export default defineComponent({
           }
         }
       });
-      formData.append("option", option);
+      formData.append("options", JSON.stringify(option));
 
       return formData;
     };
@@ -482,10 +542,11 @@ export default defineComponent({
     const onClickAdd = async () => {
       const data = makeObjForRequest();
       data.append("userIndex", "1");
+
       //등록
       const status = await addProduct(data);
       if (status === ResponseStatus.Ok) {
-        router.back();
+        router.replace("/");
       }
       if (status === ResponseStatus.Conflict) {
         alert("이미 등록된 매물입니다");
@@ -501,7 +562,7 @@ export default defineComponent({
       const productId: number = parseInt(route.params.id[0]);
       const status = await editProduct(data, productId);
       if (status === ResponseStatus.Ok) {
-        router.back();
+        router.replace("/");
       }
       if (status === ResponseStatus.InternalServerError) {
         alert("서버 오류로 처리할 수 없습니다");

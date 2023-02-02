@@ -8,8 +8,10 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
+//TODO: findByProductIndex 겹침 수정
 public interface ProductRepository extends JpaRepository<Product, Integer> {
 //    매물 찾기
     List<Product> findAll();
@@ -22,4 +24,11 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
     Product findByProductIndex(Integer productIndex);
 
     List<ProductDTO> findAllByProductSeller(User user);
+
+    Product findByProductDetailAndBuildingBuildingAddress(String productDetail, String buildingAddress);
+
+    @Transactional
+    void deleteProductByProductIndex(int productIndex);
+
+    Product findByProductIndex(int productIndex);
 }
