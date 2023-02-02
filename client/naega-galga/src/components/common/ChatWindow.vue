@@ -42,7 +42,7 @@
     <div>
       <div class="chat-content">
         <div v-for="item in chatContents" :key="item.chatRoomIndex" class="msg">
-          <div class="item" v-if="nowChatRoomIndex == item.senderIndex">
+          <div class="item" v-if="userIndex == item.senderIndex">
             <div class="box">
               <p class="msg">{{ item.message }}</p>
               <span class="time">{{ item.time }}</span>
@@ -125,40 +125,50 @@
 <script lang="ts">
 import { defineComponent, ref, watch, reactive, computed } from "vue";
 import { Plus, Promotion } from "@element-plus/icons-vue";
-import { getChatRooms, getChatContent } from "@/api/chatApi";
+import { getChatRooms, getChatContent, getChatRoomInfo } from "@/api/chatApi";
 import { addProductReserve } from "@/api/productApi";
 import ResponseStatus from "@/api/responseStatus";
 import { useStore } from "vuex";
 
 export default defineComponent({
   props: {
-    GetProduct: { type: Object },
+    getProduct: { type: Object },
+    getChatOpen: { type: Boolean },
   },
   setup(props) {
-    const nowChatRoomIndex = ref(0);
-    const userIndex = ref(0);
-    const OpIndex = ref(0);
-    const isOpenList = ref(false);
-    const isOpenChat = ref(false);
-    const isOpenReserve = ref(false);
+    const store = useStore();
+    const nowChatProduct = ref(); // 현재 문의하기로 연결된 매물 정보
+    const nowChatRoomInfo = ref(); // 현재 채팅방 정보
+    const userIndex = computed(
+      // 현재 로그인 된 유저 인덱스
+      () => store.getters["userStore/userIndex"]
+    ).value;
+    const nowOpIndex = ref(0); // 현재 채팅의 상대 인덱스
+    const isOpenList = ref(false); // 채팅 목록 열림 여부
+    const isOpenChat = ref(false); // 채팅방 열림 여부
+    const isOpenReserve = ref(false); // 예약 창 열림 여부
     const inputMsg = ref("");
 
     watch(
-      () => isOpenChat.value,
+      () => props.getChatOpen,
       () => {
-        console.log("isOpenChat " + isOpenChat.value);
+        nowChatProduct.value = props.getProduct;
+        requestChatRoomInfo();
       },
       { deep: true }
     );
 
-    watch(
-      () => props.GetProduct,
-      () => {
-        chatProduct.value = props.GetProduct;
-        isOpenChat.value = true;
-      },
-      { deep: true }
-    );
+    const requestChatRoomInfo = async () => {
+      isOpenChat.value = true;
+      nowChatRoomInfo.value = await getChatRoomInfo(
+        nowChatProduct.value.OpIndex
+      );
+    };
+
+    if (props.getChatOpen) {
+      isOpenChat.value = true;
+    }
+
     // ------------------------------------채팅 start------------------------------------
 
     interface chatRoom {
@@ -176,12 +186,8 @@ export default defineComponent({
 
     const isOpenChatRooms = ref(false);
     let chatRooms = reactive<Array<chatRoom>>([]);
-    const store = useStore();
     const OpenChatRooms = async () => {
       // 채팅방 목록 요청
-      userIndex.value = computed(
-        () => store.getters["userStore/userIndex"]
-      ).value;
       const list = await getChatRooms(userIndex.value);
       list.data.forEach((product: chatRoom) => chatRooms.push(product));
       isOpenChatRooms.value = !isOpenChatRooms.value;
@@ -190,11 +196,21 @@ export default defineComponent({
     const chatProduct = ref();
     let chatContents = reactive<Array<chatContent>>([]);
 
+    const setOpIndex = (index: number) => {
+      nowOpIndex.value = chatRooms[index].OpIndex;
+    };
+
     const OpenChat = async (index: number) => {
       // 채팅방 컨텐츠 요청
-      OpIndex.value = chatRooms[index].OpIndex;
-      nowChatRoomIndex.value = chatRooms[index].chatRoomIndex;
-      let list = await getChatContent(nowChatRoomIndex.value);
+      isOpenChat.value = true;
+      if (index != -1) {
+        nowChatProduct.value = chatRooms[index];
+      }
+      let list = await getChatContent(
+        index == -1
+          ? nowChatRoomInfo.value.chatRoomIndex
+          : chatRooms[index].chatRoomIndex
+      );
       list.data.forEach((content: chatContent) => chatContents.push(content));
 
       isOpenChat.value = true;
@@ -313,7 +329,8 @@ export default defineComponent({
       chatProduct,
       chatRooms,
       chatContents,
-      nowChatRoomIndex,
+      setOpIndex,
+      userIndex,
     };
   },
 });
@@ -382,7 +399,7 @@ export default defineComponent({
   top: calc(50vh - 350px);
   left: calc(50vw - 200px);
   width: 400px;
-  height: 550px;
+  height: 520px;
   background: rgb(255, 255, 255);
   border: 1px solid rgb(184, 184, 184);
   box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;

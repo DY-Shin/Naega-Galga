@@ -6,14 +6,18 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, computed } from "vue";
 import LoginHome from "@/components/home/login/LoginHome.vue";
 import LogoutHome from "@/components/home/logout/LogoutHome.vue";
+import { useStore } from "vuex";
 export default defineComponent({
-  data() {
-    return { isLog: true };
-  },
   components: { LoginHome, LogoutHome },
+
+  setup() {
+    const isLog = computed(() => store.getters["userStore/isLogin"]).value;
+    const store = useStore();
+    return { isLog };
+  },
 });
 </script>
 <style scoped></style>
