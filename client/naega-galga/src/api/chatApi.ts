@@ -19,4 +19,14 @@ async function getChatContent(chatRoomIndex: number) {
   return response;
 }
 
-export { getChatRooms, getChatContent };
+async function getChatRoomInfo(opIndex: number) {
+  const response: AxiosResponse = await apiTokenInstance.post(
+    `/api/chat/rooms/ask`,
+    {
+      opIndex: opIndex,
+    }
+  );
+  return response;
+}
+
+export { getChatRooms, getChatContent, getChatRoomInfo };

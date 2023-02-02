@@ -16,8 +16,8 @@
   <!-- --------------chat list start-------------- -->
   <el-scrollbar v-show="isOpenChatRooms" class="chat-list" height="400px">
     <div v-for="(item, index) in chatRooms" :key="item.chatRoomIndex">
-      <button @click="OpenChat(index)" class="chat-list-item">
-        {{ item.OpName }}
+      <button @click="openChat(index)" class="chat-list-item">
+        {{ item.opName }}
       </button>
     </div>
   </el-scrollbar>
@@ -41,8 +41,8 @@
     <div id="chatTitle" style="font-size: 20px; margin: 10px 15px 0">{{}}</div>
     <div>
       <div class="chat-content">
-        <div v-for="item in chatContents" :key="item.senderIndex" class="msg">
-          <div class="item" v-if="nowChatRoomIndex == item.senderIndex">
+        <div v-for="item in chatContents" :key="item.chatRoomIndex" class="msg">
+          <div class="item" v-if="userIndex == item.senderIndex">
             <div class="box">
               <p class="msg">{{ item.message }}</p>
               <span class="time">{{ item.time }}</span>
@@ -69,7 +69,7 @@
         @click="sendMessage"
       />
     </div>
-    <div id="clock-icon" @click="OpenReserve">
+    <div id="clock-icon" @click="openReserve">
       <img src="@/assets/image/icon-clock.png" width="30" />
     </div>
   </div>
@@ -126,7 +126,7 @@
 <script lang="ts">
 import { defineComponent, ref, watch, reactive, computed } from "vue";
 import { Plus, Promotion } from "@element-plus/icons-vue";
-import { getChatRooms, getChatContent } from "@/api/chatApi";
+import { getChatRooms, getChatContent, getChatRoomInfo } from "@/api/chatApi";
 import { addProductReserve } from "@/api/productApi";
 import ResponseStatus from "@/api/responseStatus";
 import { useStore } from "vuex";
@@ -135,29 +135,36 @@ import SockJS from "sockjs-client";
 
 export default defineComponent({
   props: {
-    GetProduct: { type: Object },
+    getProduct: { type: Object },
+    getChatOpen: { type: Boolean },
   },
   setup(props) {
-    const nowChatRoomIndex = ref(0);
-    const userIndex = ref(0);
-    const OpIndex = ref(0);
-    const isOpenList = ref(false);
-    const isOpenChat = ref(false);
-    const isOpenReserve = ref(false);
+    const store = useStore();
+    const nowChatProduct = ref(); // 현재 문의하기로 연결된 매물 정보
+    const nowChatRoomInfo = ref(); // 현재 채팅방 정보
+    const userIndex = computed(
+      // 현재 로그인 된 유저 인덱스
+      () => store.getters["userStore/userIndex"]
+    ).value;
+    const nowOpIndex = ref(0); // 현재 채팅의 상대 인덱스
+    const isOpenList = ref(false); // 채팅 목록 열림 여부
+    const isOpenChat = ref(false); // 채팅방 열림 여부
+    const isOpenReserve = ref(false); // 예약 창 열림 여부
     const inputMsg = ref("");
 
     watch(
-      () => isOpenChat.value,
+      () => props.getChatOpen,
       () => {
-        console.log("isOpenChat " + isOpenChat.value);
+        nowChatProduct.value = props.getProduct;
+        requestChatRoomInfo();
       },
       { deep: true }
     );
 
     watch(
-      () => props.GetProduct,
+      () => props.getProduct,
       () => {
-        chatProduct.value = props.GetProduct;
+        chatProduct.value = props.getProduct;
         isOpenChat.value = true;
       },
       { deep: true }
@@ -212,12 +219,23 @@ export default defineComponent({
     };
 
     // ----------------------메세지 전송 end----------------------
+    const requestChatRoomInfo = async () => {
+      isOpenChat.value = true;
+      nowChatRoomInfo.value = await getChatRoomInfo(
+        nowChatProduct.value.OpIndex
+      );
+    };
+
+    if (props.getChatOpen) {
+      isOpenChat.value = true;
+    }
+
     // ------------------------------------채팅 start------------------------------------
 
     interface chatRoomsItem {
       chatRoomIndex: number;
-      OpIndex: number;
-      OpName: string;
+      opIndex: number;
+      opName: string;
     }
 
     interface chatContent {
@@ -229,12 +247,8 @@ export default defineComponent({
 
     const isOpenChatRooms = ref(false);
     let chatRooms = reactive<Array<chatRoomsItem>>([]);
-    const store = useStore();
     const OpenChatRooms = async () => {
       // 채팅방 목록 요청
-      userIndex.value = computed(
-        () => store.getters["userStore/userIndex"]
-      ).value;
       const list = await getChatRooms(userIndex.value);
       list.data.forEach((product: chatRoomsItem) => chatRooms.push(product));
       isOpenChatRooms.value = !isOpenChatRooms.value;
@@ -243,12 +257,22 @@ export default defineComponent({
     const chatProduct = ref();
     let chatContents = reactive<Array<chatContent>>([]);
 
-    const OpenChat = async (index: number) => {
+    const setOpIndex = (index: number) => {
+      nowOpIndex.value = chatRooms[index].opIndex;
+    };
+
+    const openChat = async (index: number) => {
       // 채팅방 컨텐츠 요청
       connect();
-      OpIndex.value = chatRooms[index].OpIndex;
-      nowChatRoomIndex.value = chatRooms[index].chatRoomIndex;
-      let list = await getChatContent(nowChatRoomIndex.value);
+      isOpenChat.value = true;
+      if (index != -1) {
+        nowChatProduct.value = chatRooms[index];
+      }
+      let list = await getChatContent(
+        index == -1
+          ? nowChatRoomInfo.value.chatRoomIndex
+          : chatRooms[index].chatRoomIndex
+      );
       list.data.forEach((content: chatContent) => chatContents.push(content));
 
       isOpenChat.value = true;
@@ -286,7 +310,7 @@ export default defineComponent({
       date.value = dateValue.value.getDate();
     };
 
-    const OpenReserve = () => {
+    const openReserve = () => {
       // 예약 창 열기
       isOpenReserve.value = !isOpenReserve.value;
     };
@@ -342,9 +366,9 @@ export default defineComponent({
     return {
       inputMsg,
       OpenChatRooms,
-      OpenChat,
+      openChat,
       isOpenChatRooms,
-      OpenReserve,
+      openReserve,
       isOpenList,
       isOpenChat,
       isOpenReserve,
@@ -367,8 +391,9 @@ export default defineComponent({
       chatProduct,
       chatRooms,
       chatContents,
-      nowChatRoomIndex,
       sendMessage,
+      setOpIndex,
+      userIndex,
     };
   },
 });
@@ -437,7 +462,7 @@ export default defineComponent({
   top: calc(50vh - 350px);
   left: calc(50vw - 200px);
   width: 400px;
-  height: 550px;
+  height: 520px;
   background: rgb(255, 255, 255);
   border: 1px solid rgb(184, 184, 184);
   box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
