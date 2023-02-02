@@ -221,6 +221,7 @@ export default defineComponent({
     }
 
     interface chatContent {
+      chatRoomIndex: number;
       senderIndex: number;
       message: string;
       time: string;
