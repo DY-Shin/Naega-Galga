@@ -463,7 +463,6 @@ export default defineComponent({
 
     const onClickAdd = async () => {
       const data = makeObjForRequest();
-      data.append("userIndex", "1");
 
       //등록
       const status = await addProduct(data);
