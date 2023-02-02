@@ -4,7 +4,7 @@ import localStorageManager from "@/utils/localStorageManager";
 
 const state = {
   user_info: {
-    user_index: "",
+    user_index: 1,
     user_id: "",
     user_phone: "",
     user_name: "",
