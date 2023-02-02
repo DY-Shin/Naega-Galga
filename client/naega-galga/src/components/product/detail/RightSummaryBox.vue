@@ -4,20 +4,6 @@
       <span class="font-large font-semi-bold">
         {{ summary.title }}
       </span>
-      <el-button
-        type="info"
-        size="small"
-        text
-        class="heart-btn"
-        @click="toggleLike"
-      >
-        <img
-          class="heart-icon"
-          v-if="isWish.value"
-          src="@/assets/image/icon-heart-filled.png"
-        />
-        <img class="heart-icon" v-else src="@/assets/image/icon-heart.png" />
-      </el-button>
     </div>
     <div class="font-medium margin-top">
       {{ summary.floor }}
@@ -44,10 +30,8 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, reactive } from "vue";
+import { computed, defineComponent } from "vue";
 import { Plus } from "@element-plus/icons-vue";
-import { addProductWish, deleteProductWish } from "@/api/productApi";
-import ResponseStatus from "@/api/responseStatus";
 
 export default defineComponent({
   props: {
@@ -62,33 +46,11 @@ export default defineComponent({
         sellerId: String,
         sellerIndex: Number,
         explanationDate: String,
-        isWish: Boolean,
       },
     },
   },
   setup(props) {
-    const isWish = reactive({ value: props.summaryValue?.isWish });
-    const userIndex = 1;
-
-    const toggleLike = async () => {
-      isWish.value = !isWish.value;
-      let response;
-      //관심 등록
-      if (!isWish) {
-        response = await addProductWish(
-          props.summaryValue?.productIndex,
-          userIndex
-        );
-      } else {
-        response = await deleteProductWish(
-          props.summaryValue?.productIndex,
-          userIndex
-        );
-      }
-      if ((response.status = ResponseStatus.InternalServerError)) {
-        alert("서버 오류로 요청을 처리할 수 없습니다.");
-      }
-    };
+    // const userIndex = 1;
 
     const dateSplit = (divider: string, value: string): string[] =>
       value.split(divider);
@@ -115,8 +77,6 @@ export default defineComponent({
 
     return {
       summary,
-      isWish,
-      toggleLike,
       Plus,
     };
   },
