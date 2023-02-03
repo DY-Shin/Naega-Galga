@@ -1,6 +1,8 @@
 package com.ssafy.commonpjt.api.service;
 
 import com.ssafy.commonpjt.api.dto.chatDTO.ChatRoomResponseDTO;
+import com.ssafy.commonpjt.api.dto.chatDTO.MessageListRequestDTO;
+import com.ssafy.commonpjt.api.dto.chatDTO.MessageListResponseDTO;
 import com.ssafy.commonpjt.common.security.SecurityUtil;
 import com.ssafy.commonpjt.db.entity.ChatRoom;
 import com.ssafy.commonpjt.db.entity.User;
@@ -18,12 +20,16 @@ public class ChatServiceImpl implements ChatService{
     private final UserRepository userRepository;
     private final ChatRoomRepository chatRoomRepository;
 
-    @Override
-    public List<ChatRoomResponseDTO> getChatList() throws Exception {
+    public User getLoginUser() throws Exception{
         User loginUser = userRepository
 //                .findByUserId(SecurityUtil.getLoginUsername())
                 .findByUserId("aabbcc")
                 .orElseThrow(() -> new Exception("No User Exists"));
+        return loginUser;
+    }
+    @Override
+    public List<ChatRoomResponseDTO> getChatList() throws Exception {
+        User loginUser = getLoginUser();
         int loginUserIndex = loginUser.getUserIndex();
         String loginUserName = loginUser.getName();
         List<ChatRoom> roomList = chatRoomRepository.findChatRoomByUser(loginUserIndex);
@@ -41,6 +47,15 @@ public class ChatServiceImpl implements ChatService{
         }
 
         return result;
+    }
+
+    @Override
+    public MessageListResponseDTO getMessageList(MessageListRequestDTO dto) throws Exception {
+        User loginUser = getLoginUser();
+        int loginUserIndex = loginUser.getUserIndex();
+        int opIndex = dto.getOpIndex();
+        int roomId = 0;
+        return null;
     }
 
 

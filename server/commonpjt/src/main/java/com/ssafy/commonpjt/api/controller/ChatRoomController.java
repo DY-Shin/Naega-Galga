@@ -1,14 +1,14 @@
 package com.ssafy.commonpjt.api.controller;
 
-import com.ssafy.commonpjt.api.dto.chatDTO.ChatRoomRequestDTO;
+import com.ssafy.commonpjt.api.dto.chatDTO.MessageListRequestDTO;
+import com.ssafy.commonpjt.api.dto.chatDTO.MessageListResponseDTO;
 import com.ssafy.commonpjt.api.service.ChatServiceImpl;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -21,8 +21,8 @@ public class ChatRoomController {
     private ChatServiceImpl chatService;
 
     @PostMapping("/ask")
-    public ResponseEntity<?> createChat(@ResponseBody ChatRoomRequestDTO) throws Exception {
-
+    public ResponseEntity<?> createChat(@RequestBody MessageListRequestDTO dto) throws Exception {
+        MessageListResponseDTO messageList = chatService.getMessageList(dto);
         return null;
     }
 
