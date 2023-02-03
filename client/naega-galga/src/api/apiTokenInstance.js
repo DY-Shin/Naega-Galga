@@ -48,24 +48,24 @@ const apiTokenInstance = axios.create({
 //   }
 // });
 
-apiTokenInstance.interceptors.response.use(
-  res => res,
-  // eslint-disable-next-line no-unused-vars
-  async function (error) {
-    //   //토큰 만료나 토큰이 없을시 리프레쉬 하도록
-    //   if (
-    //     error.response.status &&
-    //     error &&
-    //     error.response.status === ResponseStatus.Unauthorized
-    //   ) {
-    //     const accessToken = await getRefreshToken();
-    //     if (accessToken) {
-    //       error.headers.Authorization = `${accessToken}`;
-    //     }
-    //     return apiTokenInstance(error);
-    //   }
-    return Promise.reject();
-  }
-);
+// apiTokenInstance.interceptors.response.use(
+// res => res,
+// eslint-disable-next-line no-unused-vars
+// async function (error) {
+//   //토큰 만료나 토큰이 없을시 리프레쉬 하도록
+//   if (
+//     error.response.status &&
+//     error &&
+//     error.response.status === ResponseStatus.Unauthorized
+//   ) {
+//     const accessToken = await getRefreshToken();
+//     if (accessToken) {
+//       error.headers.Authorization = `${accessToken}`;
+//     }
+//     return apiTokenInstance(error);
+//   }
+// return Promise.reject();
+// }
+// );
 
 export default apiTokenInstance;

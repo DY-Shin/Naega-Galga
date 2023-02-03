@@ -1,11 +1,6 @@
 <template>
   <div id="mypagedetail">
     <h1>내 정보</h1>
-
-    <button v-show="loginCheck">로그인O</button>
-    <button v-show="!loginCheck">로그인X</button>
-
-    <el-button @click="logout">로그아웃</el-button>
     <hr />
     <el-form v-if="isChange == false">
       <el-form-item class="one-line">
@@ -85,14 +80,7 @@
 </template>
 
 <script lang="ts">
-import {
-  defineComponent,
-  computed,
-  reactive,
-  ref,
-  onMounted,
-  // onBeforeMount,
-} from "vue";
+import { defineComponent, computed, reactive, ref } from "vue";
 import { useStore } from "vuex";
 import PasswordChange from "./PasswordChange.vue";
 import UserDeleteDialog from "./UserDeleteDialog.vue";
@@ -105,17 +93,11 @@ export default defineComponent({
   },
   setup() {
     const store = useStore();
-    const { state } = useStore();
 
-    let info = computed(() => state.userStore.user_info);
-    const loginCheck = computed(() => store.getters["userStore/isLogin"]);
-
-    onMounted(() => {
-      store.dispatch("userStore/getUserInfo");
-      store.dispatch("userStore/isToken");
-    });
-
-    let isChange = ref(false);
+    const getUserInfo = () => store.dispatch("userStore/getUserInfo");
+    // rendering 될 때 유저정보 가져오기 위해 실행해준다.
+    getUserInfo();
+    const info = computed(() => store.state.userStore.user_info);
 
     const changeform = reactive({
       user_name: "",
@@ -125,29 +107,26 @@ export default defineComponent({
       corporate_registration_number: "",
     });
 
+    let isChange = ref(false);
+
     const putUserInfo = () => {
       isChange.value = true;
-      // event.preventDefault();
     };
 
     const saveChangeInfo = () => {
       store.dispatch("userStore/userInfoChange", changeform);
       isChange.value = false;
-      // event.preventDefault();
-    };
-
-    const logout = () => {
-      store.dispatch("userStore/logout");
+      getUserInfo();
     };
 
     return {
+      getUserInfo,
       info,
+
       changeform,
       isChange,
       putUserInfo,
       saveChangeInfo,
-      logout,
-      loginCheck,
     };
   },
 });

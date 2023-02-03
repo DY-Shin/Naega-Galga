@@ -1,8 +1,10 @@
 <template>
+  <div style="font-size: 50px">회원 탈퇴</div>
+
   <div>비밀번호를 입력하세요</div>
   <el-input v-model="passwordForm.password" placeholder="" />
-  <button @click="checkPassword">비밀번호 확인</button>
-  <button @click="userdelete">탈퇴버튼</button>
+  <el-button @click="checkPassword">비밀번호 확인</el-button>
+  <el-button @click="userdelete">탈퇴버튼</el-button>
 </template>
 
 <script lang="ts">

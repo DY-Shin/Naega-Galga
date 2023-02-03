@@ -1,15 +1,16 @@
 import apiInstance from "@/api/apiInstance";
 import apiTokenInstance from "@/api/apiTokenInstance";
 import localStorageManager from "@/utils/localStorageManager";
+import axios from "axios";
 import router from "../router";
 
 const state = {
   user_info: {
-    user_index: 1,
-    user_id: "",
-    user_phone: "",
-    user_name: "",
-    user_address: "",
+    user_index: "abab",
+    user_id: "로그인이 되지 않음!",
+    user_phone: "로그인이 되지 않음!",
+    user_name: "로그인이 되지 않음!",
+    user_address: "로그인이 되지 않음!",
     corporate_registration_number: null,
   },
   isToken: false,
@@ -86,6 +87,7 @@ const actions = {
       .then(res => {
         localStorageManager.setAccessToken(res.data.accessToken);
         localStorageManager.setRefreshToken(res.data.refreshToken);
+
         context.commit("TOKEN_TRUE");
 
         router.push({ path: "/" });
@@ -95,6 +97,31 @@ const actions = {
       });
   },
 
+  // login(context, loginform) {
+  //   axios({
+  //     method: "post",
+  //     url: `http://localhost:8888/api/users/login`,
+  //     data: {
+  //       userId: loginform.id,
+  //       userPassword: loginform.password,
+  //     },
+  //     headers: {
+  //       Authorization:
+  //         "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJvbWo5NTEyIiwiYXV0aCI6IlJPTEVfVVNFUiIsImV4cCI6MTY3NTM5NzQxOX0.UvSXDSuk2Y4EhTRD3CenajxpOlrqQyNuDq-7caQq4Io",
+  //     },
+  //   })
+  //     .then(res => {
+  //       localStorageManager.setAccessToken(res.data.accessToken);
+  //       localStorageManager.setRefreshToken(res.data.refreshToken);
+  //       console.log("good");
+
+  //       router.push({ path: "/" });
+  //     })
+  //     .catch(err => {
+  //       console.log(err);
+  //     });
+  // },
+
   logout(context) {
     apiInstance
       .post("/api/users/logout", {
@@ -103,9 +130,13 @@ const actions = {
       })
       .then(res => {
         console.log(res);
-        localStorageManager.setAccessToken("");
-        localStorageManager.setRefreshToken("");
+        localStorageManager.removeTokens();
+
+        console.log(localStorageManager.getAccessToken());
+
         context.commit("TOKEN_FALSE");
+
+        router.push({ path: "/" });
       })
       .catch(err => {
         console.log(err);
@@ -113,17 +144,38 @@ const actions = {
   },
 
   getUserInfo(context) {
-    apiTokenInstance
-      .get("/api/users")
+    axios({
+      method: "get",
+      url: `http://localhost:8888/api/users`,
+      headers: {
+        Authorization: `Bearer ${localStorageManager.getAccessToken()}`,
+      },
+    })
       .then(res => {
         context.commit("GET_USER_INFO", res.data);
+        console.log("success");
+        console.log(localStorageManager.getAccessToken());
       })
-      .catch(error => {
-        if (error) {
-          console.log(error);
-        }
+      .catch(err => {
+        console.log("fail");
+        console.log(localStorageManager.getAccessToken());
+        console.log(err);
       });
   },
+  // getUserInfo(context) {
+  //   axios
+  //     .get("/api/users")
+  //     .then(res => {
+  //       context.commit("GET_USER_INFO", res.data);
+  //       console.log("success");
+  //       console.log(localStorageManager.getAccessToken());
+  //     })
+  //     .catch(err => {
+  //       console.log("fail");
+  //       console.log(localStorageManager.getAccessToken());
+  //       console.log(err);
+  //     });
+  // },
 
   userInfoChange(context, changeform) {
     apiTokenInstance
