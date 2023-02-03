@@ -180,9 +180,11 @@ export default {
 
     const muteMic = () => {
       myMicMute.value = !myMicMute.value;
+      publisher.value.publishAudio(myMicMute.value);
     };
     const muteVideo = () => {
       myVideoMute.value = !myVideoMute.value;
+      publisher.value.publishVideo(myMicMute.value);
     };
 
     //exit
