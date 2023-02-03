@@ -6,4 +6,6 @@ import java.util.List;
 
 public interface ChatService {
     List<ChatRoomResponseDTO> getChatList() throws Exception;
+
+
 }
