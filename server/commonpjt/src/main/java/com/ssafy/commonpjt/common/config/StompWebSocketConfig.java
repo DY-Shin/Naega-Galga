@@ -19,7 +19,9 @@ public class StompWebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
+        // 메세지 수신
         registry.setApplicationDestinationPrefixes("/pub");
+        // 메세지 발송
         registry.enableSimpleBroker("/sub");
     }
 }

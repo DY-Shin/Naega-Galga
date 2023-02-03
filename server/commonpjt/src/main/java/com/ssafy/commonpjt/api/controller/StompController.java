@@ -1,14 +1,13 @@
 package com.ssafy.commonpjt.api.controller;
 
-import com.ssafy.commonpjt.api.dto.chatDTO.ChatRoomRequestDTO;
-import com.ssafy.commonpjt.api.dto.chatDTO.MessageRequestDTO;
+import com.ssafy.commonpjt.api.dto.chatDTO.MessageSendRequestDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
+@RestController
 @RequiredArgsConstructor
 @Slf4j
 public class StompController {
@@ -18,13 +17,13 @@ public class StompController {
     // /pub/chat/enter
     @MessageMapping("/chat/enter")
     public void enter() {
+        log.info("Connection");
         template.convertAndSend("/sub/chat/room/"+1, "Conectation");
     }
 
     // /pub/chat/message
     @MessageMapping("/chat/message")
-    public void message(MessageRequestDTO message) {
+    public void message(MessageSendRequestDTO message) {
         template.convertAndSend("/sub/chat/room/"+1, message);
     }
-
 }
