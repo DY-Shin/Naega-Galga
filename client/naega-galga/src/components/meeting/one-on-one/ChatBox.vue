@@ -159,4 +159,21 @@ export default {
   align-self: flex-start;
   margin-left: 20px;
 }
+
+@media only screen and (max-width: 500px) {
+  #chat-box {
+    width: 90vw;
+    margin-top: unset;
+    background-color: rgba(236, 245, 255, 0.5);
+    margin-bottom: 5vh;
+  }
+  #message-box-container {
+    height: 25vh;
+  }
+  .send-button {
+    margin-right: 5px;
+    width: 1em;
+    height: 1em;
+  }
+}
 </style>
