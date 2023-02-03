@@ -20,6 +20,7 @@ public class ChatRoomController {
     @Autowired
     private ChatServiceImpl chatService;
 
+    // TODO : RequestBody로 받아야될까? 그냥 경로에 명시를 하는 것이 좋을 것 같다.
     @PostMapping("/ask")
     public ResponseEntity<?> createChat(@RequestBody MessageListRequestDTO dto) throws Exception {
         MessageListResponseDTO messageList = chatService.getMessageList(dto);

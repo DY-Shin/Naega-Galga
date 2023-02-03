@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -25,7 +25,7 @@ public class ChatRoom {
     @Column(name = "chat_index", nullable = false)
     private Integer chatIndex;
 
-    @CreationTimestamp
+    @CreatedDate
     private Timestamp createdAt;
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -54,7 +54,19 @@ public class ChatServiceImpl implements ChatService{
         User loginUser = getLoginUser();
         int loginUserIndex = loginUser.getUserIndex();
         int opIndex = dto.getOpIndex();
-        int roomId = 0;
+        User opUser = userRepository.findById(opIndex)
+                .orElseThrow(() -> new Exception("No User Exists"));
+        ChatRoom chatRoom = chatRoomRepository.hasChatRoom(loginUserIndex, opIndex);
+
+        int roomIndex;
+
+        if(chatRoom == null) {
+            ChatRoom createRoom = ChatRoom.builder()
+                    .buyer(loginUser)
+                    .seller(opUser)
+                    .build();
+        }
+
         return null;
     }
 
