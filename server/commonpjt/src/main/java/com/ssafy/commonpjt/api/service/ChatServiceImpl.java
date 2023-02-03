@@ -21,7 +21,8 @@ public class ChatServiceImpl implements ChatService{
     @Override
     public List<ChatRoomResponseDTO> getChatList() throws Exception {
         User loginUser = userRepository
-                .findByUserId(SecurityUtil.getLoginUsername())
+//                .findByUserId(SecurityUtil.getLoginUsername())
+                .findByUserId("aabbcc")
                 .orElseThrow(() -> new Exception("No User Exists"));
         int loginUserIndex = loginUser.getUserIndex();
         String loginUserName = loginUser.getName();
