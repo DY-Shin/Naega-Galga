@@ -12,7 +12,7 @@ const state = {
     user_address: "",
     corporate_registration_number: null,
   },
-  isToken: false,
+  isToken: true,
 };
 
 const getters = {
