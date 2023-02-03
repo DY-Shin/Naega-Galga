@@ -3,9 +3,9 @@
     <div id="message-box-container" ref="messageBoxRef">
       <div v-for="(message, index) in messageListRef" :key="index">
         <div v-if="message.isMine" class="message-box-holder">
-          <p class="message-box">
+          <div class="message-box">
             {{ message.text }}
-          </p>
+          </div>
         </div>
         <div v-else class="message-box-holder">
           <p class="message-box message-partner">
@@ -152,7 +152,7 @@ export default {
   margin-top: 5px;
   max-width: 40%;
   word-break: break-all;
-  white-space: pre;
+  white-space: pre-wrap;
 }
 .message-partner {
   background: var(--el-color-primary-light-7);
