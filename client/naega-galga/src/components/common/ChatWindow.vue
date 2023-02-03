@@ -170,7 +170,6 @@ export default defineComponent({
       { deep: true }
     );
     // ----------------------메세지 전송 start----------------------
-    const msgInput = ref("");
     // const recvList: any[] = [];
     let serverURL;
     let socket;
@@ -203,7 +202,7 @@ export default defineComponent({
 
     const sendMessage = () => {
       send();
-      msgInput.value = "";
+      inputMsg.value = "";
     };
 
     const send = () => {
@@ -222,10 +221,11 @@ export default defineComponent({
         today.getMilliseconds().toString(10).padStart(2, "0");
       if (socket.stompClient && socket.stompClient.connected) {
         const msg = {
-          chatRoomIndex: str,
+          // chatRoomIndex: nowChatRoomInfo.value.chatRoomIndex,
+          chatRoomIndex: 1,
           senderIndex: userIndex.value,
           message: inputMsg.value,
-          time: today.getHours() + ":" + today.getHours(),
+          time: str,
         };
 
         chatContents.push({
@@ -245,6 +245,7 @@ export default defineComponent({
       nowChatRoomInfo.value = await getChatRoomInfo(
         nowChatProduct.value.OpIndex
       );
+      console.log(nowChatRoomInfo.value + "!!!!!!!!!!");
     };
 
     if (props.getChatOpen) {
