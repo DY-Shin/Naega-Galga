@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 @RestController
 @RequiredArgsConstructor
@@ -17,8 +18,7 @@ public class StompController {
     // /pub/chat/enter
     @MessageMapping("/chat/enter")
     public void enter() {
-        log.info("Connection");
-        template.convertAndSend("/sub/chat/room/"+1, "Conectation");
+        template.convertAndSend("/sub/chat/room/"+1, "Connection");
     }
 
     // /pub/chat/message
@@ -26,4 +26,6 @@ public class StompController {
     public void message(MessageSendRequestDTO message) {
         template.convertAndSend("/sub/chat/room/"+1, message);
     }
+
+
 }
