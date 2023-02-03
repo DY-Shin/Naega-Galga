@@ -11,13 +11,13 @@
           :getIdx="idxProxy"
           :getList="listProxy"
           :getClick="clickProxy"
-          @chatProduct="sendProduct"
+          @chatUserIndex="sendUserIndex"
           @chatOpen="sendChatOpen"
         ></ka-kao-map>
       </el-container>
     </el-container>
     <chat-window
-      :getProduct="productProxy"
+      :getChatUserIndex="chatUserIndexProxy"
       :getChatOpen="chatOpenProxy"
     ></chat-window>
   </div>
@@ -50,9 +50,9 @@ export default defineComponent({
         listProxy.value.push(list[i]);
       }
     };
-    const productProxy = ref();
-    const sendProduct = (product: object) => {
-      productProxy.value = product;
+    const chatUserIndexProxy = ref();
+    const sendUserIndex = (product: number) => {
+      chatUserIndexProxy.value = product;
     };
     const chatOpenProxy = ref(false);
     const sendChatOpen = (isOpen: boolean) => {
@@ -64,12 +64,12 @@ export default defineComponent({
       idxProxy,
       sendList,
       listProxy,
-      sendProduct,
-      productProxy,
+      sendUserIndex,
       sendChatOpen,
       chatOpenProxy,
       sendClick,
       clickProxy,
+      chatUserIndexProxy,
     };
   },
 });
