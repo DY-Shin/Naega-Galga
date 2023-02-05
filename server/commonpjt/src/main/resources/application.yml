@@ -7,9 +7,9 @@ server:
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://stg-yswa-kr-practice-db-master.mariadb.database.azure.com:3306/S08P12D106?serverTimezone=UTC&useUnicode=true&characterEncoding=utf8
-    username: S08P12D106@stg-yswa-kr-practice-db-master
-    password: w2TFbH3C22
+    url: jdbc:mysql://43.201.104.230:3306/naegagalga?serverTimezone=UTC&useUnicode=true&characterEncoding=utf8
+    username: ssafyD106
+    password: ssafycommonD106
 #    url: jdbc:mysql://localhost:3306/pjt?serverTimezone=UTC&useUnicode=true&characterEncoding=utf8
 #    username: test
 #    password: Abcd123!
