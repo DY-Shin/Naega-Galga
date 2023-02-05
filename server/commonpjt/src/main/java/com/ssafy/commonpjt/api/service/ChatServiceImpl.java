@@ -1,6 +1,7 @@
 package com.ssafy.commonpjt.api.service;
 
 import com.ssafy.commonpjt.api.dto.chatDTO.ChatRoomResponseDTO;
+import com.ssafy.commonpjt.api.dto.chatDTO.MessageDTO;
 import com.ssafy.commonpjt.api.dto.chatDTO.MessageListRequestDTO;
 import com.ssafy.commonpjt.api.dto.chatDTO.MessageListResponseDTO;
 import com.ssafy.commonpjt.common.security.SecurityUtil;
@@ -54,15 +55,16 @@ public class ChatServiceImpl implements ChatService{
     }
 
     @Override
-    public MessageListResponseDTO getMessageList(MessageListRequestDTO dto) throws Exception {
+    public MessageListResponseDTO getMessageList(MessageListRequestDTO requestDTO) throws Exception {
+        MessageListResponseDTO result;
         User loginUser = getLoginUser();
         int loginUserIndex = loginUser.getUserIndex();
-        int opIndex = dto.getOpIndex();
+        int opIndex = requestDTO.getOpIndex();
         User opUser = User.builder()
                 .userIndex(opIndex)
                 .build();
         ChatRoom chatRoom = chatRoomRepository.hasChatRoom(loginUserIndex, opIndex);
-
+        List<MessageDTO> resultMessage = new ArrayList<>();
         if(chatRoom == null) {
             log.info("NO CHAT ROOM I WILL CREATE");
             chatRoom = ChatRoom.builder()
@@ -70,10 +72,24 @@ public class ChatServiceImpl implements ChatService{
                     .seller(opUser)
                     .build();
             chatRoomRepository.save(chatRoom);
+            log.info("I CREATE ROOM INDEX " + chatRoom.getChatIndex());
+            result = MessageListResponseDTO.builder()
+                    .chatRoomIndex(chatRoom.getChatIndex())
+                    .messageList(resultMessage)
+                    .build();
+            return result;
         }
         log.info("I GOT ROOM INDEX " + chatRoom.getChatIndex());
 
         List<ChatMessage> messageList = messageRepository.findByChatRoom(chatRoom);
+
+        for(ChatMessage message : messageList) {
+            MessageDTO dto = MessageDTO.builder()
+                    .senderIndex(message.getSender().getUserIndex())
+                    .message(message.getMessage())
+//                    .time(message.getCreatedAt())
+                    .build();
+        }
 
         return null;
     }
