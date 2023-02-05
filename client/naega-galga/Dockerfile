@@ -1,6 +1,6 @@
 FROM nginx:stable-alpine
 
-WORKDIR /naega-galga
+WORKDIR /app
 
 RUN mkdir ./dist
 
