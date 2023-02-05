@@ -4,22 +4,26 @@ import com.ssafy.commonpjt.api.dto.chatDTO.ChatRoomResponseDTO;
 import com.ssafy.commonpjt.api.dto.chatDTO.MessageListRequestDTO;
 import com.ssafy.commonpjt.api.dto.chatDTO.MessageListResponseDTO;
 import com.ssafy.commonpjt.common.security.SecurityUtil;
+import com.ssafy.commonpjt.db.entity.ChatMessage;
 import com.ssafy.commonpjt.db.entity.ChatRoom;
 import com.ssafy.commonpjt.db.entity.User;
+import com.ssafy.commonpjt.db.repository.ChatMessageRepository;
 import com.ssafy.commonpjt.db.repository.ChatRoomRepository;
 import com.ssafy.commonpjt.db.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class ChatServiceImpl implements ChatService{
     private final UserRepository userRepository;
     private final ChatRoomRepository chatRoomRepository;
-
+    private final ChatMessageRepository messageRepository;
     public User getLoginUser() throws Exception{
         User loginUser = userRepository
 //                .findByUserId(SecurityUtil.getLoginUsername())
@@ -54,18 +58,22 @@ public class ChatServiceImpl implements ChatService{
         User loginUser = getLoginUser();
         int loginUserIndex = loginUser.getUserIndex();
         int opIndex = dto.getOpIndex();
-        User opUser = userRepository.findById(opIndex)
-                .orElseThrow(() -> new Exception("No User Exists"));
+        User opUser = User.builder()
+                .userIndex(opIndex)
+                .build();
         ChatRoom chatRoom = chatRoomRepository.hasChatRoom(loginUserIndex, opIndex);
 
-        int roomIndex;
-
         if(chatRoom == null) {
-            ChatRoom createRoom = ChatRoom.builder()
+            log.info("NO CHAT ROOM I WILL CREATE");
+            chatRoom = ChatRoom.builder()
                     .buyer(loginUser)
                     .seller(opUser)
                     .build();
+            chatRoomRepository.save(chatRoom);
         }
+        log.info("I GOT ROOM INDEX " + chatRoom.getChatIndex());
+
+        List<ChatMessage> messageList = messageRepository.findByChatRoom(chatRoom);
 
         return null;
     }
