@@ -48,28 +48,37 @@
       </div>
     </div>
   </div>
+  <explanation-add-dialog
+    :is-show="dialogShow"
+    @closeDialog="closeDialog"
+  ></explanation-add-dialog>
 </template>
 
 <script lang="ts">
 import { ref, reactive, computed } from "vue";
 import { ProductReservation } from "@/types/MeetingReservationType";
 import { Calendar, Minus, Plus } from "@element-plus/icons-vue";
-import { useStore } from "vuex";
+// import { useStore } from "vuex";
+import ExplanationAddDialog from "@/components/product/detail/ExplanationAddDialog.vue";
 
 export default {
   props: {
     productIndex: Number,
   },
+  components: {
+    ExplanationAddDialog,
+  },
   setup(props) {
     const productIndexRef = ref(props.productIndex);
-    const store = useStore();
-    const myIndex = computed(() => store.getters["userStore/userIndex"]);
+    // const store = useStore();
+    // const myIndex = computed(() => store.getters["userStore/userIndex"]);
+    const myIndex = ref(1);
 
     const meetingInfo: ProductReservation = reactive({
       productIndex: productIndexRef.value,
       meetingIndex: -1,
       explanationDate: "2022.02.01 11:00",
-      sellerIndex: -1,
+      sellerIndex: 1,
       buyerIndex: null,
     });
 
@@ -102,8 +111,12 @@ export default {
     );
 
     //click event
+    const dialogShow = ref(false);
     const onClickAddExplanation = () => {
-      //
+      dialogShow.value = !dialogShow.value;
+    };
+    const closeDialog = () => {
+      dialogShow.value = false;
     };
     const onClickDeleteExplanation = () => {
       //
@@ -129,6 +142,8 @@ export default {
       canAddReservation,
       //click event
       onClickAddExplanation,
+      dialogShow,
+      closeDialog,
       onClickDeleteExplanation,
       onClickReserveExplanation,
       onClickCancelReserveExplanation,
