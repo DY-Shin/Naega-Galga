@@ -184,11 +184,11 @@ export default defineComponent({
       chatRoomIndex: number;
       message: message;
     }
-    interface chatContent {
-      // 채팅방 전체 메세지 응답
-      chatRoomIndex: number;
-      list: Array<message>;
-    }
+    // interface chatContent {
+    //   // 채팅방 전체 메세지 응답
+    //   chatRoomIndex: number;
+    //   list: Array<message>;
+    // }
     const isOpenChatRooms = ref(false);
     let chatRooms = reactive<Array<chatRoomsItem>>([]); // 채팅방 목록
 
@@ -197,7 +197,7 @@ export default defineComponent({
       if (!isOpenChatRooms.value) {
         chatRooms.splice(0);
         const list = await getChatRooms();
-        list.forEach(item => chatRooms.push(item));
+        list.data.forEach(item => chatRooms.push(item));
       }
       isOpenChatRooms.value = !isOpenChatRooms.value;
     };
@@ -217,8 +217,8 @@ export default defineComponent({
       connect();
       isOpenChat.value = true;
 
-      let content: chatContent = await getChatContent(nowOpIndex.value);
-      content.list.forEach((msg: message) => chatContents.push(msg));
+      const content = await getChatContent(nowOpIndex.value);
+      content.data.forEach((msg: message) => chatContents.push(msg));
 
       isOpenChat.value = true;
       isOpenChatRooms.value = false;
