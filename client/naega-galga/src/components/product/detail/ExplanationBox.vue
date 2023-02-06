@@ -58,7 +58,7 @@
 import { ref, reactive, computed } from "vue";
 import { ProductReservation } from "@/types/MeetingReservationType";
 import { Calendar, Minus, Plus } from "@element-plus/icons-vue";
-// import { useStore } from "vuex";
+import { useStore } from "vuex";
 import ExplanationAddDialog from "@/components/product/detail/ExplanationAddDialog.vue";
 
 export default {
@@ -70,15 +70,14 @@ export default {
   },
   setup(props) {
     const productIndexRef = ref(props.productIndex);
-    // const store = useStore();
-    // const myIndex = computed(() => store.getters["userStore/userIndex"]);
-    const myIndex = ref(1);
+    const store = useStore();
+    const myIndex = computed(() => store.getters["userStore/userIndex"]);
 
     const meetingInfo: ProductReservation = reactive({
       productIndex: productIndexRef.value,
       meetingIndex: -1,
       explanationDate: "2022.02.01 11:00",
-      sellerIndex: 1,
+      sellerIndex: -1,
       buyerIndex: null,
     });
 
