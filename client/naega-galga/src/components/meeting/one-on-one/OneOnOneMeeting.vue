@@ -19,11 +19,20 @@
       </div>
     </div>
     <div class="flex-column">
-      <div id="map" class="border shadow"></div>
+      <div v-if="!isMobileScreen" id="map" class="border shadow"></div>
       <chat-box
+        v-if="!isMobileScreen"
         @sendMessage="sendMessage"
         :message-list="messageList"
       ></chat-box>
+      <div v-else>
+        <div v-if="!isChatMode" id="map" class="border shadow"></div>
+        <chat-box
+          v-else
+          @sendMessage="sendMessage"
+          :message-list="messageList"
+        ></chat-box>
+      </div>
     </div>
   </div>
   <div class="control-buttons">
@@ -40,6 +49,16 @@
       <span v-if="myVideoMute" class="button-text">ON</span>
       <span v-else class="button-text">OFF</span>
     </el-button>
+    <el-button v-if="isMobileScreen" round @click="toggleChatMode">
+      <span v-if="isChatMode">
+        <el-icon><ChatRound /></el-icon>
+        <span class="button-text">채팅</span>
+      </span>
+      <span v-else>
+        <el-icon><LocationFilled /></el-icon>
+        <span class="button-text">지도</span>
+      </span>
+    </el-button>
     <el-button round type="danger" @click="onClickExit">
       <el-icon><Close /></el-icon>
       <span class="button-text">나가기</span>
@@ -53,9 +72,10 @@ import { useRoute, useRouter } from "vue-router";
 import { useStore } from "vuex";
 import { getOneOnOneMeetingInfo } from "@/api/meetingApi";
 import OvVideo from "./OvVideo.vue";
-import { OpenVidu } from "openvidu-browser";
+import { OpenVidu, SignalOptions } from "openvidu-browser";
 import ChatBox from "@/components/meeting/one-on-one/ChatBox.vue";
 import { Message } from "@/types/MeetingChatType";
+import { isMobileScreen } from "@/use/useMediaQuery";
 
 export default {
   components: {
@@ -63,7 +83,7 @@ export default {
     ChatBox,
   },
   setup() {
-    //화상 미팅방 정보
+    //--------------------------화상 미팅방 정보
     const store = useStore();
     const route = useRoute();
     const router = useRouter();
@@ -99,31 +119,41 @@ export default {
     const buyerVideo = document.querySelector("video#buyderVideo");
     let myVideo = buyerVideo;
 
-    const ov = ref();
-    const session = ref();
+    //--------------------------open-vidu things
+    let ov;
+    let session;
     const publisher = ref();
-    let subscriber = ref();
+    const subscriber = ref();
 
-    const getSession = async () => {
-      ov.value = new OpenVidu();
-      session.value = ov.value.getSession();
+    const setSession = async () => {
+      ov = new OpenVidu();
+      session = ov.initSession();
 
       //새로운 stream을 받을때마다
-      session.value.on("streamCreated", ({ stream }) => {
-        subscriber = session.value.subscribe(stream);
+      session.on("streamCreated", ({ stream }) => {
+        subscriber.value = session.subscribe(stream);
       });
       //stream이 끊어졌을때마다
-      session.value.on("streamDestroyed", () => {
+      session.on("streamDestroyed", () => {
         if (subscriber.value) {
           subscriber.value = null;
         }
       });
-      session.value.on("exception", ({ exception }) => {
+      session.on("exception", ({ exception }) => {
         console.warn(exception);
       });
 
-      await session.value.connect(token);
-      publisher.value = ov.value.initPublisher(myVideo, {
+      session.on(`signal:chat`, event => {
+        const msg = JSON.parse(event.data).message;
+        messageList.push({
+          isMine: false,
+          text: msg,
+          sendedTime: new Date(),
+        });
+      });
+
+      await session.connect(token);
+      publisher.value = ov.initPublisher(myVideo, {
         audioSource: undefined,
         videoSource: undefined,
         publishAudio: true,
@@ -131,7 +161,7 @@ export default {
         insertMode: "APPEND",
         mirror: false,
       });
-      session.value.publish(publisher);
+      session.publish(publisher);
     };
 
     onMounted(async () => {
@@ -139,10 +169,10 @@ export default {
       index.meeting = computed(() => parseInt(route.params.id[0])).value;
 
       await getMeetingInfo(index.meeting);
-      getSession();
+      setSession();
     });
 
-    //chat
+    //--------------------------chat
     const messageList: Array<Message> = reactive([]);
 
     //새로운 문자열이 추가될때마다 시간 기준으로 정렬
@@ -155,28 +185,39 @@ export default {
         )
     );
     const sendMessage = (message: Message) => {
-      //chat signal 전송
       messageList.push(message);
+      const signalOptions: SignalOptions = {
+        data: JSON.stringify({ message }),
+        type: "chat",
+        to: undefined,
+      };
+      session.signal(signalOptions);
     };
 
     //media control
     const myMicMute = ref(false);
     const myVideoMute = ref(false);
+    const isChatMode = ref(true);
 
     const muteMic = () => {
       myMicMute.value = !myMicMute.value;
+      publisher.value.publishAudio(myMicMute.value);
     };
     const muteVideo = () => {
       myVideoMute.value = !myVideoMute.value;
+      publisher.value.publishVideo(myMicMute.value);
+    };
+    const toggleChatMode = () => {
+      isChatMode.value = !isChatMode.value;
     };
 
     //exit
     const leaveSession = () => {
-      if (session.value) {
-        session.value.disconnect();
+      if (session) {
+        session.disconnect();
       }
 
-      session.value = undefined;
+      session = undefined;
       publisher.value = undefined;
       subscriber.value = null;
       ov.value = undefined;
@@ -198,6 +239,7 @@ export default {
     // onMounted(async () => {});
 
     return {
+      isMobileScreen,
       isSeller,
       publisher,
       subscriber,
@@ -205,8 +247,10 @@ export default {
       sendMessage,
       myMicMute,
       myVideoMute,
+      isChatMode,
       muteMic,
       muteVideo,
+      toggleChatMode,
       onClickExit,
     };
   },
@@ -259,8 +303,8 @@ export default {
   height: 15%;
   z-index: 10;
   position: absolute;
-  bottom: -1px;
-  right: 0;
+  bottom: 0;
+  right: 1px;
   border-bottom: none;
   object-fit: cover;
   background-color: #fafafa;
@@ -277,10 +321,6 @@ export default {
   margin-left: 1.5rem;
 }
 
-.button-size {
-  width: 100px;
-}
-
 .control-buttons {
   margin-top: 20px;
   margin-left: 33vw;
@@ -295,5 +335,73 @@ export default {
   margin-right: 10px;
   font-size: var(--el-font-size-small);
   width: 30px;
+}
+
+@media only screen and (max-width: 500px) {
+  .container {
+    display: flex;
+    flex-direction: column;
+    height: 80vh;
+  }
+
+  .video-group {
+    box-sizing: border-box;
+    top: 0;
+    width: 90vw;
+    height: 40vh;
+    align-self: center;
+  }
+
+  #seller-video {
+    width: inherit;
+    height: inherit;
+    overflow-x: hidden;
+  }
+
+  #buyer-video {
+    width: 30%;
+    height: 25%;
+    z-index: 10;
+    position: absolute;
+    right: -2px;
+    border-bottom: none;
+    object-fit: cover;
+    background-color: #fafafa;
+  }
+
+  .flex-column {
+    flex-direction: column-reverse;
+    margin-left: unset;
+    margin-top: 20px;
+    width: 90vw;
+    align-self: center;
+  }
+
+  #map {
+    width: 90vw;
+    height: 30vh;
+    margin-bottom: 5vh;
+  }
+
+  .control-buttons {
+    width: 100%;
+    background-color: #fafafa;
+    margin-top: unset;
+    margin-left: unset;
+    margin-right: unset;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    position: fixed;
+    margin-bottom: 10px;
+    left: 0;
+  }
+
+  .button-text {
+    margin-left: 5px !important;
+    margin-right: 10px;
+    font-size: (--el-font-size-x-small);
+    width: 20px;
+  }
 }
 </style>

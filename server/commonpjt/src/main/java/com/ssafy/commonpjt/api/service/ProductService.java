@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface ProductService {
-    boolean addProduct(int userIndex, List<MultipartFile> fileList, ProductDTO productDTO, BuildingDTO buildingDTO, OptionsDTO optionsDTO) throws Exception;
+    boolean addProduct(List<MultipartFile> fileList, ProductDTO productDTO, BuildingDTO buildingDTO, OptionsDTO optionsDTO) throws Exception;
 
     ProductDetailDTO detailProduct(int productIndex) throws JsonProcessingException;
 

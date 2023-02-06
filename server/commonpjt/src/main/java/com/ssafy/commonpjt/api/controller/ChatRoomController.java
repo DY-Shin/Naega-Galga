@@ -25,7 +25,7 @@ public class ChatRoomController {
     @PostMapping("/rooms/{opIndex}")
     public ResponseEntity<?> createChat(@PathVariable("opIndex") int opIndex) throws Exception {
         MessageListResponseDTO messageList = chatService.getMessageList(opIndex);
-        return null;
+        return ResponseEntity.ok(messageList);
     }
 
     @GetMapping("/rooms")

@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,14 +30,15 @@ class ChatTest {
         ChatRoom chat= chatRoomRepository.hasChatRoom(1,3);
 
         System.out.println(chat != null ? "I GOT " +chat.getChatIndex() + " " + chat.getCreatedAt() : "I Will CREATE MY ROOM");
-        chatService.getMessageList(7);
+        chatService.getMessageList(2);
 
         chat = ChatRoom.builder()
                 .chatIndex(1)
                 .build();
         List<ChatMessage> messageList = chatMessageRepository.findByChatRoom(chat);
         for(ChatMessage message : messageList) {
-            System.out.println("Sender : "+message.getSender().getName()+" MESSAGE : "+ message.getMessage());
+//            "Sender : "+message.getSender().getName()+
+            System.out.println("SENDER : " + message.getSender().getUserIndex() + " MESSAGE : "+ message.getMessage() + " TIME : " + new SimpleDateFormat("HH:mm:ss").format(message.getCreatedAt()));
         }
     }
 }

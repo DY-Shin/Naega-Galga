@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class SocketVO {
+public class SocketDTO {
     // 유저의 이름을 저장하기 위한 변수
     private String userName;
 

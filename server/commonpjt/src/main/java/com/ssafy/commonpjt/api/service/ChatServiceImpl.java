@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -83,14 +84,20 @@ public class ChatServiceImpl implements ChatService{
         List<ChatMessage> messageList = messageRepository.findByChatRoom(chatRoom);
 
         for(ChatMessage message : messageList) {
+            log.info("I SEND MESSAGE : " + message.getMessage() + " WHO AM I : "+message.getSender().getUserIndex());
             MessageDTO dto = MessageDTO.builder()
                     .senderIndex(message.getSender().getUserIndex())
                     .message(message.getMessage())
-//                    .time(message.getCreatedAt())
+                    .time(new SimpleDateFormat("HH:mm:ss").format(message.getCreatedAt()))
                     .build();
-        }
 
-        return null;
+            resultMessage.add(dto);
+        }
+        result = MessageListResponseDTO.builder()
+                .chatRoomIndex(chatRoom.getChatIndex())
+                .messageList(resultMessage)
+                .build();
+        return result;
     }
 
 
