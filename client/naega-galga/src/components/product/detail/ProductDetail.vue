@@ -6,10 +6,7 @@
   </div>
   <el-row>
     <el-col :span="16"></el-col>
-    <el-col :span="8" class="align-right">
-      <el-button type="primary" size="large" @click="moveToEdit">
-        수정
-      </el-button>
+    <el-col v-if="isMine" :span="8" class="align-right">
       <el-button type="danger" size="large" @click="onClickDeleteProduct">
         삭제
       </el-button>
@@ -127,9 +124,6 @@ export default {
       explanationDate: "2022.01.31",
     }));
 
-    const moveToEdit = () => {
-      router.push(`/product/edit/${productIndex}`);
-    };
     const onClickDeleteProduct = async () => {
       if (!confirm("정말 삭제하시겠습니까?")) {
         return;
@@ -150,7 +144,6 @@ export default {
     return {
       productInfo,
       summaryValue,
-      moveToEdit,
       onClickDeleteProduct,
       isMine,
     };
