@@ -13,6 +13,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsUtils;
 
 @Configuration
 @RequiredArgsConstructor
@@ -29,13 +30,14 @@ public class SecurityConfig {
                 .csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                .authorizeRequests()
                 // 접속 URL 권한 설정
+                .authorizeRequests().requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
                 .antMatchers("/api/users", "/api/users/login", "/api/users/logout", "/api/users/delete").permitAll()
-//                .antMatchers("/api/products").hasRole("USER")
-//                .anyRequest().authenticated()
+                .antMatchers("/api/chat")
+                .authenticated()
                 .and()
-                .addFilterBefore(new JwtTokenAuthenticationFilter(jwtTokenProvider, redisTemplate), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new JwtTokenAuthenticationFilter(jwtTokenProvider, redisTemplate),
+                        UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 
