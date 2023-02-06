@@ -37,6 +37,45 @@ async function logout() {
   return response;
 }
 
+async function checkPassword(passwordForm) {
+  const response: AxiosResponse = await axios.post(
+    `/api/users/password`,
+    {
+      checkPassword: passwordForm.password,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${localStorageManager.getAccessToken()}`,
+      },
+    }
+  );
+  return response;
+}
+
+async function changePassword(password_change_form) {
+  const response: AxiosResponse = await axios.put(
+    `api/users/password`,
+    {
+      toBePassword: password_change_form.new_password,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${localStorageManager.getAccessToken()}`,
+      },
+    }
+  );
+  return response;
+}
+
+async function userDelete(passwordForm) {
+  const response: AxiosResponse = await axios.post(`/api/users/delete`, {
+    accessToken: localStorageManager.getAccessToken(),
+    refreshToken: localStorageManager.getRefreshToken(),
+    checkPassword: passwordForm.password,
+  });
+  return response;
+}
+
 async function getUserInfo() {
   const response: AxiosResponse = await axios.get("/api/users", {
     headers: {
@@ -65,4 +104,32 @@ async function userInfoChange(changeform) {
   return response;
 }
 
-export { join, login, logout, getUserInfo, userInfoChange };
+async function getRegistProduct() {
+  const response: AxiosResponse = await axios.get(`api/users/me/products`, {
+    headers: {
+      Authorization: `Bearer ${localStorageManager.getAccessToken()}`,
+    },
+  });
+  return response;
+}
+
+async function getReservateProduct() {
+  const response: AxiosResponse = await axios.get(``, {
+    headers: {
+      Authorization: `Bearer ${localStorageManager.getAccessToken()}`,
+    },
+  });
+  return response;
+}
+export {
+  join,
+  login,
+  logout,
+  checkPassword,
+  changePassword,
+  userDelete,
+  getUserInfo,
+  userInfoChange,
+  getRegistProduct,
+  getReservateProduct,
+};

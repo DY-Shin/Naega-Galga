@@ -3,16 +3,19 @@
 
   <div>비밀번호를 입력하세요</div>
   <el-input v-model="passwordForm.password" placeholder="" />
-  <el-button @click="checkPassword">비밀번호 확인</el-button>
-  <el-button @click="userdelete">탈퇴버튼</el-button>
+  <el-button @click="confirmPassword">비밀번호 확인</el-button>
+  <el-button @click="deleteAccount" v-if="isChecked == true"
+    >탈퇴버튼</el-button
+  >
 </template>
 
 <script lang="ts">
 import { defineComponent, reactive, ref } from "vue";
 import { useRouter } from "vue-router";
-import apiTokenInstance from "@/api/apiTokenInstance";
-import apiInstance from "@/api/apiInstance";
-import localStorageManager from "@/utils/localStorageManager";
+
+import { checkPassword } from "@/api/userApi";
+import { userDelete } from "@/api/userApi";
+import ResponseStatus from "@/api/responseStatus";
 
 export default defineComponent({
   name: "UserDeleteView",
@@ -25,37 +28,24 @@ export default defineComponent({
 
     let isChecked = ref(false);
 
-    const checkPassword = () => {
-      apiTokenInstance
-        .post(`api/users/password`, {
-          checkPassword: passwordForm.password,
-        })
-        .then(res => {
-          isChecked.value = res.data;
-          passwordForm.password = "";
-        })
-        .catch(err => {
-          console.log(err);
-        });
+    const confirmPassword = async () => {
+      const response = await checkPassword(passwordForm);
+      const data = response.data;
+
+      if (response.status === ResponseStatus.Ok) {
+        isChecked.value = data;
+      }
     };
 
-    const userdelete = () => {
-      apiInstance
-        .post("/api/users/delete", {
-          accessToken: localStorageManager.getAccessToken(),
-          refreshToken: localStorageManager.getRefreshToken(),
-          checkPassword: passwordForm.password,
-        })
-        .then(res => {
-          console.log(res);
-          router.push({ path: "" });
-        })
-        .catch(err => {
-          console.log(err);
-        });
+    const deleteAccount = async () => {
+      const response = await userDelete(passwordForm);
+
+      if (response.status === ResponseStatus.Ok) {
+        router.push({ path: "/" });
+      }
     };
 
-    return { passwordForm, checkPassword, userdelete, isChecked };
+    return { passwordForm, confirmPassword, deleteAccount, isChecked };
   },
 });
 </script>
