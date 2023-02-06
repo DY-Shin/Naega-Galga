@@ -3,9 +3,9 @@
     <div id="message-box-container" ref="messageBoxRef">
       <div v-for="(message, index) in messageListRef" :key="index">
         <div v-if="message.isMine" class="message-box-holder">
-          <p class="message-box">
+          <div class="message-box">
             {{ message.text }}
-          </p>
+          </div>
         </div>
         <div v-else class="message-box-holder">
           <p class="message-box message-partner">
@@ -152,11 +152,28 @@ export default {
   margin-top: 5px;
   max-width: 40%;
   word-break: break-all;
-  white-space: pre;
+  white-space: pre-wrap;
 }
 .message-partner {
   background: var(--el-color-primary-light-7);
   align-self: flex-start;
   margin-left: 20px;
+}
+
+@media only screen and (max-width: 500px) {
+  #chat-box {
+    width: 90vw;
+    margin-top: unset;
+    background-color: rgba(236, 245, 255, 0.5);
+    margin-bottom: 5vh;
+  }
+  #message-box-container {
+    height: 25vh;
+  }
+  .send-button {
+    margin-right: 5px;
+    width: 1em;
+    height: 1em;
+  }
 }
 </style>

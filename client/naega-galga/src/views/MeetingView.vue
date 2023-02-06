@@ -15,4 +15,11 @@ export default defineComponent({});
   margin: 3rem;
   margin-bottom: 2rem;
 }
+
+@media only screen and (max-width: 600px) {
+  .margin {
+    margin: unset;
+    margin-bottom: 1rem;
+  }
+}
 </style>
