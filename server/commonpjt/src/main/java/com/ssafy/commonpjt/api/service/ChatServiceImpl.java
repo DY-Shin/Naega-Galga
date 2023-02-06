@@ -55,11 +55,10 @@ public class ChatServiceImpl implements ChatService{
     }
 
     @Override
-    public MessageListResponseDTO getMessageList(MessageListRequestDTO requestDTO) throws Exception {
+    public MessageListResponseDTO getMessageList(int opIndex) throws Exception {
         MessageListResponseDTO result;
         User loginUser = getLoginUser();
         int loginUserIndex = loginUser.getUserIndex();
-        int opIndex = requestDTO.getOpIndex();
         User opUser = User.builder()
                 .userIndex(opIndex)
                 .build();

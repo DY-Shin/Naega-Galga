@@ -29,8 +29,7 @@ class ChatTest {
         ChatRoom chat= chatRoomRepository.hasChatRoom(1,3);
 
         System.out.println(chat != null ? "I GOT " +chat.getChatIndex() + " " + chat.getCreatedAt() : "I Will CREATE MY ROOM");
-        MessageListRequestDTO dto = new MessageListRequestDTO(7);
-        chatService.getMessageList(dto);
+        chatService.getMessageList(7);
 
         chat = ChatRoom.builder()
                 .chatIndex(1)
