@@ -40,7 +40,7 @@ import { computed, onMounted, reactive } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { deleteProduct, getProduct } from "@/api/productApi";
 import ResponseStatus from "@/api/responseStatus";
-// import { useStore } from "vuex";
+import { useStore } from "vuex";
 
 export default {
   components: {
@@ -52,9 +52,8 @@ export default {
   setup() {
     const router = useRouter();
     const route = useRoute();
-    // const store = useStore();
-    // const userIndex = store.getters["userStore/userIndex"];
-    const userIndex = 1;
+    const store = useStore();
+    const userIndex = store.getters["userStore/userIndex"];
 
     const productIndex = parseInt(route.params.id[0]);
     //TODO : userStore 정리되면 적용
