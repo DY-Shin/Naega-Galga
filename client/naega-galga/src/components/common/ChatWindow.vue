@@ -240,7 +240,7 @@ export default defineComponent({
     let socket;
 
     const connect = () => {
-      serverURL = "http://localhost:8888/stomp";
+      serverURL = `${process.env.VUE_APP_API_BASE_URL}stomp`;
       socket = new SockJS(serverURL);
       socket.stompClient = Stomp.over(socket);
       console.log(`소켓 연결을 시도 -> 서버 주소: ${serverURL}`);
