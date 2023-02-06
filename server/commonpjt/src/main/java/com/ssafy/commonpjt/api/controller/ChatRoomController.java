@@ -6,6 +6,7 @@ import com.ssafy.commonpjt.api.service.ChatServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,9 +22,9 @@ public class ChatRoomController {
     private ChatServiceImpl chatService;
 
     // TODO : RequestBody로 받아야될까? 그냥 경로에 명시를 하는 것이 좋을 것 같다.
-    @PostMapping("/ask")
-    public ResponseEntity<?> createChat(@RequestBody MessageListRequestDTO dto) throws Exception {
-        MessageListResponseDTO messageList = chatService.getMessageList(dto);
+    @PostMapping("/rooms/{opIndex}")
+    public ResponseEntity<?> createChat(@PathVariable("opIndex") int opIndex) throws Exception {
+        MessageListResponseDTO messageList = chatService.getMessageList(opIndex);
         return null;
     }
 

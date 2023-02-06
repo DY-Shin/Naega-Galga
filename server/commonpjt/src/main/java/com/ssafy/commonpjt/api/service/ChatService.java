@@ -9,5 +9,5 @@ import java.util.List;
 public interface ChatService {
     List<ChatRoomResponseDTO> getChatList() throws Exception;
 
-    MessageListResponseDTO getMessageList(MessageListRequestDTO dto) throws Exception;
+    MessageListResponseDTO getMessageList(int opIndex) throws Exception;
 }
