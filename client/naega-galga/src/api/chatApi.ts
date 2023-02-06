@@ -1,17 +1,44 @@
-import { AxiosResponse } from "axios";
-import apiTokenInstance from "./apiInstance";
+import axios, { AxiosResponse } from "axios";
+import localStorageManager from "@/utils/localStorageManager";
 
 async function getChatRooms() {
   console.log("getRooms");
-  const response: AxiosResponse = await apiTokenInstance.get(`/api/chat/rooms`);
+  const response: AxiosResponse = await axios.get(`/api/chat/rooms`, {
+    headers: {
+      Authorization: `Bearer ${localStorageManager.getAccessToken()}`,
+    },
+  });
   return response;
 }
 
-async function getChatContent(opIndex: number) {
-  const response: AxiosResponse = await apiTokenInstance.post(
-    `/api/chat/rooms/${opIndex}`
+async function getChatContent(chatRoomIndex: number) {
+  const response: AxiosResponse = await axios.post(
+    `/api/chat/rooms`,
+    {
+      roomIndex: chatRoomIndex,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${localStorageManager.getAccessToken()}`,
+      },
+    }
   );
   return response;
 }
 
-export { getChatRooms, getChatContent };
+async function getChatRoomInfo(opIndex: number) {
+  const response: AxiosResponse = await axios.post(
+    `/api/chat/rooms/ask`,
+    {
+      opIndex: opIndex,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${localStorageManager.getAccessToken()}`,
+      },
+    }
+  );
+  return response;
+}
+
+export { getChatRooms, getChatContent, getChatRoomInfo };

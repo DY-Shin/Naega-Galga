@@ -38,13 +38,24 @@
         <el-input v-model="joinform.user_name"></el-input>
       </el-form-item>
 
-      <el-form-item label="핸드폰 번호" prop="user_phone">
-        <el-input v-model="fullUserPhone.first_user_phone"></el-input>
-      </el-form-item>
-      <el-form-item>
-        <el-input v-model="fullUserPhone.second_user_phone"></el-input>
-
-        <el-input v-model="fullUserPhone.third_user_phone"></el-input>
+      <el-form-item label="핸드폰 번호" prop="user_phone" style="display: flex">
+        <el-input
+          v-model="fullUserPhone.first_user_phone"
+          placeholder="010"
+          style="flex: 3"
+        ></el-input>
+        <p style="flex: 1; text-align: center; margin: 0px">-</p>
+        <el-input
+          v-model="fullUserPhone.second_user_phone"
+          placeholder="0000"
+          style="flex: 4"
+        ></el-input>
+        <p style="flex: 1; text-align: center; margin: 0px">-</p>
+        <el-input
+          v-model="fullUserPhone.third_user_phone"
+          placeholder="0000"
+          style="flex: 4"
+        ></el-input>
       </el-form-item>
 
       <el-form-item style="margin: 0px">
@@ -103,12 +114,14 @@
 
 <script lang="ts">
 import { defineComponent, reactive, ref } from "vue";
-import { useStore } from "vuex";
+// import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import type { FormInstance, FormRules } from "element-plus";
 
 import AddressSearchButton from "@/components/common/AddressSearchButton.vue";
 import JoinTerms from "@/components/user/mypage/JoinTerms.vue";
+
+import { join } from "@/api/userApi";
 
 export default defineComponent({
   name: "JoinView",
@@ -117,7 +130,7 @@ export default defineComponent({
     JoinTerms,
   },
   setup() {
-    const store = useStore();
+    // const store = useStore();
     const router = useRouter();
     const visible = ref(false);
     const terms_check = ref(false);
@@ -171,6 +184,18 @@ export default defineComponent({
       }
     };
 
+    const phone_confirm = (rule: any, value: any, callback: any) => {
+      if (fullUserPhone.first_user_phone == "") {
+        callback(new Error("Please input the phone"));
+      } else if (fullUserPhone.second_user_phone == "") {
+        callback(new Error("Please input the phone"));
+      } else if (fullUserPhone.third_user_phone == "") {
+        callback(new Error("Please input the phone"));
+      } else {
+        callback();
+      }
+    };
+
     const rules = reactive<FormRules>({
       user_id: [
         {
@@ -193,8 +218,12 @@ export default defineComponent({
         },
         {
           min: 2,
+          message: "이름은 2글자 이상으로 입력해주세요.",
+          trigger: "blur",
+        },
+        {
           max: 8,
-          message: "이름은 어쩌고",
+          message: "이름은 8글자 이하로 입력해주세요.",
           trigger: "blur",
         },
       ],
@@ -213,10 +242,6 @@ export default defineComponent({
           max: 16,
           message: "비밀번호는 16글자 이하로 만들어주세요.",
           trigger: "blur",
-        },
-        {
-          validator: password_confirm,
-          message: "비밀번호가 서로 다릅니다",
         },
       ],
       password_confirm: [
@@ -237,14 +262,19 @@ export default defineComponent({
         },
         {
           validator: password_confirm,
-          message: "비밀번호는 같아야 한다 이녀석아",
+          message: "비밀번호가 서로 다릅니다",
         },
       ],
       user_phone: [
+        // {
+        //   required: true,
+        //   message: "핸드폰 번호는 반드시 입력해주세요.",
+        //   trigger: "blur",
+        // },
         {
-          required: true,
-          message: "핸드폰 번호는 반드시 입력해주세요.",
-          trigger: "blur",
+          validator: phone_confirm,
+          message: "번호는 반드시",
+          // trigger: "change",
         },
       ],
       user_address: [
@@ -257,6 +287,12 @@ export default defineComponent({
     });
 
     const submitForm = async (formEl: FormInstance | undefined) => {
+      user_phone.value =
+        fullUserPhone.first_user_phone +
+        "-" +
+        fullUserPhone.second_user_phone +
+        "-" +
+        fullUserPhone.third_user_phone;
       user_address.value =
         fullAddress.roadAddress + " " + fullAddress.detailAddress;
       if (!formEl) {
@@ -264,7 +300,7 @@ export default defineComponent({
       }
       await formEl.validate((valid, fields) => {
         if (valid) {
-          store.dispatch("userStore/join", joinform);
+          join(joinform);
           router.push({ path: "/login" });
         } else {
           console.log("error submit!", fields);
