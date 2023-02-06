@@ -93,6 +93,12 @@
 <script lang="ts">
 import { defineComponent, ref, computed } from "vue";
 import { useStore } from "vuex";
+import { useRouter } from "vue-router";
+import { logout } from "@/api/userApi";
+
+import localStorageManager from "@/utils/localStorageManager";
+import ResponseStatus from "@/api/responseStatus";
+
 export default defineComponent({
   setup() {
     const isLog = computed(() => store.getters["userStore/isLogin"]);
@@ -101,8 +107,10 @@ export default defineComponent({
     const isHeaderShow = ref(true);
 
     const store = useStore();
+    const router = useRouter();
 
     // isLog.value = computed(() => store.getters["userStore/isLogin"]).value;
+    // console.log(isLog.value);
     // console.log(isLog.value);
 
     const OpenMenu = () => {
@@ -111,10 +119,25 @@ export default defineComponent({
     const close = () => {
       // this.showButton = false;
     };
-    const Logout = () => {
-      store.dispatch("userStore/logout");
-      console.log("logout");
+
+    const Logout = async () => {
+      const response = await logout();
+
+      if (response.status === ResponseStatus.Ok) {
+        localStorageManager.removeTokens();
+
+        router.push({ path: "/" });
+      }
     };
+
+    // const Logout = () => {
+    //   // store.dispatch("userStore/logout");
+    //   logout();
+    //   localStorageManager.removeTokens();
+    //   router.push({ path: "/" });
+    //   console.log("logout");
+    // };
+
     const changeEmpty = () => {
       // window.open("../assets/image/icon-heart.png");
       let icon2 = document.querySelector("#icon");

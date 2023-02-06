@@ -4,7 +4,7 @@ const refreshTokenName = "refreshToken";
 const localStorageManager = {
   getAccessToken: (): string | null => localStorage.getItem(accessTokenName),
   setAccessToken: (token: string): void => {
-    localStorage.setItem("accessToken", token);
+    localStorage.setItem(accessTokenName, token);
   },
 
   getRefreshToken: (): string | null => localStorage.getItem(refreshTokenName),

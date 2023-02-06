@@ -16,7 +16,7 @@
     </el-form-item>
   </el-form>
 
-  <el-button @click="checkPassword">비밀번호 체크</el-button>
+  <el-button @click="confirmPassword">비밀번호 체크</el-button>
 
   <el-form
     :model="password_change_form"
@@ -46,15 +46,18 @@
       />
     </el-form-item>
     <el-form-it>
-      <el-button @click="changePassword"> 비밀번호 변경 </el-button>
+      <el-button @click="sendChangePassword"> 비밀번호 변경 </el-button>
     </el-form-it>
   </el-form>
 </template>
 
 <script lang="ts">
 import { defineComponent, reactive, ref } from "vue";
-import apiTokenInstance from "@/api/apiTokenInstance";
 import type { FormRules } from "element-plus";
+
+import { checkPassword } from "@/api/userApi";
+import { changePassword } from "@/api/userApi";
+import ResponseStatus from "@/api/responseStatus";
 
 export default defineComponent({
   name: "PasswordChange",
@@ -68,32 +71,21 @@ export default defineComponent({
 
     let isChecked = ref(false);
 
-    const checkPassword = () => {
-      apiTokenInstance
-        .post(`api/users/password`, {
-          checkPassword: password_change_form.password,
-        })
-        .then(res => {
-          isChecked.value = res.data;
-          password_change_form.password = "";
-          // console.log(isChecked.value);
-        })
-        .catch(err => {
-          console.log(err);
-        });
+    const confirmPassword = async () => {
+      const response = await checkPassword(password_change_form);
+      const data = response.data;
+
+      if (response.status === ResponseStatus.Ok) {
+        isChecked.value = data;
+      }
     };
 
-    const changePassword = () => {
-      apiTokenInstance
-        .put(`api/users/password`, {
-          toBePassword: password_change_form.new_password,
-        })
-        .then(res => {
-          console.log(res);
-        })
-        .catch(err => {
-          console.log(err);
-        });
+    const sendChangePassword = async () => {
+      const response = await changePassword(password_change_form);
+
+      if (response.status === ResponseStatus.Ok) {
+        console.log("password change success");
+      }
     };
 
     const password_confirm = (rule: any, value: any, callback: any) => {
@@ -164,9 +156,9 @@ export default defineComponent({
     });
 
     return {
-      checkPassword,
+      confirmPassword,
       password_change_form,
-      changePassword,
+      sendChangePassword,
       first_rules,
       second_rules,
       isChecked,
