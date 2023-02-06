@@ -32,5 +32,5 @@ spring:
     include: key
 
   redis:
-    host: 127.0.0.1:1
+    host: i8d106.p.ssafy.io
     port: 6379
