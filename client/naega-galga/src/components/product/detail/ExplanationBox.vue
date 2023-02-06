@@ -48,6 +48,10 @@
       </div>
     </div>
   </div>
+  <explanation-add-dialog
+    :is-show="dialogShow"
+    @closeDialog="closeDialog"
+  ></explanation-add-dialog>
 </template>
 
 <script lang="ts">
@@ -55,10 +59,14 @@ import { ref, reactive, computed } from "vue";
 import { ProductReservation } from "@/types/MeetingReservationType";
 import { Calendar, Minus, Plus } from "@element-plus/icons-vue";
 import { useStore } from "vuex";
+import ExplanationAddDialog from "@/components/product/detail/ExplanationAddDialog.vue";
 
 export default {
   props: {
     productIndex: Number,
+  },
+  components: {
+    ExplanationAddDialog,
   },
   setup(props) {
     const productIndexRef = ref(props.productIndex);
@@ -102,8 +110,12 @@ export default {
     );
 
     //click event
+    const dialogShow = ref(false);
     const onClickAddExplanation = () => {
-      //
+      dialogShow.value = !dialogShow.value;
+    };
+    const closeDialog = () => {
+      dialogShow.value = false;
     };
     const onClickDeleteExplanation = () => {
       //
@@ -129,6 +141,8 @@ export default {
       canAddReservation,
       //click event
       onClickAddExplanation,
+      dialogShow,
+      closeDialog,
       onClickDeleteExplanation,
       onClickReserveExplanation,
       onClickCancelReserveExplanation,
