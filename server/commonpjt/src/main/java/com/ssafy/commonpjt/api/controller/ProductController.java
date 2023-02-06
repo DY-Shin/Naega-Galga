@@ -34,17 +34,15 @@ public class ProductController {
     public ResponseEntity<?> addProduct( @RequestPart(value = "productPhoto", required = false)List<MultipartFile> files,
                                          @RequestParam(value = "product")String productStr,
                                          @RequestParam(value = "building")String buildingStr,
-                                         @RequestParam(value = "options")String optionsStr,
-                                         @RequestParam(value = "userIndex")String userIndexStr) throws Exception {
+                                         @RequestParam(value = "options")String optionsStr) throws Exception {
         log.info("in addProduct");
         try{
             ObjectMapper mapper = new ObjectMapper();
             ProductDTO productDTO = mapper.readValue(productStr, ProductDTO.class);
             BuildingDTO buildingDTO = mapper.readValue(buildingStr, BuildingDTO.class);
             OptionsDTO options = mapper.readValue(optionsStr, OptionsDTO.class);
-            int userIndex = Integer.parseInt(userIndexStr);
 
-            boolean created = productService.addProduct(userIndex, files, productDTO, buildingDTO, options);
+            boolean created = productService.addProduct(files, productDTO, buildingDTO, options);
 
             if(created){
                 return new ResponseEntity<Void>(HttpStatus.CREATED);
@@ -54,6 +52,7 @@ public class ProductController {
             }
         }
         catch(Exception e){
+            e.printStackTrace();
             return new ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
