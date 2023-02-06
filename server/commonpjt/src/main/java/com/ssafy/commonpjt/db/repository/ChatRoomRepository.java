@@ -19,4 +19,5 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, Integer> {
             "where s.userIndex = ?1 or b.userIndex = ?1")
     List<ChatRoom> findChatRoomByUser(Integer userIndex);
 
+
 }

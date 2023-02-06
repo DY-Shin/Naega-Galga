@@ -1,21 +1,19 @@
 package com.ssafy.commonpjt.api.dto.chatDTO;
 
-import com.ssafy.commonpjt.db.entity.ChatRoom;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
-// 채팅방 목록 응답
+import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ChatRoomResponseDTO {
-    private int roomIndex;
-    private int OpIndex;
-    private String OpName;
+public class MessageListResponseDTO {
+    private int chatRoomIndex;
+    private List<MessageDTO> messageList;
 }
