@@ -2,13 +2,20 @@ import axios from "axios";
 // import ResponseStatus from "./responseStatus";
 import localStorageManager from "@/utils/localStorageManager";
 
+// const config = {
+//   headers: {
+//     Authorization: `Bearer ${localStorageManager.getAccessToken()}`,
+//   },
+// };
+
 // 토큰 쓰는 객체
 const apiTokenInstance = axios.create({
   baseURL: process.env.VUE_APP_API_BASE_URL,
-  headers: {
-    Authorization: `Bearer ${localStorageManager.getAccessToken()}`,
-  },
 });
+
+apiTokenInstance.defaults.headers.common[
+  "Authorization"
+] = `Bearer ${localStorageManager.getAccessToken()}`;
 
 // async function getRefreshToken() {
 //   try {

@@ -85,6 +85,10 @@ import { useStore } from "vuex";
 import PasswordChange from "./PasswordChange.vue";
 import UserDeleteDialog from "./UserDeleteDialog.vue";
 
+import { getUserInfo } from "@/api/userApi";
+import { userInfoChange } from "@/api/userApi";
+import ResponseStatus from "@/api/responseStatus";
+
 export default defineComponent({
   name: "UserInfo",
   components: {
@@ -94,9 +98,18 @@ export default defineComponent({
   setup() {
     const store = useStore();
 
-    const getUserInfo = () => store.dispatch("userStore/getUserInfo");
-    // rendering 될 때 유저정보 가져오기 위해 실행해준다.
-    getUserInfo();
+    const composition = async () => {
+      const response = await getUserInfo();
+      const data = response.data;
+
+      if (response.status === ResponseStatus.Ok) {
+        store.commit("userStore/GET_USER_INFO", data);
+      } else {
+        console.log("err");
+      }
+    };
+    composition();
+
     const info = computed(() => store.state.userStore.user_info);
 
     const changeform = reactive({
@@ -113,14 +126,21 @@ export default defineComponent({
       isChange.value = true;
     };
 
-    const saveChangeInfo = () => {
-      store.dispatch("userStore/userInfoChange", changeform);
-      isChange.value = false;
-      getUserInfo();
+    const saveChangeInfo = async () => {
+      const response = await userInfoChange(changeform);
+      const data = response.data;
+
+      if (response.status === ResponseStatus.Ok) {
+        store.commit("userStore/USER_INFO_CHANGE", data);
+        isChange.value = false;
+        composition();
+      } else {
+        console.log("err");
+      }
     };
 
     return {
-      getUserInfo,
+      composition,
       info,
 
       changeform,

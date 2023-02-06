@@ -114,12 +114,14 @@
 
 <script lang="ts">
 import { defineComponent, reactive, ref } from "vue";
-import { useStore } from "vuex";
+// import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import type { FormInstance, FormRules } from "element-plus";
 
 import AddressSearchButton from "@/components/common/AddressSearchButton.vue";
 import JoinTerms from "@/components/user/mypage/JoinTerms.vue";
+
+import { join } from "@/api/userApi";
 
 export default defineComponent({
   name: "JoinView",
@@ -128,7 +130,7 @@ export default defineComponent({
     JoinTerms,
   },
   setup() {
-    const store = useStore();
+    // const store = useStore();
     const router = useRouter();
     const visible = ref(false);
     const terms_check = ref(false);
@@ -298,7 +300,7 @@ export default defineComponent({
       }
       await formEl.validate((valid, fields) => {
         if (valid) {
-          store.dispatch("userStore/join", joinform);
+          join(joinform);
           router.push({ path: "/login" });
         } else {
           console.log("error submit!", fields);
