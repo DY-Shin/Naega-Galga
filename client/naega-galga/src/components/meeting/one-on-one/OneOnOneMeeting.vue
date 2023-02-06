@@ -19,11 +19,20 @@
       </div>
     </div>
     <div class="flex-column">
-      <div id="map" class="border shadow"></div>
+      <div v-if="!isMobileScreen" id="map" class="border shadow"></div>
       <chat-box
+        v-if="!isMobileScreen"
         @sendMessage="sendMessage"
         :message-list="messageList"
       ></chat-box>
+      <div v-else>
+        <div v-if="!isChatMode" id="map" class="border shadow"></div>
+        <chat-box
+          v-else
+          @sendMessage="sendMessage"
+          :message-list="messageList"
+        ></chat-box>
+      </div>
     </div>
   </div>
   <div class="control-buttons">
@@ -39,6 +48,16 @@
       <el-icon v-else><VideoPause /></el-icon>
       <span v-if="myVideoMute" class="button-text">ON</span>
       <span v-else class="button-text">OFF</span>
+    </el-button>
+    <el-button v-if="isMobileScreen" round @click="toggleChatMode">
+      <span v-if="isChatMode">
+        <el-icon><ChatRound /></el-icon>
+        <span class="button-text">채팅</span>
+      </span>
+      <span v-else>
+        <el-icon><LocationFilled /></el-icon>
+        <span class="button-text">지도</span>
+      </span>
     </el-button>
     <el-button round type="danger" @click="onClickExit">
       <el-icon><Close /></el-icon>
@@ -56,6 +75,7 @@ import OvVideo from "./OvVideo.vue";
 import { OpenVidu, SignalOptions } from "openvidu-browser";
 import ChatBox from "@/components/meeting/one-on-one/ChatBox.vue";
 import { Message } from "@/types/MeetingChatType";
+import { isMobileScreen } from "@/use/useMediaQuery";
 
 export default {
   components: {
@@ -177,6 +197,7 @@ export default {
     //media control
     const myMicMute = ref(false);
     const myVideoMute = ref(false);
+    const isChatMode = ref(true);
 
     const muteMic = () => {
       myMicMute.value = !myMicMute.value;
@@ -185,6 +206,9 @@ export default {
     const muteVideo = () => {
       myVideoMute.value = !myVideoMute.value;
       publisher.value.publishVideo(myMicMute.value);
+    };
+    const toggleChatMode = () => {
+      isChatMode.value = !isChatMode.value;
     };
 
     //exit
@@ -215,6 +239,7 @@ export default {
     // onMounted(async () => {});
 
     return {
+      isMobileScreen,
       isSeller,
       publisher,
       subscriber,
@@ -222,8 +247,10 @@ export default {
       sendMessage,
       myMicMute,
       myVideoMute,
+      isChatMode,
       muteMic,
       muteVideo,
+      toggleChatMode,
       onClickExit,
     };
   },
@@ -276,8 +303,8 @@ export default {
   height: 15%;
   z-index: 10;
   position: absolute;
-  bottom: -1px;
-  right: 0;
+  bottom: 0;
+  right: 1px;
   border-bottom: none;
   object-fit: cover;
   background-color: #fafafa;
@@ -294,10 +321,6 @@ export default {
   margin-left: 1.5rem;
 }
 
-.button-size {
-  width: 100px;
-}
-
 .control-buttons {
   margin-top: 20px;
   margin-left: 33vw;
@@ -312,5 +335,73 @@ export default {
   margin-right: 10px;
   font-size: var(--el-font-size-small);
   width: 30px;
+}
+
+@media only screen and (max-width: 500px) {
+  .container {
+    display: flex;
+    flex-direction: column;
+    height: 80vh;
+  }
+
+  .video-group {
+    box-sizing: border-box;
+    top: 0;
+    width: 90vw;
+    height: 40vh;
+    align-self: center;
+  }
+
+  #seller-video {
+    width: inherit;
+    height: inherit;
+    overflow-x: hidden;
+  }
+
+  #buyer-video {
+    width: 30%;
+    height: 25%;
+    z-index: 10;
+    position: absolute;
+    right: -2px;
+    border-bottom: none;
+    object-fit: cover;
+    background-color: #fafafa;
+  }
+
+  .flex-column {
+    flex-direction: column-reverse;
+    margin-left: unset;
+    margin-top: 20px;
+    width: 90vw;
+    align-self: center;
+  }
+
+  #map {
+    width: 90vw;
+    height: 30vh;
+    margin-bottom: 5vh;
+  }
+
+  .control-buttons {
+    width: 100%;
+    background-color: #fafafa;
+    margin-top: unset;
+    margin-left: unset;
+    margin-right: unset;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    position: fixed;
+    margin-bottom: 10px;
+    left: 0;
+  }
+
+  .button-text {
+    margin-left: 5px !important;
+    margin-right: 10px;
+    font-size: (--el-font-size-x-small);
+    width: 20px;
+  }
 }
 </style>

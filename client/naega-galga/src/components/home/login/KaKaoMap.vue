@@ -203,7 +203,7 @@ export default defineComponent({
       chatbtn.appendChild(document.createTextNode("문의하기"));
 
       chatbtn.onclick = function () {
-        emit("chatProduct", product);
+        emit("chatUserIndex", product.sellerIndex);
         emit("chatOpen", isOpen);
         isOpen.value = !isOpen.value;
       };
