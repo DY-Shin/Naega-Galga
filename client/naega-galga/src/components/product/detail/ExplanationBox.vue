@@ -28,21 +28,21 @@
           />
         </div>
         <!-- 내가 등록한 매물 아님 -->
-        <div v-if="!isMine">
+        <div v-if="!isMine && isRegisteredExplanation">
           <el-button
-            v-if="isReserved"
-            type="danger"
-            :icon="Minus"
-            class="button-size"
-            @click="onClickReserveExplanation"
-          />
-          <el-button
-            v-else
+            v-if="canAddReservation"
             circle
             type="primary"
             :icon="Plus"
             class="button-size"
             @click="onClickCancelReserveExplanation"
+          />
+          <el-button
+            v-else
+            type="danger"
+            :icon="Minus"
+            class="button-size"
+            @click="onClickReserveExplanation"
           />
         </div>
       </div>
@@ -97,6 +97,10 @@ export default {
       () => !isMine.value && meetingInfo.buyerIndex === myIndex.value
     );
 
+    const canAddReservation = computed(
+      () => isRegisteredExplanation.value && !isReserved.value
+    );
+
     //click event
     const onClickAddExplanation = () => {
       //
@@ -119,9 +123,10 @@ export default {
       //values
       meetingInfo,
       isMine,
+      isRegisteredExplanation,
       canAddExplanation,
       explanationDateString,
-      isReserved,
+      canAddReservation,
       //click event
       onClickAddExplanation,
       onClickDeleteExplanation,
