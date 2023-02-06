@@ -6,10 +6,7 @@
   </div>
   <el-row>
     <el-col :span="16"></el-col>
-    <el-col :span="8" class="align-right">
-      <el-button type="primary" size="large" @click="moveToEdit">
-        수정
-      </el-button>
+    <el-col v-if="isMine" :span="8" class="align-right">
       <el-button type="danger" size="large" @click="onClickDeleteProduct">
         삭제
       </el-button>
@@ -40,6 +37,7 @@ import { computed, onMounted, reactive } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { deleteProduct, getProduct } from "@/api/productApi";
 import ResponseStatus from "@/api/responseStatus";
+import { useStore } from "vuex";
 
 export default {
   components: {
@@ -51,10 +49,11 @@ export default {
   setup() {
     const router = useRouter();
     const route = useRoute();
+    const store = useStore();
+    const userIndex = store.getters["userStore/userIndex"];
 
     const productIndex = parseInt(route.params.id[0]);
     //TODO : userStore 정리되면 적용
-    const userIndex = 1;
     const isMine = computed(() => productInfo.seller.userIndex === userIndex);
 
     let productInfo = reactive({
@@ -125,9 +124,6 @@ export default {
       explanationDate: "2022.01.31",
     }));
 
-    const moveToEdit = () => {
-      router.push(`/product/edit/${productIndex}`);
-    };
     const onClickDeleteProduct = async () => {
       if (!confirm("정말 삭제하시겠습니까?")) {
         return;
@@ -148,7 +144,6 @@ export default {
     return {
       productInfo,
       summaryValue,
-      moveToEdit,
       onClickDeleteProduct,
       isMine,
     };

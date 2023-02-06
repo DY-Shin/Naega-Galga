@@ -3,6 +3,7 @@ package com.ssafy.commonpjt.api.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssafy.commonpjt.api.dto.productDTO.*;
+import com.ssafy.commonpjt.common.security.SecurityUtil;
 import com.ssafy.commonpjt.db.entity.Building;
 import com.ssafy.commonpjt.db.entity.Options;
 import com.ssafy.commonpjt.db.entity.Product;
@@ -49,11 +50,11 @@ public class ProductServiceImpl implements ProductService {
         return productRepository.findByProductDetailAndBuildingBuildingAddress(productDetail, jibunAddress);
     }
     @Override
-    public boolean addProduct(int userIndex, List<MultipartFile> fileList, ProductDTO productDTO, BuildingDTO buildingDTO, OptionsDTO optionsDTO) throws Exception {
+    public boolean addProduct(List<MultipartFile> fileList, ProductDTO productDTO, BuildingDTO buildingDTO, OptionsDTO optionsDTO) throws Exception {
         String productDetail = productDTO.getProductDetail();
         String jibunAddress = buildingDTO.getBuildingJibunAddress();
         Product product = findProductByAddress(productDetail, jibunAddress);
-        
+
         //매물 정보 중복
         if(product!=null) return false;
         
@@ -124,11 +125,11 @@ public class ProductServiceImpl implements ProductService {
                 .build();
         optionsRepository.save(options);
 
-        User productSeller = userRepository.findByUserIndex(userIndex);
+        User seller = userRepository.findByUserId(SecurityUtil.getLoginUsername()).orElseThrow(() -> new Exception("No User Exists"));
         product = new Product().builder()
                 .building(building)
                 .options(options)
-                .productSeller(productSeller)
+                .productSeller(seller)
                 .productDetail(productDTO.getProductDetail())
                 .productFloor(productDTO.getProductFloor())
                 .productType(productDTO.getProductType())
@@ -139,7 +140,6 @@ public class ProductServiceImpl implements ProductService {
                 .productDirection(productDTO.getProductDirection())
                 .productPhoto(imageFilePathListStr.toString())
                 .productAnimal(productDTO.getProductAnimal())
-                .productSeller(productSeller)
                 .build();
         productRepository.save(product);
 
@@ -245,6 +245,8 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public boolean deleteProduct(int productIndex) throws Exception, SecurityException {
         Product product = productRepository.findByProductIndex(productIndex);
+        int optionsIndex = product.getOptions().getOptionIndex();
+        Options options = optionsRepository.findByOptionIndex(optionsIndex);
 
         //매물 정보 없음
         if (product == null) {
@@ -253,9 +255,6 @@ public class ProductServiceImpl implements ProductService {
 
         int buildingIndex = product.getBuilding().getBuildingIndex();
         Building building = buildingRepository.findByBuildingIndex(buildingIndex);
-
-        //파일 삭제
-        String[] productStrings = product.getProductPhoto().split(",");  //파일 string을 parsing
 
         StringBuilder imageDirectoryPath = new StringBuilder(imagePath);
         imageDirectoryPath
@@ -281,6 +280,7 @@ public class ProductServiceImpl implements ProductService {
         directory.delete();
 
         productRepository.deleteProductByProductIndex(productIndex);
+        optionsRepository.deleteById(optionsIndex);
         return true;
     }
 

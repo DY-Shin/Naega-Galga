@@ -11,20 +11,6 @@ async function addProduct(product): Promise<number> {
   return response.status;
 }
 
-async function editProduct(product, id: number): Promise<number> {
-  const response: AxiosResponse = await axios.put(
-    `/api/products/${id}`,
-    product,
-    {
-      headers: {
-        "Content-Type": "multipart/form-data",
-        Authorization: `Bearer ${localStorageManager.getAccessToken()}`,
-      },
-    }
-  );
-  return response.status;
-}
-
 async function deleteProduct(productId: number): Promise<number> {
   const response: AxiosResponse = await axios.delete(
     `/api/products/${productId}`,
@@ -40,35 +26,6 @@ async function deleteProduct(productId: number): Promise<number> {
 async function getProduct(productId: number) {
   const response: AxiosResponse = await axios.get(
     `/api/products/${productId}`,
-    {
-      headers: {
-        Authorization: `Bearer ${localStorageManager.getAccessToken()}`,
-      },
-    }
-  );
-  return response;
-}
-
-async function addProductWish(productid: number, userId: number) {
-  console.log(productid + " " + userId);
-  const response: AxiosResponse = await axios.post(
-    `/api/products/wish`,
-    {
-      userIndex: userId,
-      productIndex: userId,
-    },
-    {
-      headers: {
-        Authorization: `Bearer ${localStorageManager.getAccessToken()}`,
-      },
-    }
-  );
-  return response;
-}
-
-async function deleteProductWish(productIndex: number, userIndex: number) {
-  const response: AxiosResponse = await axios.delete(
-    `/api/products/wish/${productIndex}/${userIndex}`,
     {
       headers: {
         Authorization: `Bearer ${localStorageManager.getAccessToken()}`,
@@ -114,11 +71,8 @@ async function addProductReserve(
 }
 export {
   addProduct,
-  editProduct,
   deleteProduct,
   getProduct,
-  addProductWish,
-  deleteProductWish,
   addProductReserve,
   searchProduct,
 };

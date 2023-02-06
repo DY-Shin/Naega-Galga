@@ -6,7 +6,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -18,6 +19,7 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@EntityListeners(AuditingEntityListener.class)
 public class ChatRoom {
 
     @Id
@@ -25,7 +27,7 @@ public class ChatRoom {
     @Column(name = "chat_index", nullable = false)
     private Integer chatIndex;
 
-    @CreationTimestamp
+    @CreatedDate
     private Timestamp createdAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
