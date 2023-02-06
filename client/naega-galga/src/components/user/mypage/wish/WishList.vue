@@ -2,7 +2,7 @@
   <h1>찜 목록</h1>
   <div>{{ allProduct }}</div>
   <div>{{ allProduct.productIndex }}</div>
-  <button @click="getProduct">유저정보내놔</button>
+  <!-- <button @click="getProduct">유저정보불러오기</button> -->
   <hr />
   <el-row :gutter="20">
     <wish-list-item v-for="wish in wishList" :key="wish.id" :wish="wish" />
@@ -12,7 +12,7 @@
 <script lang="ts">
 import { defineComponent, reactive } from "vue";
 import WishListItem from "./WishListItem.vue";
-import apiTokenInstance from "@/api/apiTokenInstance";
+// import apiTokenInstance from "@/api/apiTokenInstance";
 
 export default defineComponent({
   name: "WishList",
@@ -20,16 +20,16 @@ export default defineComponent({
     WishListItem,
   },
   setup() {
-    const getProduct = () => {
-      apiTokenInstance
-        .get(`api/users/me/products`)
-        .then(res => {
-          allProduct.productIndex = res.data[0].productIndex;
-        })
-        .catch(err => {
-          console.log(err);
-        });
-    };
+    // const getProduct = () => {
+    //   apiTokenInstance
+    //     .get(`api/users/me/products`)
+    //     .then(res => {
+    //       allProduct.productIndex = res.data[0].productIndex;
+    //     })
+    //     .catch(err => {
+    //       console.log(err);
+    //     });
+    // };
 
     const allProduct = reactive({
       productIndex: "",
@@ -67,7 +67,7 @@ export default defineComponent({
     ];
     return {
       wishList,
-      getProduct,
+      // getProduct,
       allProduct,
     };
   },

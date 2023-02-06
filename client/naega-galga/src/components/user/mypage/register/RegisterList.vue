@@ -2,7 +2,7 @@
   <h1>등록된 매물</h1>
   <hr />
   <!-- <div>{{ registList }}</div> -->
-  <button @click="getRegistProduct">매물목록을 가져오는 버튼</button>
+  <button @click="makeRegistProduct">매물목록을 가져오는 버튼</button>
   <el-row :gutter="20">
     <register-list-item
       v-for="regist in registList.all"
@@ -13,7 +13,8 @@
 </template>
 
 <script lang="ts">
-import apiTokenInstance from "@/api/apiTokenInstance";
+import { getRegistProduct } from "@/api/userApi";
+import ResponseStatus from "@/api/responseStatus";
 import { defineComponent, reactive } from "vue";
 import RegisterListItem from "./RegisterListItem.vue";
 
@@ -23,17 +24,13 @@ export default defineComponent({
     RegisterListItem,
   },
   setup() {
-    const getRegistProduct = () => {
-      apiTokenInstance
-        .get(`api/users/me/products`)
-        .then(res => {
-          registList.all = res.data;
-          console.log(res.data);
-          console.log(registList.all);
-        })
-        .catch(err => {
-          console.log(err);
-        });
+    const makeRegistProduct = async () => {
+      const response = await getRegistProduct();
+      const data = response.data;
+
+      if (response.status === ResponseStatus.Ok) {
+        registList.all = data;
+      }
     };
 
     const registList = reactive({
@@ -41,7 +38,7 @@ export default defineComponent({
     });
 
     return {
-      getRegistProduct,
+      makeRegistProduct,
       registList,
     };
   },
