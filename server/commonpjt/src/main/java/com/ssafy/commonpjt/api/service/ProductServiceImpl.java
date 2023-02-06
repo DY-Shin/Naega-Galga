@@ -245,6 +245,8 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public boolean deleteProduct(int productIndex) throws Exception, SecurityException {
         Product product = productRepository.findByProductIndex(productIndex);
+        int optionsIndex = product.getOptions().getOptionIndex();
+        Options options = optionsRepository.findByOptionIndex(optionsIndex);
 
         //매물 정보 없음
         if (product == null) {
@@ -253,9 +255,6 @@ public class ProductServiceImpl implements ProductService {
 
         int buildingIndex = product.getBuilding().getBuildingIndex();
         Building building = buildingRepository.findByBuildingIndex(buildingIndex);
-
-        //파일 삭제
-        String[] productStrings = product.getProductPhoto().split(",");  //파일 string을 parsing
 
         StringBuilder imageDirectoryPath = new StringBuilder(imagePath);
         imageDirectoryPath
@@ -281,6 +280,7 @@ public class ProductServiceImpl implements ProductService {
         directory.delete();
 
         productRepository.deleteProductByProductIndex(productIndex);
+        optionsRepository.deleteById(optionsIndex);
         return true;
     }
 
