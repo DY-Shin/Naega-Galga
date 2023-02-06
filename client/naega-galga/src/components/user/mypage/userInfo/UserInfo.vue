@@ -1,11 +1,6 @@
 <template>
   <div id="mypagedetail">
     <h1>내 정보</h1>
-
-    <button v-show="loginCheck">로그인O</button>
-    <button v-show="!loginCheck">로그인X</button>
-
-    <el-button @click="logout">로그아웃</el-button>
     <hr />
     <el-form v-if="isChange == false">
       <el-form-item class="one-line">
@@ -85,17 +80,14 @@
 </template>
 
 <script lang="ts">
-import {
-  defineComponent,
-  computed,
-  reactive,
-  ref,
-  onMounted,
-  // onBeforeMount,
-} from "vue";
+import { defineComponent, computed, reactive, ref } from "vue";
 import { useStore } from "vuex";
 import PasswordChange from "./PasswordChange.vue";
 import UserDeleteDialog from "./UserDeleteDialog.vue";
+
+import { getUserInfo } from "@/api/userApi";
+import { userInfoChange } from "@/api/userApi";
+import ResponseStatus from "@/api/responseStatus";
 
 export default defineComponent({
   name: "UserInfo",
@@ -105,17 +97,20 @@ export default defineComponent({
   },
   setup() {
     const store = useStore();
-    const { state } = useStore();
 
-    let info = computed(() => state.userStore.user_info);
-    const loginCheck = computed(() => store.getters["userStore/isLogin"]);
+    const composition = async () => {
+      const response = await getUserInfo();
+      const data = response.data;
 
-    onMounted(() => {
-      store.dispatch("userStore/getUserInfo");
-      store.dispatch("userStore/isToken");
-    });
+      if (response.status === ResponseStatus.Ok) {
+        store.commit("userStore/GET_USER_INFO", data);
+      } else {
+        console.log("err");
+      }
+    };
+    composition();
 
-    let isChange = ref(false);
+    const info = computed(() => store.state.userStore.user_info);
 
     const changeform = reactive({
       user_name: "",
@@ -125,29 +120,33 @@ export default defineComponent({
       corporate_registration_number: "",
     });
 
+    let isChange = ref(false);
+
     const putUserInfo = () => {
       isChange.value = true;
-      // event.preventDefault();
     };
 
-    const saveChangeInfo = () => {
-      store.dispatch("userStore/userInfoChange", changeform);
-      isChange.value = false;
-      // event.preventDefault();
-    };
+    const saveChangeInfo = async () => {
+      const response = await userInfoChange(changeform);
+      const data = response.data;
 
-    const logout = () => {
-      store.dispatch("userStore/logout");
+      if (response.status === ResponseStatus.Ok) {
+        store.commit("userStore/USER_INFO_CHANGE", data);
+        isChange.value = false;
+        composition();
+      } else {
+        console.log("err");
+      }
     };
 
     return {
+      composition,
       info,
+
       changeform,
       isChange,
       putUserInfo,
       saveChangeInfo,
-      logout,
-      loginCheck,
     };
   },
 });

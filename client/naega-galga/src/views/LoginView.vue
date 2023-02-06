@@ -14,11 +14,11 @@
           <el-input
             v-model="loginform.password"
             type="password"
-            @keyup.enter="login"
+            @keyup.enter="goLogin"
           />
         </el-form-item>
         <el-button class="signup-button" @click="signup">회원가입</el-button>
-        <el-button class="login-button" @click="login">로그인</el-button>
+        <el-button class="login-button" @click="goLogin">로그인</el-button>
       </div>
     </el-form>
     <div />
@@ -27,13 +27,17 @@
 
 <script lang="ts">
 import { defineComponent, reactive } from "vue";
-import { useStore } from "vuex";
+// import { useStore } from "vuex";
 import { useRouter } from "vue-router";
+
+import { login } from "@/api/userApi";
+import localStorageManager from "@/utils/localStorageManager";
+import ResponseStatus from "@/api/responseStatus";
 
 export default defineComponent({
   name: "LoginView",
   setup() {
-    const store = useStore();
+    // const store = useStore();
     const router = useRouter();
 
     const url =
@@ -48,11 +52,18 @@ export default defineComponent({
       router.push({ path: "/join" });
     };
 
-    const login = () => {
-      store.dispatch("userStore/login", loginform);
+    const goLogin = async () => {
+      const response = await login(loginform);
+
+      if (response.status === ResponseStatus.Ok) {
+        localStorageManager.setAccessToken(response.data.accessToken);
+        localStorageManager.setRefreshToken(response.data.refreshToken);
+
+        router.push({ path: "/" });
+      }
     };
 
-    return { loginform, signup, login, url };
+    return { loginform, signup, goLogin, url };
   },
 });
 </script>
