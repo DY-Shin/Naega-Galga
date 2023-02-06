@@ -163,6 +163,7 @@ export default {
   flex-direction: column;
   position: sticky;
   float: right;
+  top: 50px;
 }
 
 div > h2:nth-child(2) {
