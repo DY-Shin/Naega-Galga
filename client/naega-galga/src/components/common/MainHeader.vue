@@ -122,10 +122,11 @@ export default defineComponent({
 
     const Logout = async () => {
       const response = await logout();
+      store.commit("userStore/CHECK_TOKEN");
 
       if (response.status === ResponseStatus.Ok) {
         localStorageManager.removeTokens();
-
+        localStorageManager.removeLocalStorage();
         router.push({ path: "/" });
       }
     };
@@ -144,6 +145,7 @@ export default defineComponent({
       // icon?.setAttribute("src", "../assets/image/icon-heart.png");
       icon2?.setAttribute("src", "/icon-heart.png");
     };
+
     return {
       isLog,
       isMenu,

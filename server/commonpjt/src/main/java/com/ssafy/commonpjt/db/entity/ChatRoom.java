@@ -11,6 +11,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "chat_room")
@@ -37,4 +39,7 @@ public class ChatRoom {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "buyer_index", referencedColumnName = "user_index")
     private User buyer;
+
+    @OneToMany(mappedBy = "chatRoom", orphanRemoval = true)
+    private List<ChatMessage> chatRoom = new ArrayList<>();
 }
