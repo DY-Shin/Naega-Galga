@@ -10,6 +10,6 @@ import lombok.Setter;
 public class ExplanationInfoDTO {
     int meetingIndex;
     int sellerIndex;
-    int buyerIndex;
+    int buyerIndex = -1;
     String reservedAt;
 }
