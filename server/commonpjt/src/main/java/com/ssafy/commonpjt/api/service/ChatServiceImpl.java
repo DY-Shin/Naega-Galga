@@ -2,8 +2,9 @@ package com.ssafy.commonpjt.api.service;
 
 import com.ssafy.commonpjt.api.dto.chatDTO.ChatRoomResponseDTO;
 import com.ssafy.commonpjt.api.dto.chatDTO.MessageDTO;
-import com.ssafy.commonpjt.api.dto.chatDTO.MessageListRequestDTO;
 import com.ssafy.commonpjt.api.dto.chatDTO.MessageListResponseDTO;
+import com.ssafy.commonpjt.api.dto.chatDTO.MessageSendRequestDTO;
+import com.ssafy.commonpjt.api.dto.chatDTO.MessageSendResponseDTO;
 import com.ssafy.commonpjt.common.security.SecurityUtil;
 import com.ssafy.commonpjt.db.entity.ChatMessage;
 import com.ssafy.commonpjt.db.entity.ChatRoom;
@@ -15,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +24,7 @@ import java.util.List;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class ChatServiceImpl implements ChatService{
+public class ChatServiceImpl implements ChatService {
     private final UserRepository userRepository;
     private final ChatRoomRepository chatRoomRepository;
     private final ChatMessageRepository messageRepository;
@@ -42,9 +44,11 @@ public class ChatServiceImpl implements ChatService{
         List<ChatRoom> roomList = chatRoomRepository.findChatRoomByUser(loginUserIndex);
 
         List<ChatRoomResponseDTO> result = new ArrayList<>();
-        for(ChatRoom room : roomList) {
-            int OpIndex = room.getBuyer().getUserIndex() != loginUserIndex ? room.getBuyer().getUserIndex() : room.getSeller().getUserIndex();
-            String OpName = !room.getBuyer().getName().equals(loginUserName) ? room.getBuyer().getName() : room.getSeller().getName();
+        for (ChatRoom room : roomList) {
+            int OpIndex = room.getBuyer().getUserIndex() != loginUserIndex ? room.getBuyer().getUserIndex()
+                    : room.getSeller().getUserIndex();
+            String OpName = !room.getBuyer().getName().equals(loginUserName) ? room.getBuyer().getName()
+                    : room.getSeller().getName();
             ChatRoomResponseDTO dto = ChatRoomResponseDTO.builder()
                     .roomIndex(room.getChatIndex())
                     .OpIndex(OpIndex)
@@ -68,7 +72,7 @@ public class ChatServiceImpl implements ChatService{
                 .build();
         ChatRoom chatRoom = chatRoomRepository.hasChatRoom(loginUserIndex, opIndex);
         List<MessageDTO> resultMessage = new ArrayList<>();
-        if(chatRoom == null) {
+        if (chatRoom == null) {
             log.info("NO CHAT ROOM I WILL CREATE");
             chatRoom = ChatRoom.builder()
                     .buyer(loginUser)
@@ -86,12 +90,12 @@ public class ChatServiceImpl implements ChatService{
 
         List<ChatMessage> messageList = messageRepository.findByChatRoom(chatRoom);
 
-        for(ChatMessage message : messageList) {
-            log.info("I SEND MESSAGE : " + message.getMessage() + " WHO AM I : "+message.getSender().getUserIndex());
+        for (ChatMessage message : messageList) {
+            log.info("I SEND MESSAGE : " + message.getMessage() + " WHO AM I : " + message.getSender().getUserIndex());
             MessageDTO dto = MessageDTO.builder()
-                    .senderIndex(message.getSender().getUserIndex())
+                    .sender(message.getSender().getUserIndex())
                     .message(message.getMessage())
-                    .time(new SimpleDateFormat("HH:mm").format(message.getCreatedAt()))
+                    .createdAt(new SimpleDateFormat("HH:mm").format(message.getCreatedAt()))
                     .build();
 
             resultMessage.add(dto);
@@ -103,5 +107,27 @@ public class ChatServiceImpl implements ChatService{
         return result;
     }
 
-
+     @Override
+     public MessageSendResponseDTO saveMessage(MessageSendRequestDTO requestDTO) {
+         User sender = User.builder()
+                 .userIndex(requestDTO.getMessage().getSender())
+                 .build();
+         ChatRoom chatRoom = ChatRoom.builder()
+                 .chatIndex(requestDTO.getChatRoomIndex())
+                 .build();
+         System.out.println(Timestamp.valueOf(requestDTO.getMessage().getCreatedAt()));
+         ChatMessage message = ChatMessage.builder()
+                 .chatRoom(chatRoom)
+                 .sender(sender)
+                 .message(requestDTO.getMessage().getMessage())
+                 .createdAt(Timestamp.valueOf(requestDTO.getMessage().getCreatedAt()))
+                 .build();
+         messageRepository.save(message);
+         requestDTO.getMessage().setCreatedAt(new SimpleDateFormat("HH:mm").format(message.getCreatedAt()));
+         MessageSendResponseDTO result = MessageSendResponseDTO.builder()
+                 .chatRoomIndex(requestDTO.getChatRoomIndex())
+                 .message(requestDTO.getMessage())
+                 .build();
+         return result;
+     }
 }
