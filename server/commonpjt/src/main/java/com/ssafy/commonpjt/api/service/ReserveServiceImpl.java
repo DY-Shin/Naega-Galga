@@ -7,6 +7,8 @@ import com.ssafy.commonpjt.db.repository.MeetingRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
+
 @Service
 @RequiredArgsConstructor
 public class ReserveServiceImpl implements ReserveService{
@@ -25,7 +27,13 @@ public class ReserveServiceImpl implements ReserveService{
         Meeting meeting = Meeting.builder()
                 .owner(owner)
                 .guest(guest)
+                .reserveAt(Timestamp.valueOf(requestDTO.getDate()))
                 .build();
+        meetingRepository.save(meeting);
+        String url = "/meeting/one-on-one/" + meeting.getMeetingIndex();
+
+        meeting.setMeetingUrl(url);
+        meetingRepository.save(meeting);
         return false;
     }
 }
