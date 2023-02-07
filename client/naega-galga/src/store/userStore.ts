@@ -23,7 +23,6 @@ const mutations = {
   GET_USER_INFO(state, user_info) {
     state.user_info.user_index = user_info.userIndex;
     state.user_info.user_name = user_info.userName;
-    state.user_info.user_name = user_info.userName;
     state.user_info.user_id = user_info.userId;
     state.user_info.user_phone = user_info.userPhone;
     state.user_info.user_address = user_info.userAddress;
