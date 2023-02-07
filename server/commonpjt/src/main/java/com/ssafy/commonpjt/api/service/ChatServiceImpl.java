@@ -28,8 +28,8 @@ public class ChatServiceImpl implements ChatService{
     private final ChatMessageRepository messageRepository;
     public User getLoginUser() throws Exception{
         User loginUser = userRepository
-//                .findByUserId(SecurityUtil.getLoginUsername())
-                .findByUserId("aabbcc")
+                .findByUserId(SecurityUtil.getLoginUsername())
+//                .findByUserId("aabbcc")
                 .orElseThrow(() -> new Exception("No User Exists"));
         return loginUser;
     }
