@@ -316,9 +316,11 @@ export default defineComponent({
           //화면에 띄울 컨텐츠 배열에 넣음
           sender: userIndex.value,
           message: inputMsg.value,
-          createdAt: today.getHours() + ":" + today.getMinutes(),
+          createdAt:
+            today.getHours().toString().padStart(2, "0") +
+            ":" +
+            today.getMinutes().toString().padStart(2, "0"),
         });
-        // console.log(msg);
         socket.stompClient.send("/pub/chat/message", JSON.stringify(msg), {});
       }
     };
