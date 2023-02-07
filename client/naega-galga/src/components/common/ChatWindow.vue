@@ -261,11 +261,12 @@ export default defineComponent({
               console.log(time + "!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
               if (str.message.sender != userIndex.value) {
                 console.log(str + "!!!!!!!!!!!!!!!!!");
-                chatContents.push({
-                  sender: str.message.sender,
-                  message: str.message.message,
-                  createdAt: time,
-                });
+                // chatContents.push({
+                //   sender: str.message.sender,
+                //   message: str.message.message,
+                //   createdAt: time,
+                // });
+                chatContents.push(str);
               }
             }
           );
