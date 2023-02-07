@@ -122,7 +122,7 @@ export default defineComponent({
 
     const Logout = async () => {
       const response = await logout();
-      store.commit("userStore/CHANGE_TOKEN_BOOLEAN");
+      store.commit("userStore/CHANGE_TOKEN");
 
       if (response.status === ResponseStatus.Ok) {
         localStorageManager.removeTokens();
