@@ -122,6 +122,7 @@ export default defineComponent({
 
     const Logout = async () => {
       const response = await logout();
+      store.commit("userStore/CHANGE_TOKEN");
 
       if (response.status === ResponseStatus.Ok) {
         localStorageManager.removeTokens();
@@ -144,6 +145,7 @@ export default defineComponent({
       // icon?.setAttribute("src", "../assets/image/icon-heart.png");
       icon2?.setAttribute("src", "/icon-heart.png");
     };
+
     return {
       isLog,
       isMenu,
