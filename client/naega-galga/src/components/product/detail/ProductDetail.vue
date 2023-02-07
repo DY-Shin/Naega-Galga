@@ -6,17 +6,17 @@
   </div>
   <el-row>
     <el-col :span="16"></el-col>
-    <el-col :span="8" class="align-right">
-      <el-button type="primary" size="large" @click="moveToEdit">
-        수정
-      </el-button>
+    <el-col v-if="isMine" :span="8" class="align-right">
       <el-button type="danger" size="large" @click="onClickDeleteProduct">
         삭제
       </el-button>
     </el-col>
   </el-row>
   <div>
-    <right-summary-box :summary-value="summaryValue"></right-summary-box>
+    <div class="sticky-box">
+      <right-summary-box :summary-value="summaryValue"></right-summary-box>
+      <explanation-box :productIndex="productIndex"></explanation-box>
+    </div>
     <h1 class="margin-bottom-large semi-bold">매물 정보</h1>
     <product-info
       :product="productInfo.product"
@@ -36,6 +36,7 @@ import ProductImageList from "@/components/product/detail/ProductImageList.vue";
 import ProductOptionList from "@/components/product/detail/ProductOptionList.vue";
 import RightSummaryBox from "@/components/product/detail/RightSummaryBox.vue";
 import ProductInfoComponent from "@/components/product/detail/ProductInfo.vue";
+import ExplanationBox from "@/components/product/detail/ExplanationBox.vue";
 import { computed, onMounted, reactive } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { deleteProduct, getProduct } from "@/api/productApi";
@@ -48,6 +49,7 @@ export default {
     ProductOptionList,
     RightSummaryBox,
     ProductInfo: ProductInfoComponent,
+    ExplanationBox,
   },
   setup() {
     const router = useRouter();
@@ -127,9 +129,6 @@ export default {
       explanationDate: "2022.01.31",
     }));
 
-    const moveToEdit = () => {
-      router.push(`/product/edit/${productIndex}`);
-    };
     const onClickDeleteProduct = async () => {
       if (!confirm("정말 삭제하시겠습니까?")) {
         return;
@@ -149,8 +148,8 @@ export default {
 
     return {
       productInfo,
+      productIndex,
       summaryValue,
-      moveToEdit,
       onClickDeleteProduct,
       isMine,
     };
@@ -159,6 +158,14 @@ export default {
 </script>
 
 <style scoped>
+.sticky-box {
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  float: right;
+  top: 50px;
+}
+
 div > h2:nth-child(2) {
   margin-top: 10px !important;
 }

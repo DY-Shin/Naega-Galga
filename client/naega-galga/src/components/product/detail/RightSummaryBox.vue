@@ -14,15 +14,6 @@
     <div class="font-medium margin-top">
       {{ summary.sellerId }}
     </div>
-    <div class="margin-top">
-      <span
-        v-if="summary.explanationDate !== null"
-        class="font-small margin-bottom explanation-text"
-      >
-        {{ summary.explanationDate }}
-      </span>
-      <el-button type="primary" circle :icon="Plus"></el-button>
-    </div>
     <div class="margin-top width-full">
       <el-button type="primary" class="width-full">문의하기</el-button>
     </div>
@@ -45,33 +36,18 @@ export default defineComponent({
         managePrice: Number,
         sellerId: String,
         sellerIndex: Number,
-        explanationDate: String,
       },
     },
   },
   setup(props) {
     // const userIndex = 1;
-
-    const dateSplit = (divider: string, value: string): string[] =>
-      value.split(divider);
-
     const summary = computed(() => {
       const obj = { ...props.summaryValue };
-      let splitedDateString: string[] | null = null;
-      let dateString: string | null = null;
-
-      if (obj.explanationDate != null) {
-        //[2023, 1, 23]
-        splitedDateString = dateSplit(".", obj.explanationDate);
-        dateString = `${splitedDateString[1]}월 ${splitedDateString[2]}일 온라인 설명회 예정`;
-      }
-
       return {
         title: `${obj?.productType} ${obj?.price}`,
         floor: obj?.floor,
         managePrice: `관리비 월 ${obj?.managePrice}만`,
         sellerId: obj?.sellerId,
-        explanationDate: dateString,
       };
     });
 
@@ -86,10 +62,6 @@ export default defineComponent({
 <style scoped>
 .container {
   border: 1px solid var(--el-color-info);
-  display: flex;
-  flex-direction: column;
-  position: sticky;
-  float: right;
   top: 50px;
   padding: 20px;
   width: 250px;
