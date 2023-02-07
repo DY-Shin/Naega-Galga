@@ -30,10 +30,11 @@ public class SecurityConfig {
                 .csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
+                .authorizeRequests()
+                .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
                 // 접속 URL 권한 설정
-                .authorizeRequests().requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
                 .antMatchers("/api/users", "/api/users/login", "/api/users/logout", "/api/users/delete").permitAll()
-                .antMatchers("/api/chat")
+                .antMatchers("/api/**")
                 .authenticated()
                 .and()
                 .addFilterBefore(new JwtTokenAuthenticationFilter(jwtTokenProvider, redisTemplate),

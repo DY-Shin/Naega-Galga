@@ -26,18 +26,17 @@ public class ChatServiceImpl implements ChatService {
     private final UserRepository userRepository;
     private final ChatRoomRepository chatRoomRepository;
     private final ChatMessageRepository messageRepository;
-
-    public User getLoginUser() throws Exception {
-        User loginUser = userRepository
-                .findByUserId(SecurityUtil.getLoginUsername())
-                // .findByUserId("aabbcc")
-                .orElseThrow(() -> new Exception("No User Exists"));
-        return loginUser;
-    }
-
+//    public User getLoginUser() throws Exception{
+//        User loginUser = userRepository
+//                .findByUserId(SecurityUtil.getLoginUsername())
+//                .orElseThrow(() -> new Exception("No User Exists"));
+//        return loginUser;
+//    }
     @Override
     public List<ChatRoomResponseDTO> getChatList() throws Exception {
-        User loginUser = getLoginUser();
+        User loginUser = userRepository
+                .findByUserId(SecurityUtil.getLoginUsername())
+                .orElseThrow(() -> new Exception("No User Exists"));
         int loginUserIndex = loginUser.getUserIndex();
         String loginUserName = loginUser.getName();
         List<ChatRoom> roomList = chatRoomRepository.findChatRoomByUser(loginUserIndex);
@@ -62,7 +61,9 @@ public class ChatServiceImpl implements ChatService {
     @Override
     public MessageListResponseDTO getMessageList(int opIndex) throws Exception {
         MessageListResponseDTO result;
-        User loginUser = getLoginUser();
+        User loginUser = userRepository
+                .findByUserId(SecurityUtil.getLoginUsername())
+                .orElseThrow(() -> new Exception("No User Exists"));
         int loginUserIndex = loginUser.getUserIndex();
         User opUser = User.builder()
                 .userIndex(opIndex)
@@ -92,7 +93,7 @@ public class ChatServiceImpl implements ChatService {
             MessageDTO dto = MessageDTO.builder()
                     .senderIndex(message.getSender().getUserIndex())
                     .message(message.getMessage())
-                    .time(new SimpleDateFormat("HH:mm:ss").format(message.getCreatedAt()))
+                    .time(new SimpleDateFormat("HH:mm").format(message.getCreatedAt()))
                     .build();
 
             resultMessage.add(dto);

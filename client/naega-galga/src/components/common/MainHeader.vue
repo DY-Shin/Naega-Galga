@@ -122,11 +122,11 @@ export default defineComponent({
 
     const Logout = async () => {
       const response = await logout();
-      store.commit("userStore/CHANGE_TOKEN");
+      store.commit("userStore/CHECK_TOKEN");
 
       if (response.status === ResponseStatus.Ok) {
         localStorageManager.removeTokens();
-
+        localStorageManager.removeLocalStorage();
         router.push({ path: "/" });
       }
     };
