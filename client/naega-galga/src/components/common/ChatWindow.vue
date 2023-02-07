@@ -257,9 +257,15 @@ export default defineComponent({
             res => {
               console.log("구독으로 받은 메시지 : ", res.body);
               let str = JSON.parse(res.body);
+              let time = str.message.createdAt.substr(11, 5);
+              console.log(time + "!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
               if (str.message.sender != userIndex.value) {
                 console.log(str + "!!!!!!!!!!!!!!!!!");
-                chatContents.push(str.message);
+                chatContents.push({
+                  sender: str.message.sender,
+                  message: str.message.message,
+                  createdAt: time,
+                });
               }
             }
           );

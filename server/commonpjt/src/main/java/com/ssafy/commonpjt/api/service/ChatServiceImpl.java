@@ -109,26 +109,26 @@ public class ChatServiceImpl implements ChatService {
         return result;
     }
 
-    @Override
-    public MessageSendResponseDTO saveMessage(MessageSendRequestDTO requestDTO) {
-        User sender = User.builder()
-                .userIndex(requestDTO.getMessage().getSender())
-                .build();
-        ChatRoom chatRoom = ChatRoom.builder()
-                .chatIndex(requestDTO.getChatRoomIndex())
-                .build();
-        ChatMessage message = ChatMessage.builder()
-                .chatRoom(chatRoom)
-                .sender(sender)
-                .message(requestDTO.getMessage().getMessage())
-                .createdAt(Timestamp.valueOf(requestDTO.getMessage().getCreatedAt()))
-                .build();
-        messageRepository.save(message);
-        requestDTO.getMessage().setCreatedAt(new SimpleDateFormat("HH:mm").format(requestDTO.getMessage().getCreatedAt()));
-        MessageSendResponseDTO result = MessageSendResponseDTO.builder()
-                .chatRoomIndex(requestDTO.getChatRoomIndex())
-                .message(requestDTO.getMessage())
-                .build();
-        return result;
-    }
+//     @Override
+//     public MessageSendResponseDTO saveMessage(MessageSendRequestDTO requestDTO) {
+//         User sender = User.builder()
+//                 .userIndex(requestDTO.getMessage().getSender())
+//                 .build();
+//         ChatRoom chatRoom = ChatRoom.builder()
+//                 .chatIndex(requestDTO.getChatRoomIndex())
+//                 .build();
+//         ChatMessage message = ChatMessage.builder()
+//                 .chatRoom(chatRoom)
+//                 .sender(sender)
+//                 .message(requestDTO.getMessage().getMessage())
+//                 .createdAt(Timestamp.valueOf(requestDTO.getMessage().getCreatedAt()))
+//                 .build();
+//         messageRepository.save(message);
+//         // requestDTO.getMessage().setCreatedAt(new SimpleDateFormat("HH:mm").format(requestDTO.getMessage().getCreatedAt()));
+//         MessageSendResponseDTO result = MessageSendResponseDTO.builder()
+//                 .chatRoomIndex(requestDTO.getChatRoomIndex())
+//                 .message(requestDTO.getMessage())
+//                 .build();
+//         return result;
+//     }
 }

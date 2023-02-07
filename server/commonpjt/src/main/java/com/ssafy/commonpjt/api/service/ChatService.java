@@ -13,5 +13,5 @@ public interface ChatService {
 
     MessageListResponseDTO getMessageList(int opIndex) throws Exception;
 
-    MessageSendResponseDTO saveMessage(MessageSendRequestDTO requestDTO);
+    // MessageSendResponseDTO saveMessage(MessageSendRequestDTO requestDTO);
 }

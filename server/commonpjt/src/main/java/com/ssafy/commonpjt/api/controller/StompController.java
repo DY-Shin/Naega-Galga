@@ -27,7 +27,7 @@ public class StompController {
     // /pub/chat/message
     @MessageMapping("/chat/message")
     public void message(MessageSendRequestDTO requestDTO) {
-        MessageSendResponseDTO message = chatService.saveMessage(requestDTO);
-        template.convertAndSend("/sub/chat/room/"+message.getChatRoomIndex(), message);
+        // MessageSendResponseDTO message = chatService.saveMessage(requestDTO);
+        template.convertAndSend("/sub/chat/room/"+requestDTO.getChatRoomIndex(), requestDTO);
     }
 }
