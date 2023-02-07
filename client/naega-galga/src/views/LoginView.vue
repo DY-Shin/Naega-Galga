@@ -30,6 +30,7 @@ import { defineComponent, reactive } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 
+import { getUserInfo } from "@/api/userApi";
 import { login } from "@/api/userApi";
 import localStorageManager from "@/utils/localStorageManager";
 import ResponseStatus from "@/api/responseStatus";
@@ -59,6 +60,18 @@ export default defineComponent({
         store.commit("userStore/CHECK_TOKEN");
         localStorageManager.setAccessToken(response.data.accessToken);
         localStorageManager.setRefreshToken(response.data.refreshToken);
+
+        const composition = async () => {
+          const response = await getUserInfo();
+          const data = response.data;
+
+          if (response.status === ResponseStatus.Ok) {
+            store.commit("userStore/GET_USER_INFO", data);
+          } else {
+            console.log("err");
+          }
+        };
+        composition();
 
         router.push({ path: "/" });
       }

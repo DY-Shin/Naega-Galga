@@ -45,20 +45,20 @@
       <div class="chat-content">
         <div
           v-for="item in chatContents.slice().reverse()"
-          :key="item.time"
+          :key="item.createdAt"
           class="msg"
         >
           <div class="item mymsg" v-if="userIndex == item.sender">
             <div class="box">
               <p class="msg">{{ item.message }}</p>
-              <span class="time">{{ item.time }}</span>
+              <span class="time">{{ item.createdAt }}</span>
             </div>
           </div>
 
           <div class="item" v-else>
             <div class="box">
               <p class="msg">{{ item.message }}</p>
-              <span class="time">{{ item.time }}</span>
+              <span class="time">{{ item.createdAt }}</span>
             </div>
           </div>
         </div>
@@ -146,10 +146,7 @@ export default defineComponent({
   },
   setup(props) {
     const store = useStore();
-    const userIndex = computed(
-      // 현재 로그인 된 유저 인덱스
-      () => store.getters["userStore/userIndex"]
-    );
+    const userIndex = computed(() => store.getters["userStore/userIndex"]);
     const nowOpIndex = ref(); // 현재 채팅의 상대 인덱스
     const isOpenList = ref(false); // 채팅 목록 열림 여부
     const isOpenChat = ref(false); // 채팅방 열림 여부
@@ -177,7 +174,7 @@ export default defineComponent({
       // 메세지
       sender: number;
       message: string;
-      time: string;
+      createdAt: string;
     }
     interface chatMessage {
       // 주고받는 메세지
@@ -216,14 +213,11 @@ export default defineComponent({
       chatContents.splice(0); // 채팅방 내용 초기화(전에 열었던 채팅 목록 남아있음)
       connect();
       isOpenChat.value = true;
-      console.log(nowOpIndex.value);
+
       const list = await getChatContent(nowOpIndex.value);
-      console.log("!!");
-      console.log(list);
-      console.log("!!");
-
+      console.log(userIndex.value + " " + nowOpIndex.value);
       list.data.messageList.forEach(item => chatContents.push(item));
-
+      console.log(chatContents[0]);
       isOpenChat.value = true;
       isOpenChatRooms.value = false;
     };
@@ -295,7 +289,7 @@ export default defineComponent({
           message: {
             sender: 1,
             message: inputMsg.value,
-            time: str,
+            createdAt: str,
           },
         };
 
@@ -303,9 +297,9 @@ export default defineComponent({
           //화면에 띄울 컨텐츠 배열에 넣음
           sender: userIndex.value,
           message: inputMsg.value,
-          time: today.getHours() + ":" + today.getMinutes(),
+          createdAt: today.getHours() + ":" + today.getMinutes(),
         });
-        console.log(msg);
+        // console.log(msg);
         socket.stompClient.send("/pub/chat/message", JSON.stringify(msg), {});
       }
     };
