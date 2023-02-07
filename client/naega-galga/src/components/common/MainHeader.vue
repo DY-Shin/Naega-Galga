@@ -126,8 +126,7 @@ export default defineComponent({
 
       if (response.status === ResponseStatus.Ok) {
         localStorageManager.removeTokens();
-        localStorage.clear();
-
+        localStorageManager.removeLocalStorage();
         router.push({ path: "/" });
       }
     };
