@@ -18,13 +18,13 @@ public class StompController {
     // /pub/chat/enter
     @MessageMapping("/chat/enter")
     public void enter() {
-        template.convertAndSend("/sub/chat/room/"+1, "Connection");
+        template.convertAndSend("/sub/chat/room/", "Connection");
     }
 
     // /pub/chat/message
     @MessageMapping("/chat/message")
     public void message(MessageSendRequestDTO message) {
-        template.convertAndSend("/sub/chat/room/"+1, message);
+        template.convertAndSend("/sub/chat/room/", message);
     }
 
 
