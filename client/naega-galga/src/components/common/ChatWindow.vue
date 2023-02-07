@@ -257,6 +257,7 @@ export default defineComponent({
               console.log("구독으로 받은 메시지 : ", res.body);
               let str = JSON.parse(res.body);
               if (str.message.sender != userIndex.value) {
+                console.log("push !!!!!!!!!!!");
                 chatContents.push(str.message);
               }
             }
@@ -270,8 +271,14 @@ export default defineComponent({
       );
     };
 
-    const sendMessage = () => {
+    const sendMessage = e => {
       // 메세지 보냄
+      if (e.isComposing || e.keyCode === 229) {
+        return;
+      }
+      if (inputMsg.value == "") {
+        return;
+      }
       send();
       inputMsg.value = ""; // 입력 초기화
     };
