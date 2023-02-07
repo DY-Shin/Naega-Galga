@@ -1,6 +1,7 @@
 package com.ssafy.commonpjt.api.service;
 
 import com.ssafy.commonpjt.api.dto.userDTO.*;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
@@ -19,4 +20,5 @@ public interface UserService {
     List<?> getUserProductList(String userId) throws Exception;
     List<?> findMyUserId(String name) throws Exception;
     void findMyPassword(FindPasswordDTO findPasswordDTO) throws Exception;
+    TokenDTO reissue(TokenDTO tokenDTO) throws Exception;
 }

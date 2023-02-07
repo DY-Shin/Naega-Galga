@@ -11,11 +11,13 @@ import com.ssafy.commonpjt.db.repository.WishListRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -192,5 +194,22 @@ public class UserServiceImpl implements UserService {
         }
         user.updatePassword(passwordEncoder, findPasswordDTO.getToBePassword());
         userRepository.save(user);
+    }
+
+    @Override
+    public TokenDTO reissue(TokenDTO tokenDTO) throws Exception {
+        if(!jwtTokenProvider.validateToken(tokenDTO.getRefreshToken())) {
+            throw new Exception("Invalid Refresh Token");
+        }
+        Authentication authentication = jwtTokenProvider.getAuthentication(tokenDTO.getAccessToken());
+        String refreshToken = (String) redisTemplate.opsForValue().get("RT:" + authentication.getName());
+        if (!refreshToken.equals(tokenDTO.getRefreshToken())) {
+            throw new Exception("User Information Does Not Match");
+        }
+        TokenDTO token = jwtTokenProvider.generateToken(authentication);
+        redisTemplate.opsForValue()
+                .set("RT:" + authentication.getName(), token.getRefreshToken(),
+                        token.getRefreshTokenExpirationTime(), TimeUnit.MILLISECONDS);
+        return token;
     }
 }

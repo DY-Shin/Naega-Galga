@@ -108,4 +108,10 @@ public class UserController {
         userService.findMyPassword(findPasswordDTO);
         return ResponseEntity.ok("Password Changed");
     }
+
+    // 토큰 만료시 재발급
+    @PostMapping("reissue")
+    public TokenDTO reissue(@Validated @RequestBody TokenDTO tokenDTO) throws Exception {
+        return userService.reissue(tokenDTO);
+    }
 }
