@@ -22,8 +22,8 @@ public class ChatRoomController {
     private ChatServiceImpl chatService;
 
     // TODO : RequestBody로 받아야될까? 그냥 경로에 명시를 하는 것이 좋을 것 같다.
-    @PostMapping("/rooms/{opIndex}")
-    public ResponseEntity<?> createChat(@PathVariable("opIndex") int opIndex) throws Exception {
+    @GetMapping("/rooms/{opIndex}")
+    public ResponseEntity<?> getMessageList(@PathVariable("opIndex") int opIndex) throws Exception {
         MessageListResponseDTO messageList = chatService.getMessageList(opIndex);
         return ResponseEntity.ok(messageList);
     }
