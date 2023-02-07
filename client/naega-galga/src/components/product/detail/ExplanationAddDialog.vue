@@ -52,8 +52,16 @@
 
 <script lang="ts">
 import { toRef, ref } from "vue";
-import { ElConfigProvider } from "element-plus";
 import ko from "element-plus/dist/locale/ko.mjs";
+
+import {
+  ElConfigProvider,
+  ElButton,
+  ElSelect,
+  ElOption,
+  ElDialog,
+  ElCalendar,
+} from "element-plus";
 
 export default {
   props: {
@@ -63,6 +71,11 @@ export default {
   },
   components: {
     ElConfigProvider,
+    ElButton,
+    ElSelect,
+    ElOption,
+    ElDialog,
+    ElCalendar,
   },
   setup(props, context) {
     const isShowRef = toRef(props, "isShow");

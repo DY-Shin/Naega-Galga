@@ -60,6 +60,7 @@ import { ProductReservation } from "@/types/MeetingReservationType";
 import { Calendar, Minus, Plus } from "@element-plus/icons-vue";
 import { useStore } from "vuex";
 import ExplanationAddDialog from "@/components/product/detail/ExplanationAddDialog.vue";
+import { ElButton } from "element-plus";
 
 export default {
   props: {
@@ -67,6 +68,7 @@ export default {
   },
   components: {
     ExplanationAddDialog,
+    ElButton,
   },
   setup(props) {
     const productIndexRef = ref(props.productIndex);

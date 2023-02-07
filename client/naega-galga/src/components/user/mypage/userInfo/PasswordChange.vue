@@ -45,9 +45,9 @@
         show-password
       />
     </el-form-item>
-    <el-form-it>
+    <el-form-item>
       <el-button @click="sendChangePassword"> 비밀번호 변경 </el-button>
-    </el-form-it>
+    </el-form-item>
   </el-form>
 </template>
 
@@ -59,9 +59,11 @@ import { checkPassword } from "@/api/userApi";
 import { changePassword } from "@/api/userApi";
 import ResponseStatus from "@/api/responseStatus";
 
+import { ElForm, ElFormItem, ElInput } from "element-plus";
+
 export default defineComponent({
   name: "PasswordChange",
-
+  components: { ElForm, ElFormItem, ElInput },
   setup() {
     const password_change_form = reactive({
       password: "",
