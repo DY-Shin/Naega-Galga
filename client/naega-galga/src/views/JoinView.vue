@@ -44,17 +44,21 @@
           placeholder="010"
           style="flex: 3"
         ></el-input>
+
         <p style="flex: 1; text-align: center; margin: 0px">-</p>
+
         <el-input
           v-model="fullUserPhone.second_user_phone"
           placeholder="0000"
-          style="flex: 4"
+          style="flex: 3"
         ></el-input>
+
         <p style="flex: 1; text-align: center; margin: 0px">-</p>
+
         <el-input
           v-model="fullUserPhone.third_user_phone"
           placeholder="0000"
-          style="flex: 4"
+          style="flex: 3"
         ></el-input>
       </el-form-item>
 
@@ -73,7 +77,8 @@
         <el-input
           v-model="fullAddress.detailAddress"
           placeholder="상세 주소를 입력해주세요."
-        ></el-input>
+        >
+        </el-input>
       </el-form-item>
 
       <el-form-item label="사업자이신가요?">
@@ -114,7 +119,6 @@
 
 <script lang="ts">
 import { defineComponent, reactive, ref } from "vue";
-// import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import type { FormInstance, FormRules } from "element-plus";
 
@@ -130,7 +134,6 @@ export default defineComponent({
     JoinTerms,
   },
   setup() {
-    // const store = useStore();
     const router = useRouter();
     const visible = ref(false);
     const terms_check = ref(false);
@@ -143,8 +146,8 @@ export default defineComponent({
 
     const fullUserPhone = reactive({
       first_user_phone: "",
-      second_user_phone: "",
-      third_user_phone: "",
+      second_user_phone: null,
+      third_user_phone: null,
     });
 
     const user_phone = ref(
@@ -210,23 +213,7 @@ export default defineComponent({
           trigger: "blur",
         },
       ],
-      user_name: [
-        {
-          required: true,
-          message: "이름은 반드시 입력해주세요",
-          trigger: "blur",
-        },
-        {
-          min: 2,
-          message: "이름은 2글자 이상으로 입력해주세요.",
-          trigger: "blur",
-        },
-        {
-          max: 8,
-          message: "이름은 8글자 이하로 입력해주세요.",
-          trigger: "blur",
-        },
-      ],
+
       user_password: [
         {
           required: true,
@@ -244,6 +231,7 @@ export default defineComponent({
           trigger: "blur",
         },
       ],
+
       password_confirm: [
         {
           required: true,
@@ -262,26 +250,33 @@ export default defineComponent({
         },
         {
           validator: password_confirm,
-          message: "비밀번호가 서로 다릅니다",
+          // message: "비밀번호가 서로 다릅니다",
         },
       ],
-      user_phone: [
-        // {
-        //   required: true,
-        //   message: "핸드폰 번호는 반드시 입력해주세요.",
-        //   trigger: "blur",
-        // },
-        {
-          validator: phone_confirm,
-          message: "번호는 반드시",
-          // trigger: "change",
-        },
-      ],
-      user_address: [
+
+      user_name: [
         {
           required: true,
-          message: "주소는 반드시 입력해주세요.",
+          message: "이름은 반드시 입력해주세요",
           trigger: "blur",
+        },
+        {
+          min: 2,
+          message: "이름은 2글자 이상으로 입력해주세요.",
+          trigger: "blur",
+        },
+        {
+          max: 8,
+          message: "이름은 8글자 이하로 입력해주세요.",
+          trigger: "blur",
+        },
+      ],
+
+      user_phone: [
+        {
+          validator: phone_confirm,
+          required: true,
+          trigger: "change",
         },
       ],
     });
