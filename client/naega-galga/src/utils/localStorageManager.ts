@@ -19,6 +19,9 @@ const localStorageManager = {
     localStorage.removeItem(accessTokenName);
     localStorage.removeItem(refreshTokenName);
   },
+  removeLocalStorage: () => {
+    localStorage.clear();
+  },
 };
 
 export default localStorageManager;

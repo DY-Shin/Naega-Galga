@@ -44,17 +44,21 @@
           placeholder="010"
           style="flex: 3"
         ></el-input>
+
         <p style="flex: 1; text-align: center; margin: 0px">-</p>
+
         <el-input
           v-model="fullUserPhone.second_user_phone"
           placeholder="0000"
-          style="flex: 4"
+          style="flex: 3"
         ></el-input>
+
         <p style="flex: 1; text-align: center; margin: 0px">-</p>
+
         <el-input
           v-model="fullUserPhone.third_user_phone"
           placeholder="0000"
-          style="flex: 4"
+          style="flex: 3"
         ></el-input>
       </el-form-item>
 
@@ -73,7 +77,8 @@
         <el-input
           v-model="fullAddress.detailAddress"
           placeholder="상세 주소를 입력해주세요."
-        ></el-input>
+        >
+        </el-input>
       </el-form-item>
 
       <el-form-item label="사업자이신가요?">
@@ -114,7 +119,6 @@
 
 <script lang="ts">
 import { defineComponent, reactive, ref } from "vue";
-// import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import type { FormInstance, FormRules } from "element-plus";
 
@@ -130,7 +134,6 @@ export default defineComponent({
     JoinTerms,
   },
   setup() {
-    // const store = useStore();
     const router = useRouter();
     const visible = ref(false);
     const terms_check = ref(false);
@@ -142,9 +145,9 @@ export default defineComponent({
     };
 
     const fullUserPhone = reactive({
-      first_user_phone: "",
-      second_user_phone: "",
-      third_user_phone: "",
+      first_user_phone: null,
+      second_user_phone: null,
+      third_user_phone: null,
     });
 
     const user_phone = ref(
@@ -165,9 +168,9 @@ export default defineComponent({
     );
 
     const joinform = reactive({
-      user_id: "",
-      user_name: "",
-      user_password: "",
+      user_id: null,
+      user_name: null,
+      user_password: null,
       password_confirm: "",
       user_phone,
       user_address,
@@ -176,21 +179,44 @@ export default defineComponent({
 
     const password_confirm = (rule: any, value: any, callback: any) => {
       if (value === "") {
-        callback(new Error("Please input the password again"));
-      } else if (value !== joinform.user_password) {
-        callback(new Error("Two inputs don't match!"));
+        callback(new Error("비밀번호 확인은 반드시 입력해주세요"));
+      } else if (joinform.password_confirm.length < 8) {
+        callback(new Error("비밀번호는 8글자 이상으로 만들어주세요."));
+      } else if (joinform.password_confirm.length > 16) {
+        callback(new Error("비밀번호는 16글자 이하로 만들어주세요."));
+      } else if (
+        value !== joinform.user_password &&
+        joinform.password_confirm.length > 7
+      ) {
+        callback(new Error("비밀번호가 서로 다릅니다!"));
       } else {
         callback();
       }
     };
 
     const phone_confirm = (rule: any, value: any, callback: any) => {
-      if (fullUserPhone.first_user_phone == "") {
-        callback(new Error("Please input the phone"));
-      } else if (fullUserPhone.second_user_phone == "") {
-        callback(new Error("Please input the phone"));
-      } else if (fullUserPhone.third_user_phone == "") {
-        callback(new Error("Please input the phone"));
+      if (
+        fullUserPhone.first_user_phone == "" ||
+        fullUserPhone.second_user_phone == "" ||
+        fullUserPhone.third_user_phone == ""
+      ) {
+        callback(new Error("핸드폰 번호는 반드시 입력해주세요"));
+        // } else if () {
+        //   callback(new Error("Please input the phone"));
+        // } else if () {
+        //   callback(new Error("Please input the phone"));
+      } else {
+        callback();
+      }
+    };
+
+    const address_confirm = (rule: any, value: any, callback: any) => {
+      if (fullAddress.roadAddress.length > 3) {
+        callback(new Error("핸드폰 번호는 반드시 입력해주세요"));
+        // } else if () {
+        //   callback(new Error("Please input the phone"));
+        // } else if () {
+        //   callback(new Error("Please input the phone"));
       } else {
         callback();
       }
@@ -210,23 +236,7 @@ export default defineComponent({
           trigger: "blur",
         },
       ],
-      user_name: [
-        {
-          required: true,
-          message: "이름은 반드시 입력해주세요",
-          trigger: "blur",
-        },
-        {
-          min: 2,
-          message: "이름은 2글자 이상으로 입력해주세요.",
-          trigger: "blur",
-        },
-        {
-          max: 8,
-          message: "이름은 8글자 이하로 입력해주세요.",
-          trigger: "blur",
-        },
-      ],
+
       user_password: [
         {
           required: true,
@@ -244,44 +254,45 @@ export default defineComponent({
           trigger: "blur",
         },
       ],
+
       password_confirm: [
         {
           required: true,
-          message: "비밀번호는 반드시 입력해주세요.",
-          trigger: "blur",
-        },
-        {
-          min: 8,
-          message: "비밀번호는 8글자 이상으로 만들어주세요.",
-          trigger: "blur",
-        },
-        {
-          max: 16,
-          message: "비밀번호는 16글자 이하로 만들어주세요.",
-          trigger: "blur",
-        },
-        {
           validator: password_confirm,
-          message: "비밀번호가 서로 다릅니다",
+          trigger: "blur",
         },
       ],
-      user_phone: [
-        // {
-        //   required: true,
-        //   message: "핸드폰 번호는 반드시 입력해주세요.",
-        //   trigger: "blur",
-        // },
-        {
-          validator: phone_confirm,
-          message: "번호는 반드시",
-          // trigger: "change",
-        },
-      ],
-      user_address: [
+
+      user_name: [
         {
           required: true,
-          message: "주소는 반드시 입력해주세요.",
+          message: "이름은 반드시 입력해주세요",
           trigger: "blur",
+        },
+        {
+          min: 2,
+          message: "이름은 2글자 이상으로 입력해주세요.",
+          trigger: "blur",
+        },
+        {
+          max: 8,
+          message: "이름은 8글자 이하로 입력해주세요.",
+          trigger: "blur",
+        },
+      ],
+
+      user_phone: [
+        {
+          validator: phone_confirm,
+          required: true,
+          trigger: "blur",
+        },
+      ],
+
+      user_address: [
+        {
+          validator: address_confirm,
+          required: true,
         },
       ],
     });
