@@ -91,9 +91,9 @@ public class ChatServiceImpl implements ChatService {
         for (ChatMessage message : messageList) {
             log.info("I SEND MESSAGE : " + message.getMessage() + " WHO AM I : " + message.getSender().getUserIndex());
             MessageDTO dto = MessageDTO.builder()
-                    .senderIndex(message.getSender().getUserIndex())
+                    .sender(message.getSender().getUserIndex())
                     .message(message.getMessage())
-                    .time(new SimpleDateFormat("HH:mm").format(message.getCreatedAt()))
+                    .createAt(new SimpleDateFormat("HH:mm").format(message.getCreatedAt()))
                     .build();
 
             resultMessage.add(dto);
