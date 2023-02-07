@@ -22,17 +22,19 @@ import java.util.List;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class ChatServiceImpl implements ChatService{
+public class ChatServiceImpl implements ChatService {
     private final UserRepository userRepository;
     private final ChatRoomRepository chatRoomRepository;
     private final ChatMessageRepository messageRepository;
-    public User getLoginUser() throws Exception{
+
+    public User getLoginUser() throws Exception {
         User loginUser = userRepository
-//                .findByUserId(SecurityUtil.getLoginUsername())
-                .findByUserId("aabbcc")
+                .findByUserId(SecurityUtil.getLoginUsername())
+                // .findByUserId("aabbcc")
                 .orElseThrow(() -> new Exception("No User Exists"));
         return loginUser;
     }
+
     @Override
     public List<ChatRoomResponseDTO> getChatList() throws Exception {
         User loginUser = getLoginUser();
@@ -41,9 +43,11 @@ public class ChatServiceImpl implements ChatService{
         List<ChatRoom> roomList = chatRoomRepository.findChatRoomByUser(loginUserIndex);
 
         List<ChatRoomResponseDTO> result = new ArrayList<>();
-        for(ChatRoom room : roomList) {
-            int OpIndex = room.getBuyer().getUserIndex() != loginUserIndex ? room.getBuyer().getUserIndex() : room.getSeller().getUserIndex();
-            String OpName = !room.getBuyer().getName().equals(loginUserName) ? room.getBuyer().getName() : room.getSeller().getName();
+        for (ChatRoom room : roomList) {
+            int OpIndex = room.getBuyer().getUserIndex() != loginUserIndex ? room.getBuyer().getUserIndex()
+                    : room.getSeller().getUserIndex();
+            String OpName = !room.getBuyer().getName().equals(loginUserName) ? room.getBuyer().getName()
+                    : room.getSeller().getName();
             ChatRoomResponseDTO dto = ChatRoomResponseDTO.builder()
                     .roomIndex(room.getChatIndex())
                     .OpIndex(OpIndex)
@@ -65,7 +69,7 @@ public class ChatServiceImpl implements ChatService{
                 .build();
         ChatRoom chatRoom = chatRoomRepository.hasChatRoom(loginUserIndex, opIndex);
         List<MessageDTO> resultMessage = new ArrayList<>();
-        if(chatRoom == null) {
+        if (chatRoom == null) {
             log.info("NO CHAT ROOM I WILL CREATE");
             chatRoom = ChatRoom.builder()
                     .buyer(loginUser)
@@ -83,8 +87,8 @@ public class ChatServiceImpl implements ChatService{
 
         List<ChatMessage> messageList = messageRepository.findByChatRoom(chatRoom);
 
-        for(ChatMessage message : messageList) {
-            log.info("I SEND MESSAGE : " + message.getMessage() + " WHO AM I : "+message.getSender().getUserIndex());
+        for (ChatMessage message : messageList) {
+            log.info("I SEND MESSAGE : " + message.getMessage() + " WHO AM I : " + message.getSender().getUserIndex());
             MessageDTO dto = MessageDTO.builder()
                     .senderIndex(message.getSender().getUserIndex())
                     .message(message.getMessage())
@@ -99,6 +103,5 @@ public class ChatServiceImpl implements ChatService{
                 .build();
         return result;
     }
-
 
 }
