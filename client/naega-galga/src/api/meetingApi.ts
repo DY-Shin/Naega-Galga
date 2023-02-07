@@ -6,3 +6,5 @@ const getOneOnOneMeetingInfo = async (meetingIndex: number) => {
   );
   return response;
 };
+
+export { getOneOnOneMeetingInfo };
