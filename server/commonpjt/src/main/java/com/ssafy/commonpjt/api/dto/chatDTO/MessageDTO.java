@@ -14,5 +14,5 @@ import lombok.Setter;
 public class MessageDTO {
     private int sender;
     private String message;
-    private String createAt;
+    private String createdAt;
 }
