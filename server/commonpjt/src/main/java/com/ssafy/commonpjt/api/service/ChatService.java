@@ -1,7 +1,6 @@
 package com.ssafy.commonpjt.api.service;
 
 import com.ssafy.commonpjt.api.dto.chatDTO.ChatRoomResponseDTO;
-import com.ssafy.commonpjt.api.dto.chatDTO.MessageListRequestDTO;
 import com.ssafy.commonpjt.api.dto.chatDTO.MessageListResponseDTO;
 import com.ssafy.commonpjt.api.dto.chatDTO.MessageSendRequestDTO;
 import com.ssafy.commonpjt.api.dto.chatDTO.MessageSendResponseDTO;
@@ -13,5 +12,5 @@ public interface ChatService {
 
     MessageListResponseDTO getMessageList(int opIndex) throws Exception;
 
-    // MessageSendResponseDTO saveMessage(MessageSendRequestDTO requestDTO);
+    MessageSendResponseDTO saveMessage(MessageSendRequestDTO requestDTO);
 }

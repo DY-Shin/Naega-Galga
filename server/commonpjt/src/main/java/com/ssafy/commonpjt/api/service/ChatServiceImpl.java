@@ -2,7 +2,6 @@ package com.ssafy.commonpjt.api.service;
 
 import com.ssafy.commonpjt.api.dto.chatDTO.ChatRoomResponseDTO;
 import com.ssafy.commonpjt.api.dto.chatDTO.MessageDTO;
-import com.ssafy.commonpjt.api.dto.chatDTO.MessageListRequestDTO;
 import com.ssafy.commonpjt.api.dto.chatDTO.MessageListResponseDTO;
 import com.ssafy.commonpjt.api.dto.chatDTO.MessageSendRequestDTO;
 import com.ssafy.commonpjt.api.dto.chatDTO.MessageSendResponseDTO;
@@ -15,7 +14,6 @@ import com.ssafy.commonpjt.db.repository.ChatRoomRepository;
 import com.ssafy.commonpjt.db.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.aspectj.bridge.Message;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
@@ -109,26 +107,27 @@ public class ChatServiceImpl implements ChatService {
         return result;
     }
 
-//     @Override
-//     public MessageSendResponseDTO saveMessage(MessageSendRequestDTO requestDTO) {
-//         User sender = User.builder()
-//                 .userIndex(requestDTO.getMessage().getSender())
-//                 .build();
-//         ChatRoom chatRoom = ChatRoom.builder()
-//                 .chatIndex(requestDTO.getChatRoomIndex())
-//                 .build();
-//         ChatMessage message = ChatMessage.builder()
-//                 .chatRoom(chatRoom)
-//                 .sender(sender)
-//                 .message(requestDTO.getMessage().getMessage())
-//                 .createdAt(Timestamp.valueOf(requestDTO.getMessage().getCreatedAt()))
-//                 .build();
-//         messageRepository.save(message);
-//         // requestDTO.getMessage().setCreatedAt(new SimpleDateFormat("HH:mm").format(requestDTO.getMessage().getCreatedAt()));
-//         MessageSendResponseDTO result = MessageSendResponseDTO.builder()
-//                 .chatRoomIndex(requestDTO.getChatRoomIndex())
-//                 .message(requestDTO.getMessage())
-//                 .build();
-//         return result;
-//     }
+     @Override
+     public MessageSendResponseDTO saveMessage(MessageSendRequestDTO requestDTO) {
+         User sender = User.builder()
+                 .userIndex(requestDTO.getMessage().getSender())
+                 .build();
+         ChatRoom chatRoom = ChatRoom.builder()
+                 .chatIndex(requestDTO.getChatRoomIndex())
+                 .build();
+         System.out.println(Timestamp.valueOf(requestDTO.getMessage().getCreatedAt()));
+         ChatMessage message = ChatMessage.builder()
+                 .chatRoom(chatRoom)
+                 .sender(sender)
+                 .message(requestDTO.getMessage().getMessage())
+                 .createdAt(Timestamp.valueOf(requestDTO.getMessage().getCreatedAt()))
+                 .build();
+         messageRepository.save(message);
+         requestDTO.getMessage().setCreatedAt(new SimpleDateFormat("HH:mm").format(message.getCreatedAt()));
+         MessageSendResponseDTO result = MessageSendResponseDTO.builder()
+                 .chatRoomIndex(requestDTO.getChatRoomIndex())
+                 .message(requestDTO.getMessage())
+                 .build();
+         return result;
+     }
 }
