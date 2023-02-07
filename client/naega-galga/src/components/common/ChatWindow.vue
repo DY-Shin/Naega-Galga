@@ -292,12 +292,14 @@ export default defineComponent({
         (today.getMonth() + 1).toString(10).padStart(2, "0") +
         "-" +
         today.getDate().toString(10).padStart(2, "0") +
-        ":" +
+        " " +
         today.getHours().toString(10).padStart(2, "0") +
         ":" +
         today.getMinutes().toString(10).padStart(2, "0") +
         ":" +
-        today.getMilliseconds().toString(10).padStart(2, "0");
+        today.getSeconds().toString(10).padStart(2, "0") +
+        "." +
+        today.getMilliseconds().toString(10);
       if (socket.stompClient && socket.stompClient.connected) {
         const msg: chatMessage = {
           // 서버에 보내줄 거
@@ -308,6 +310,8 @@ export default defineComponent({
             createdAt: str,
           },
         };
+
+        console.log(str + " !!");
 
         chatContents.push({
           //화면에 띄울 컨텐츠 배열에 넣음
