@@ -13,5 +13,5 @@ import lombok.Setter;
 @Builder
 public class MessageSendRequestDTO {
     private int chatRoomIndex;
-    MessageDTO message;
+    private MessageDTO message;
 }
