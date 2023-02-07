@@ -45,25 +45,25 @@ public class User implements UserDetails {
     @Column(nullable = false, length = 100)
     private String userAddress;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", orphanRemoval = true)
     private List<WishList> wishList = new ArrayList<>();
 
     @OneToMany(mappedBy = "productSeller", orphanRemoval = true)
     private List<Product> productSeller = new ArrayList<>();
 
-    @OneToMany(mappedBy = "seller")
+    @OneToMany(mappedBy = "seller", orphanRemoval = true)
     private List<ChatRoom> seller = new ArrayList<>();
 
-    @OneToMany(mappedBy = "buyer")
+    @OneToMany(mappedBy = "buyer", orphanRemoval = true)
     private List<ChatRoom> buyer = new ArrayList<>();
 
-    @OneToMany(mappedBy = "sender")
+    @OneToMany(mappedBy = "sender", orphanRemoval = true)
     private List<ChatMessage> sender = new ArrayList<>();
 
-    @OneToMany(mappedBy = "guest")
+    @OneToMany(mappedBy = "guest", orphanRemoval = true)
     private List<Meeting> meetingGuest =  new ArrayList<>();
 
-    @OneToMany(mappedBy = "owner")
+    @OneToMany(mappedBy = "owner", orphanRemoval = true)
     private List<Meeting> meetingOwner = new ArrayList<>();
 
     // 권한 설정을 외래 키로 부여
