@@ -27,7 +27,7 @@
 
 <script lang="ts">
 import { defineComponent, reactive } from "vue";
-// import { useStore } from "vuex";
+import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 
 import { login } from "@/api/userApi";
@@ -37,7 +37,7 @@ import ResponseStatus from "@/api/responseStatus";
 export default defineComponent({
   name: "LoginView",
   setup() {
-    // const store = useStore();
+    const store = useStore();
     const router = useRouter();
 
     const url =
@@ -56,6 +56,7 @@ export default defineComponent({
       const response = await login(loginform);
 
       if (response.status === ResponseStatus.Ok) {
+        store.commit("userStore/CHANGE_TOKEN");
         localStorageManager.setAccessToken(response.data.accessToken);
         localStorageManager.setRefreshToken(response.data.refreshToken);
 
