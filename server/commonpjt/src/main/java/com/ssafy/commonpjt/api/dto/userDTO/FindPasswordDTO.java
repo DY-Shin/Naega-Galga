@@ -7,4 +7,5 @@ public class FindPasswordDTO {
     private String userId;
     private String userName;
     private String userPhone;
+    private String toBePassword;
 }

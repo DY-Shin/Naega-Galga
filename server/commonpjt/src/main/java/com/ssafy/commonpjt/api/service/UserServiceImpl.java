@@ -182,7 +182,7 @@ public class UserServiceImpl implements UserService {
 
     // 비밀번호 재설정 (암호화로 인해 복호화가 불가능) -> true 를 반환받으면 updatePassword 메소드 실행
     @Override
-    public boolean findMyPassword(FindPasswordDTO findPasswordDTO) throws Exception {
+    public void findMyPassword(FindPasswordDTO findPasswordDTO) throws Exception {
         User user = userRepository.findByUserId(findPasswordDTO.getUserId()).orElseThrow(() -> new Exception("No User Exists"));
         if (!user.getName().equals(findPasswordDTO.getUserName())){
             throw new Exception("Incorrect Name");
@@ -190,6 +190,7 @@ public class UserServiceImpl implements UserService {
         if (!user.getUserPhone().equals(findPasswordDTO.getUserPhone())){
             throw new Exception("Incorrect Phone Number");
         }
-        return true;
+        user.updatePassword(passwordEncoder, findPasswordDTO.getToBePassword());
+        userRepository.save(user);
     }
 }
