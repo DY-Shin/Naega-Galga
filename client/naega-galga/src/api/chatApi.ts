@@ -11,34 +11,32 @@ async function getChatRooms() {
   return response;
 }
 
-async function getChatContent(chatRoomIndex: number) {
-  const response: AxiosResponse = await axios.post(
-    `/api/chat/rooms`,
-    {
-      roomIndex: chatRoomIndex,
-    },
+async function getChatContent(opIndex: number) {
+  const response: AxiosResponse = await axios.get(
+    `/api/chat/rooms/${opIndex}`,
     {
       headers: {
         Authorization: `Bearer ${localStorageManager.getAccessToken()}`,
       },
     }
   );
+
   return response;
 }
 
-async function getChatRoomInfo(opIndex: number) {
-  const response: AxiosResponse = await axios.post(
-    `/api/chat/rooms/ask`,
-    {
-      opIndex: opIndex,
-    },
-    {
-      headers: {
-        Authorization: `Bearer ${localStorageManager.getAccessToken()}`,
-      },
-    }
-  );
-  return response;
-}
+// async function getChatRoomInfo(opIndex: number) {  // 안 씀
+//   const response: AxiosResponse = await axios.post(
+//     `/api/chat/rooms/ask`,
+//     {
+//       opIndex: opIndex,
+//     },
+//     {
+//       headers: {
+//         Authorization: `Bearer ${localStorageManager.getAccessToken()}`,
+//       },
+//     }
+//   );
+//   return response;
+// }
 
-export { getChatRooms, getChatContent, getChatRoomInfo };
+export { getChatRooms, getChatContent };

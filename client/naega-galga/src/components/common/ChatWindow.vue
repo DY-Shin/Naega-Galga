@@ -25,7 +25,7 @@
   </el-scrollbar>
   <!-- --------------chat room start-------------- -->
   <div class="chat-room" v-show="isOpenChat">
-    <!-- <div class="send-box box">{sd</div> -->
+    <div class="send-box box">{{ nowOpIndex }}</div>
     <el-icon
       id="close-btn"
       @click="CloseChat"
@@ -146,11 +146,9 @@ export default defineComponent({
   },
   setup(props) {
     const store = useStore();
-    const userIndex = computed(
-      // 현재 로그인 된 유저 인덱스
-      () => store.getters["userStore/userIndex"]
-    );
+    const userIndex = computed(() => store.getters["userStore/userIndex"]);
     const nowOpIndex = ref(); // 현재 채팅의 상대 인덱스
+    const nowRoomIndex = ref(); // 현재 채팅의 상대 인덱스
     const isOpenList = ref(false); // 채팅 목록 열림 여부
     const isOpenChat = ref(false); // 채팅방 열림 여부
     const isNewChat = ref(false); // 새로운 채팅 여부
@@ -217,9 +215,13 @@ export default defineComponent({
       connect();
       isOpenChat.value = true;
 
-      const content = await getChatContent(nowOpIndex.value);
-      content.data.forEach((msg: message) => chatContents.push(msg));
-
+      const list = await getChatContent(nowOpIndex.value);
+      nowRoomIndex.value = list.data.chatRoomIndex;
+      console.log(
+        userIndex.value + " " + nowOpIndex.value + " " + nowRoomIndex.value
+      );
+      list.data.messageList.forEach(item => chatContents.push(item));
+      console.log(chatContents[0]);
       isOpenChat.value = true;
       isOpenChatRooms.value = false;
     };
@@ -247,14 +249,19 @@ export default defineComponent({
       socket.stompClient.connect(
         {},
         frame => {
-          console.log("frame");
           socket.connected = true;
           console.log("소켓 연결 성공 : ", frame);
-          socket.stompClient.subscribe("/sub/chat/room/1", res => {
-            console.log("구독으로 받은 메시지 : ", res.body);
-            let str = JSON.parse(res.body);
-            chatContents.push(str);
-          });
+          socket.stompClient.subscribe(
+            `/sub/chat/room/${nowRoomIndex.value}`,
+            res => {
+              console.log("구독으로 받은 메시지 : ", res.body);
+              let str = JSON.parse(res.body);
+              if (str.message.sender != userIndex.value) {
+                console.log("push !!!!!!!!!!!");
+                chatContents.push(str.message);
+              }
+            }
+          );
         },
         error => {
           // 소켓 연결 실패
@@ -264,8 +271,14 @@ export default defineComponent({
       );
     };
 
-    const sendMessage = () => {
+    const sendMessage = e => {
       // 메세지 보냄
+      if (e.isComposing || e.keyCode === 229) {
+        return;
+      }
+      if (inputMsg.value == "") {
+        return;
+      }
       send();
       inputMsg.value = ""; // 입력 초기화
     };
@@ -278,30 +291,36 @@ export default defineComponent({
         (today.getMonth() + 1).toString(10).padStart(2, "0") +
         "-" +
         today.getDate().toString(10).padStart(2, "0") +
-        ":" +
+        " " +
         today.getHours().toString(10).padStart(2, "0") +
         ":" +
         today.getMinutes().toString(10).padStart(2, "0") +
         ":" +
-        today.getMilliseconds().toString(10).padStart(2, "0");
+        today.getSeconds().toString(10).padStart(2, "0") +
+        "." +
+        today.getMilliseconds().toString(10);
       if (socket.stompClient && socket.stompClient.connected) {
         const msg: chatMessage = {
           // 서버에 보내줄 거
-          chatRoomIndex: 1,
+          chatRoomIndex: nowRoomIndex.value,
           message: {
-            sender: 1,
+            sender: userIndex.value,
             message: inputMsg.value,
             createdAt: str,
           },
         };
 
+        console.log(str + " !!");
+
         chatContents.push({
           //화면에 띄울 컨텐츠 배열에 넣음
           sender: userIndex.value,
           message: inputMsg.value,
-          createdAt: today.getHours() + ":" + today.getMinutes(),
+          createdAt:
+            today.getHours().toString().padStart(2, "0") +
+            ":" +
+            today.getMinutes().toString().padStart(2, "0"),
         });
-        console.log(msg);
         socket.stompClient.send("/pub/chat/message", JSON.stringify(msg), {});
       }
     };
@@ -412,6 +431,8 @@ export default defineComponent({
       sendMessage,
       setOpIndex,
       userIndex,
+      nowOpIndex,
+      nowRoomIndex,
     };
   },
 });
@@ -479,7 +500,7 @@ export default defineComponent({
   top: calc(50vh - 350px);
   left: calc(50vw - 200px);
   width: 400px;
-  height: 520px;
+  height: 550px;
   background: rgb(255, 255, 255);
   border: 1px solid rgb(184, 184, 184);
   box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
