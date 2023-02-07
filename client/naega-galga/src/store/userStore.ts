@@ -1,5 +1,3 @@
-import localStorageManager from "@/utils/localStorageManager";
-
 const state = {
   user_info: {
     user_index: "0",
@@ -9,24 +7,19 @@ const state = {
     user_address: "로그인이 되지 않음!",
     corporate_registration_number: null,
   },
+  isToken: false,
 };
 
 const getters = {
-  userIndex(state) {
-    return state.user_info.user_index;
-  },
-
-  isLogin() {
-    if (localStorageManager.getAccessToken()) {
-      return true;
-    }
-    return false;
-  },
-
-  // isLogin: state => state.isToken,
+  userIndex: state => state.user_info.user_index,
+  isLogin: state => state.isToken,
 };
 
 const mutations = {
+  CHANGE_TOKEN(state) {
+    state.isToken = !state.isToken;
+  },
+
   GET_USER_INFO(state, user_info) {
     state.user_info.user_name = user_info.userName;
     state.user_info.user_id = user_info.userId;
