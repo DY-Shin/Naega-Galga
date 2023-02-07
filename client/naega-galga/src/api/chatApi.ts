@@ -12,7 +12,7 @@ async function getChatRooms() {
 }
 
 async function getChatContent(opIndex: number) {
-  const response: AxiosResponse = await axios.post(
+  const response: AxiosResponse = await axios.get(
     `/api/chat/rooms/${opIndex}`,
     {
       headers: {
@@ -20,6 +20,7 @@ async function getChatContent(opIndex: number) {
       },
     }
   );
+
   return response;
 }
 

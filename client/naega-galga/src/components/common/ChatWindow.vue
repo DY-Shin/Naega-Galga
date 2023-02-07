@@ -45,20 +45,20 @@
       <div class="chat-content">
         <div
           v-for="item in chatContents.slice().reverse()"
-          :key="item.createdAt"
+          :key="item.time"
           class="msg"
         >
           <div class="item mymsg" v-if="userIndex == item.sender">
             <div class="box">
               <p class="msg">{{ item.message }}</p>
-              <span class="time">{{ item.createdAt }}</span>
+              <span class="time">{{ item.time }}</span>
             </div>
           </div>
 
           <div class="item" v-else>
             <div class="box">
               <p class="msg">{{ item.message }}</p>
-              <span class="time">{{ item.createdAt }}</span>
+              <span class="time">{{ item.time }}</span>
             </div>
           </div>
         </div>
@@ -177,7 +177,7 @@ export default defineComponent({
       // 메세지
       sender: number;
       message: string;
-      createdAt: string;
+      time: string;
     }
     interface chatMessage {
       // 주고받는 메세지
@@ -216,9 +216,13 @@ export default defineComponent({
       chatContents.splice(0); // 채팅방 내용 초기화(전에 열었던 채팅 목록 남아있음)
       connect();
       isOpenChat.value = true;
+      console.log(nowOpIndex.value);
+      const list = await getChatContent(nowOpIndex.value);
+      console.log("!!");
+      console.log(list);
+      console.log("!!");
 
-      const content = await getChatContent(nowOpIndex.value);
-      content.data.forEach((msg: message) => chatContents.push(msg));
+      list.data.messageList.forEach(item => chatContents.push(item));
 
       isOpenChat.value = true;
       isOpenChatRooms.value = false;
@@ -291,7 +295,7 @@ export default defineComponent({
           message: {
             sender: 1,
             message: inputMsg.value,
-            createdAt: str,
+            time: str,
           },
         };
 
@@ -299,7 +303,7 @@ export default defineComponent({
           //화면에 띄울 컨텐츠 배열에 넣음
           sender: userIndex.value,
           message: inputMsg.value,
-          createdAt: today.getHours() + ":" + today.getMinutes(),
+          time: today.getHours() + ":" + today.getMinutes(),
         });
         console.log(msg);
         socket.stompClient.send("/pub/chat/message", JSON.stringify(msg), {});
