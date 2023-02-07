@@ -236,11 +236,27 @@ import router from "@/router";
 import type { UploadFile } from "element-plus";
 import { addProduct } from "@/api/productApi";
 import ResponseStatus from "@/api/responseStatus";
+import {
+  ElRow,
+  ElCol,
+  ElCheckboxGroup,
+  ElCheckbox,
+  ElButton,
+  ElInput,
+  ElRadioGroup,
+} from "element-plus";
 
 export default defineComponent({
   components: {
     ProductImageInput,
     AddressSearchButton,
+    ElRow,
+    ElCol,
+    ElCheckboxGroup,
+    ElCheckbox,
+    ElButton,
+    ElInput,
+    ElRadioGroup,
   },
   setup() {
     //edit일때 product index

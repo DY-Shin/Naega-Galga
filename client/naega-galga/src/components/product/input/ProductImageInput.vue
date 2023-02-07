@@ -16,6 +16,7 @@
 </template>
 <script lang="ts" setup>
 import { Plus } from "@element-plus/icons-vue";
+import { ElUpload, ElDialog } from "element-plus";
 
 import type { UploadFile } from "element-plus";
 import { defineEmits, defineProps, ref } from "vue";

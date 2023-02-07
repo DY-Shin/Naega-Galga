@@ -99,7 +99,25 @@ import { logout } from "@/api/userApi";
 import localStorageManager from "@/utils/localStorageManager";
 import ResponseStatus from "@/api/responseStatus";
 
+import { UserFilled } from "@element-plus/icons-vue";
+
+import {
+  ElDropdown,
+  ElDropdownMenu,
+  ElDropdownItem,
+  ElIcon,
+  ElButton,
+} from "element-plus";
+
 export default defineComponent({
+  components: {
+    ElDropdown,
+    ElDropdownMenu,
+    ElDropdownItem,
+    ElIcon,
+    ElButton,
+    UserFilled,
+  },
   setup() {
     const isLog = computed(() => store.getters["userStore/isLogin"]);
     const isMenu = ref(false);
