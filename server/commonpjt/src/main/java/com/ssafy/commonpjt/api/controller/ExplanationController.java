@@ -68,7 +68,7 @@ public class ExplanationController {
         return new ResponseEntity<Void>(HttpStatus.CREATED);
     }
 
-    @GetMapping("{meetingIndex}")
+    @GetMapping("/{meetingIndex}")
     public ResponseEntity<?> getMeetingExplanationInfo(@PathVariable("meetingIndex") int meetingIndex){
         ExplanationInfoDTO info = null;
         try {
