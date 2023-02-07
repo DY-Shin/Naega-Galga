@@ -16,7 +16,7 @@ const getters = {
 };
 
 const mutations = {
-  CHANGE_TOKEN(state) {
+  CHECK_TOKEN(state) {
     state.isToken = !state.isToken;
   },
 
