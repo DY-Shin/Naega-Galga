@@ -1,9 +1,7 @@
-import apiTokenInstance from "./apiTokenInstance";
+import axios from "axios";
 
 const getOneOnOneMeetingInfo = async (meetingIndex: number) => {
-  const response = await apiTokenInstance.get(
-    `api/meeting/one-on-one/${meetingIndex}`
-  );
+  const response = await axios.get(`api/meeting/one-on-one/${meetingIndex}`);
   return response;
 };
 
