@@ -104,7 +104,8 @@ public class UserController {
 
     // 비밀번호 찾기
     @PostMapping("find/password")
-    public boolean findMyPassword(@Validated @RequestBody FindPasswordDTO findPasswordDTO) throws Exception {
-        return userService.findMyPassword(findPasswordDTO);
+    public ResponseEntity<?> findMyPassword(@Validated @RequestBody FindPasswordDTO findPasswordDTO) throws Exception {
+        userService.findMyPassword(findPasswordDTO);
+        return ResponseEntity.ok("Password Changed");
     }
 }
