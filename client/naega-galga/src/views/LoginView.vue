@@ -56,7 +56,7 @@ export default defineComponent({
       const response = await login(loginform);
 
       if (response.status === ResponseStatus.Ok) {
-        store.commit("userStore/CHANGE_TOKEN");
+        store.commit("userStore/CHECK_TOKEN");
         localStorageManager.setAccessToken(response.data.accessToken);
         localStorageManager.setRefreshToken(response.data.refreshToken);
 

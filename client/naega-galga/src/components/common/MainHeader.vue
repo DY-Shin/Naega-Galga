@@ -1,7 +1,7 @@
 <template>
   <div id="nav" v-if="isHeaderShow">
     <router-link to="/" id="title">내가갈가[家]</router-link>
-    <div class="home-btn" v-if="isLog == false">
+    <div class="home-btn" v-if="!isLog">
       <!-- 로그인 안 했을 때 -->
       <el-button
         id="login-btn"
@@ -19,7 +19,7 @@
       >
     </div>
     <!-- 로그인 했을 때 -->
-    <el-dropdown v-if="isLog == true">
+    <el-dropdown v-if="isLog">
       <span class="el-dropdown-link">
         <el-button
           v-on:click="OpenMenu"
@@ -101,7 +101,7 @@ import ResponseStatus from "@/api/responseStatus";
 
 export default defineComponent({
   setup() {
-    const isLog = computed(() => store.getters["userStore/isLogin"]);
+    const isLog = computed(() => store.state.userStore.isToken);
     const isMenu = ref(false);
     const showButton = ref(true);
     const isHeaderShow = ref(true);
@@ -122,10 +122,11 @@ export default defineComponent({
 
     const Logout = async () => {
       const response = await logout();
-      store.commit("userStore/CHANGE_TOKEN");
+      store.commit("userStore/CHECK_TOKEN");
 
       if (response.status === ResponseStatus.Ok) {
         localStorageManager.removeTokens();
+        localStorage.clear();
 
         router.push({ path: "/" });
       }

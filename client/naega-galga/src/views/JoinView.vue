@@ -145,7 +145,7 @@ export default defineComponent({
     };
 
     const fullUserPhone = reactive({
-      first_user_phone: "",
+      first_user_phone: null,
       second_user_phone: null,
       third_user_phone: null,
     });
@@ -168,9 +168,9 @@ export default defineComponent({
     );
 
     const joinform = reactive({
-      user_id: "",
-      user_name: "",
-      user_password: "",
+      user_id: null,
+      user_name: null,
+      user_password: null,
       password_confirm: "",
       user_phone,
       user_address,
@@ -179,21 +179,44 @@ export default defineComponent({
 
     const password_confirm = (rule: any, value: any, callback: any) => {
       if (value === "") {
-        callback(new Error("Please input the password again"));
-      } else if (value !== joinform.user_password) {
-        callback(new Error("Two inputs don't match!"));
+        callback(new Error("비밀번호 확인은 반드시 입력해주세요"));
+      } else if (joinform.password_confirm.length < 8) {
+        callback(new Error("비밀번호는 8글자 이상으로 만들어주세요."));
+      } else if (joinform.password_confirm.length > 16) {
+        callback(new Error("비밀번호는 16글자 이하로 만들어주세요."));
+      } else if (
+        value !== joinform.user_password &&
+        joinform.password_confirm.length > 7
+      ) {
+        callback(new Error("비밀번호가 서로 다릅니다!"));
       } else {
         callback();
       }
     };
 
     const phone_confirm = (rule: any, value: any, callback: any) => {
-      if (fullUserPhone.first_user_phone == "") {
-        callback(new Error("Please input the phone"));
-      } else if (fullUserPhone.second_user_phone == "") {
-        callback(new Error("Please input the phone"));
-      } else if (fullUserPhone.third_user_phone == "") {
-        callback(new Error("Please input the phone"));
+      if (
+        fullUserPhone.first_user_phone == "" ||
+        fullUserPhone.second_user_phone == "" ||
+        fullUserPhone.third_user_phone == ""
+      ) {
+        callback(new Error("핸드폰 번호는 반드시 입력해주세요"));
+        // } else if () {
+        //   callback(new Error("Please input the phone"));
+        // } else if () {
+        //   callback(new Error("Please input the phone"));
+      } else {
+        callback();
+      }
+    };
+
+    const address_confirm = (rule: any, value: any, callback: any) => {
+      if (fullAddress.roadAddress.length > 3) {
+        callback(new Error("핸드폰 번호는 반드시 입력해주세요"));
+        // } else if () {
+        //   callback(new Error("Please input the phone"));
+        // } else if () {
+        //   callback(new Error("Please input the phone"));
       } else {
         callback();
       }
@@ -235,22 +258,8 @@ export default defineComponent({
       password_confirm: [
         {
           required: true,
-          message: "비밀번호는 반드시 입력해주세요.",
-          trigger: "blur",
-        },
-        {
-          min: 8,
-          message: "비밀번호는 8글자 이상으로 만들어주세요.",
-          trigger: "blur",
-        },
-        {
-          max: 16,
-          message: "비밀번호는 16글자 이하로 만들어주세요.",
-          trigger: "blur",
-        },
-        {
           validator: password_confirm,
-          // message: "비밀번호가 서로 다릅니다",
+          trigger: "blur",
         },
       ],
 
@@ -276,7 +285,14 @@ export default defineComponent({
         {
           validator: phone_confirm,
           required: true,
-          trigger: "change",
+          trigger: "blur",
+        },
+      ],
+
+      user_address: [
+        {
+          validator: address_confirm,
+          required: true,
         },
       ],
     });
