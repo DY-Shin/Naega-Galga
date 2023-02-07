@@ -37,7 +37,8 @@ public class SecurityConfig {
                 .antMatchers("/api/**")
                 .authenticated()
                 .and()
-                .addFilterBefore(new JwtTokenAuthenticationFilter(jwtTokenProvider, redisTemplate), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new JwtTokenAuthenticationFilter(jwtTokenProvider, redisTemplate),
+                        UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 
