@@ -1,5 +1,6 @@
 package com.ssafy.commonpjt.api.service;
 
+import com.ssafy.commonpjt.api.dto.explanationDTO.ExplanationDateDTO;
 import com.ssafy.commonpjt.api.dto.explanationDTO.ExplanationInfoDTO;
 import com.ssafy.commonpjt.api.dto.explanationDTO.ReserveExplanationDTO;
 import com.ssafy.commonpjt.common.exception.DuplicatedException;
@@ -21,6 +22,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 @Service
 public class ExplanationServiceImpl implements  ExplanationService{
@@ -40,7 +44,7 @@ public class ExplanationServiceImpl implements  ExplanationService{
     String oneOnManyUrl = "/meeting/one-on-many/";
     @Override
     @Transactional
-    public void addProductExplanation(int productIndex) throws NotMyContentsException, NotFoundUserException, NoContentException, DuplicatedException, Exception {
+    public void addProductExplanation(int productIndex, ExplanationDateDTO explanationDate) throws NotMyContentsException, NotFoundUserException, NoContentException, DuplicatedException, Exception {
         User user = userRepository.findByUserId(SecurityUtil.getLoginUsername()).orElseThrow(() -> new NotFoundUserException());
         Product product = productRepository.findById(productIndex).orElseThrow(()-> new NoContentException());
 
@@ -48,6 +52,11 @@ public class ExplanationServiceImpl implements  ExplanationService{
 
         if(meeting !=null)
             throw new DuplicatedException();
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.sss");
+        log.info("date : " + explanationDate.getDateString());
+        Date parsedDate = dateFormat.parse(explanationDate.getDateString());
+        Timestamp timestamp = new Timestamp(parsedDate.getTime());
 
         int userIndex = user.getUserIndex();
         int productSellerIndex = product.getProductSeller().getUserIndex();
@@ -57,7 +66,7 @@ public class ExplanationServiceImpl implements  ExplanationService{
             throw new NotMyContentsException();
         }
 
-        meeting = new Meeting().builder().owner(user).product(product).build();
+        meeting = new Meeting().builder().owner(user).product(product).reserveAt(timestamp).build();
         meetingRepository.save(meeting);
 
         meeting = meetingRepository.findByProductAndOwner(product, user);
