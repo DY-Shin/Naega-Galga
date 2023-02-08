@@ -31,10 +31,10 @@ export default defineComponent({
 
     let token: string;
     const index = reactive({
-      my: -1,
-      seller: -1,
-      buyer: -1,
-      meeting: -1,
+      my_index: -1,
+      seller_index: -1,
+      buyer_index: -1,
+      meeting_index: -1,
     });
 
     const isSeller = ref(false);
@@ -43,11 +43,11 @@ export default defineComponent({
         const response = await getOneOnManyMeetingInfo(explanationIndex);
         const data = response.data;
 
-        index.seller = data.sellerIndex;
-        index.buyer = data.buyderIndex;
+        index.seller_index = data.sellerIndex;
+        index.buyer_index = data.buyderIndex;
         token = data.token;
 
-        if (index.seller === index.my) {
+        if (index.seller_index === index.my_index) {
           isSeller.value = true;
           myVideo = sellerVideo;
         }
@@ -111,10 +111,12 @@ export default defineComponent({
     };
 
     onMounted(async () => {
-      index.my = computed(() => store.getters["userStore/userIndex"]).value;
-      index.meeting = computed(() => parseInt(route.params.id[0])).value;
+      index.my_index = computed(
+        () => store.getters["userStore/userIndex"]
+      ).value;
+      index.meeting_index = computed(() => parseInt(route.params.id[0])).value;
 
-      await getMeetingInfo(index.meeting);
+      await getMeetingInfo(index.meeting_index);
       setSession();
     });
 
