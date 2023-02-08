@@ -94,7 +94,6 @@ public class ChatServiceImpl implements ChatService {
 
         result = MessageListResponseDTO.builder()
                 .chatRoomIndex(chatRoom.getChatIndex())
-                .opName(opUser.getName())
                 .messageList(resultMessage)
                 .build();
 
