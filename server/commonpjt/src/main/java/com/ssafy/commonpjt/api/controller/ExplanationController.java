@@ -1,16 +1,16 @@
 package com.ssafy.commonpjt.api.controller;
 
+import com.ssafy.commonpjt.api.dto.explanationDTO.ExplanationInfoDTO;
+import com.ssafy.commonpjt.api.dto.explanationDTO.ReserveExplanationDTO;
 import com.ssafy.commonpjt.api.service.ExplanationService;
 import com.ssafy.commonpjt.common.exception.DuplicatedException;
+import com.ssafy.commonpjt.common.exception.NoContentException;
 import com.ssafy.commonpjt.common.exception.NotFoundUserException;
 import com.ssafy.commonpjt.common.exception.NotMyContentsException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/meetings/explanations")
@@ -19,6 +19,7 @@ public class ExplanationController {
     @Autowired
     private ExplanationService explanationService;
 
+    //판매자가 설명회 등록
     @PostMapping("/{productIndex}")
     public ResponseEntity<?> addExplanation(@PathVariable int productIndex){
         try{
@@ -44,5 +45,41 @@ public class ExplanationController {
             return new ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return new ResponseEntity<Void>(HttpStatus.CREATED);
+    }
+
+    //등록된 설명회를 구매자가 예약 추가
+    @PostMapping("")
+    public ResponseEntity<?> reserveExplanation(@RequestBody ReserveExplanationDTO reserveExplanationDTO){
+        try{
+            explanationService.reserveExplanation(reserveExplanationDTO);
+        }
+        catch(NotFoundUserException e){
+            return new ResponseEntity<Void>(HttpStatus.FORBIDDEN);
+        }
+        catch(NoContentException e){
+            return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+        }
+        catch(DuplicatedException e){
+            return new ResponseEntity<Void>(HttpStatus.CONFLICT);
+        }
+        catch(Exception e){
+            return new ResponseEntity<Void>(HttpStatus.CONFLICT);
+        }
+        return new ResponseEntity<Void>(HttpStatus.CREATED);
+    }
+
+    @GetMapping("/{productIndex}")
+    public ResponseEntity<?> getMeetingExplanationInfo(@PathVariable("productIndex") int productIndex){
+        ExplanationInfoDTO info = null;
+        try {
+            info = explanationService.getExplanationInfo(productIndex);
+        }
+        catch (NoContentException e) {
+            return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+        }
+        catch (Exception e) {
+            return new ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<ExplanationInfoDTO>(info, HttpStatus.OK);
     }
 }
