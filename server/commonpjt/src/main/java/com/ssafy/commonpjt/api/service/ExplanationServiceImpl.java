@@ -96,16 +96,17 @@ public class ExplanationServiceImpl implements  ExplanationService{
         explanationRepository.save(explanation);
     }
 
-    public ExplanationInfoDTO getExplanationInfo(int meetingIndex)
+    public ExplanationInfoDTO getExplanationInfo(int productIndex)
             throws NoContentException, NotFoundUserException, Exception{
-        Meeting meeting = meetingRepository.findById(meetingIndex).orElseThrow(()-> new NoContentException());
+        Product product = productRepository.findById(productIndex).orElseThrow(()-> new NoContentException());
+        Meeting meeting = meetingRepository.findByProduct(product).orElseThrow(()-> new NoContentException());
         User user = userRepository.findByUserId(SecurityUtil.getLoginUsername()).orElseThrow(() -> new NotFoundUserException());
         User seller = meeting.getOwner();
 
         ExplanationInfoDTO dto = new ExplanationInfoDTO();
 
         Explanation explanation = explanationRepository.findByMeetingAndReserveUser(meeting, user);
-        dto.setMeetingIndex(meetingIndex);
+        dto.setMeetingIndex(meeting.getMeetingIndex());
         dto.setSellerIndex(seller.getUserIndex());
         dto.setReservedAt(meeting.getReserveAt().toString());
         if(explanation!=null){
