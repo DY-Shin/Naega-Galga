@@ -1,25 +1,25 @@
-const path = require('path');
+const path = require("path");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 module.exports = {
-mode: 'development',
-entry: {
-    index: './src/index.js',
+  mode: "development",
+  entry: {
+    index: "./src/index.js",
     // another: './src/another-module.js',
-},
-output: {
-    filename: '[name].bundle.js',
-    path: path.resolve(__dirname, 'dist'),
-},
-optimization: {
+  },
+  output: {
+    filename: "[name].bundle.js",
+    path: path.resolve(__dirname, "dist"),
+  },
+  optimization: {
     splitChunks: {
-    chunks: 'all',
-    automaticNameDelimiter: '.',
-    name: `sk_chunk`,
-    maxSize : 712000 
+      chunks: "all",
+      automaticNameDelimiter: ".",
+      name: `sk_chunk`,
+      maxSize: 712000,
     },
-},
-plugins: [new MiniCssExtractPlugin()],
+  },
+  plugins: [new MiniCssExtractPlugin()],
   module: {
     rules: [
       {
