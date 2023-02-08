@@ -4,11 +4,11 @@ export default {
   children: [
     {
       path: ":id",
-      component: import("@/components/product/detail/ProductDetail.vue"),
+      component: () => import("@/components/product/detail/ProductDetail.vue"),
     },
     {
       path: "add",
-      component: import("@/components/product/input/ProductInput.vue"),
+      component: () => import("@/components/product/input/ProductInput.vue"),
     },
   ],
 };
