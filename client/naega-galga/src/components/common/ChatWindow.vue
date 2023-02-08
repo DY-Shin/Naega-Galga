@@ -133,8 +133,7 @@
 import { defineComponent, ref, watch, reactive, computed } from "vue";
 import { Plus, Promotion } from "@element-plus/icons-vue";
 import { getChatRooms, getChatContent } from "@/api/chatApi";
-import { addProductReserve } from "@/api/productApi";
-import ResponseStatus from "@/api/responseStatus";
+import { checkReserve } from "@/api/chatApi";
 import { useStore } from "vuex";
 import Stomp from "webstomp-client";
 import SockJS from "sockjs-client";
@@ -182,11 +181,6 @@ export default defineComponent({
       chatRoomIndex: number;
       message: message;
     }
-    // interface chatContent {
-    //   // 채팅방 전체 메세지 응답
-    //   chatRoomIndex: number;
-    //   list: Array<message>;
-    // }
     const isOpenChatRooms = ref(false);
     let chatRooms = reactive<Array<chatRoomsItem>>([]); // 채팅방 목록
 
@@ -237,7 +231,7 @@ export default defineComponent({
     };
 
     // ------------------------------------채팅 end------------------------------------
-    // ----------------------메세지 전송 start----------------------
+    // ------------------------------------메세지 전송 start------------------------------------
     let serverURL;
     let socket;
 
@@ -279,11 +273,11 @@ export default defineComponent({
       if (inputMsg.value == "") {
         return;
       }
-      send();
+      send(inputMsg.value, "message");
       inputMsg.value = ""; // 입력 초기화
     };
 
-    const send = () => {
+    const send = (inputMsg: string, type: string) => {
       let today = new Date();
       let str =
         today.getFullYear() +
@@ -299,40 +293,40 @@ export default defineComponent({
         today.getSeconds().toString(10).padStart(2, "0") +
         "." +
         today.getMilliseconds().toString(10);
+
       if (socket.stompClient && socket.stompClient.connected) {
         const msg: chatMessage = {
           // 서버에 보내줄 거
           chatRoomIndex: nowRoomIndex.value,
           message: {
             sender: userIndex.value,
-            message: inputMsg.value,
+            message: inputMsg,
             createdAt: str,
           },
         };
 
-        console.log(str + " !!");
+        socket.stompClient.send(`/pub/chat/${type}`, JSON.stringify(msg), {});
 
         chatContents.push({
           //화면에 띄울 컨텐츠 배열에 넣음
           sender: userIndex.value,
-          message: inputMsg.value,
+          message: inputMsg,
           createdAt:
             today.getHours().toString().padStart(2, "0") +
             ":" +
             today.getMinutes().toString().padStart(2, "0"),
         });
-        socket.stompClient.send("/pub/chat/message", JSON.stringify(msg), {});
       }
     };
 
-    // ----------------------메세지 전송 end----------------------
+    // ------------------------------------메세지 전송 end------------------------------------
     // ------------------------------------달력 예약 start------------------------------------
     const ampm = ref("");
     const hour = ref();
     const minute = ref();
     const timeOptions = ["오전", "오후"];
     const hourOptions = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
-    const minuteOptions = [0, 10, 20, 30, 40, 50];
+    const minuteOptions = ["0", "30"];
     const dateValue = ref(new Date());
     const year = ref(dateValue.value.getFullYear());
     const month = ref(dateValue.value.getMonth() + 1);
@@ -358,7 +352,6 @@ export default defineComponent({
         alert("시간을 입력해주세요");
         return;
       }
-
       const data = new Date( // Date 형식으로 보냄
         year.value,
         month.value,
@@ -378,21 +371,19 @@ export default defineComponent({
         ":" +
         data.getMinutes().toString(10).padStart(2, "0");
 
-      const userIndex = 1; // 나중에 로그인 정보로 바꾸기
-      // chatProduct.value = chatRooms[listIdx.value];
-      const status = await addProductReserve(
-        // 예약 신청 수락되면
-        chatProduct.value.sellerIndex,
-        userIndex,
+      let isPossible = await checkReserve(
+        userIndex.value,
+        nowOpIndex.value,
         str
       );
 
-      if (status == ResponseStatus.Ok) {
-        alert("예약 완료");
+      if (isPossible) {
+        send(str + "예약이 완료 되었습니다.", "reserve");
         isOpenReserve.value = false;
       } else {
-        alert("다시 시도");
+        alert("다른 시간을 선택해주세요.");
       }
+
       dateValue.value = new Date(); // 예약 형식 초기화해줌
       ampm.value = "";
       hour.value = "";
