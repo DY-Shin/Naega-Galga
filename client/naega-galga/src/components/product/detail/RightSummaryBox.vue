@@ -23,6 +23,7 @@
 <script lang="ts">
 import { computed, defineComponent } from "vue";
 import { Plus } from "@element-plus/icons-vue";
+import { ElButton } from "element-plus";
 
 export default defineComponent({
   props: {
@@ -38,6 +39,9 @@ export default defineComponent({
         sellerIndex: Number,
       },
     },
+  },
+  components: {
+    ElButton,
   },
   setup(props) {
     // const userIndex = 1;

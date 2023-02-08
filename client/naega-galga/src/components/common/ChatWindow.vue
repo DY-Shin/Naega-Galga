@@ -38,8 +38,7 @@
         top: -30px;
         z-index: 2021;
       "
-      ><CircleCloseFilled
-    /></el-icon>
+    ></el-icon>
     <div id="chatTitle" style="font-size: 20px; margin: 10px 15px 0">{{}}</div>
     <div>
       <div class="chat-content">
@@ -131,17 +130,37 @@
 </template>
 <script lang="ts">
 import { defineComponent, ref, watch, reactive, computed } from "vue";
-import { Plus, Promotion } from "@element-plus/icons-vue";
+import { ChatDotRound } from "@element-plus/icons-vue";
 import { getChatRooms, getChatContent } from "@/api/chatApi";
 import { checkReserve } from "@/api/chatApi";
 import { useStore } from "vuex";
 import Stomp from "webstomp-client";
 import SockJS from "sockjs-client";
 
+import {
+  ElSelect,
+  ElOption,
+  ElIcon,
+  ElButton,
+  ElCalendar,
+  ElScrollbar,
+  ElInput,
+} from "element-plus";
+
 export default defineComponent({
   props: {
     getChatUserIndex: { type: Number },
     getChatOpen: { type: Boolean },
+  },
+  components: {
+    ElSelect,
+    ElOption,
+    ElIcon,
+    ElButton,
+    ElCalendar,
+    ElScrollbar,
+    ElInput,
+    ChatDotRound,
   },
   setup(props) {
     const store = useStore();
@@ -401,8 +420,6 @@ export default defineComponent({
       isOpenChat,
       isOpenReserve,
       CloseChat,
-      Plus,
-      Promotion,
       dateValue,
       getDate,
       date,

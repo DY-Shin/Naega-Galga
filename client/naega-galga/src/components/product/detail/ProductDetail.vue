@@ -43,6 +43,8 @@ import { deleteProduct, getProduct } from "@/api/productApi";
 import ResponseStatus from "@/api/responseStatus";
 import { useStore } from "vuex";
 
+import { ElRow, ElCol, ElButton } from "element-plus";
+
 export default {
   components: {
     ProductImageList,
@@ -50,6 +52,9 @@ export default {
     RightSummaryBox,
     ProductInfo: ProductInfoComponent,
     ExplanationBox,
+    ElRow,
+    ElCol,
+    ElButton,
   },
   setup() {
     const router = useRouter();

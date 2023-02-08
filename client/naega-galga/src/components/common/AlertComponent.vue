@@ -15,6 +15,7 @@
 <script lang="ts" setup>
 import { computed } from "vue";
 import { useStore } from "vuex";
+import { ElAlert } from "element-plus";
 
 const store = useStore();
 const getIsShow = computed(() => store.getters["alertStore/getIsShow"]);

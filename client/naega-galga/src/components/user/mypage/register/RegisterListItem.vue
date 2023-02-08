@@ -19,11 +19,16 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
+import { ElCol, ElCard } from "element-plus";
 
 export default defineComponent({
   name: "RegisterListItem",
   props: {
     regist: { type: Object },
+  },
+  components: {
+    ElCol,
+    ElCard,
   },
   setup(props) {
     const registItem = { ...props.regist };
