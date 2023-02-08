@@ -50,7 +50,7 @@
         <el-input
           v-model="fullUserPhone.second_user_phone"
           placeholder="0000"
-          style="flex: 3"
+          style="flex: 4"
         ></el-input>
 
         <p style="flex: 1; text-align: center; margin: 0px">-</p>
@@ -58,7 +58,7 @@
         <el-input
           v-model="fullUserPhone.third_user_phone"
           placeholder="0000"
-          style="flex: 3"
+          style="flex: 4"
         ></el-input>
       </el-form-item>
 
@@ -69,7 +69,11 @@
         ></address-search-button>
       </el-form-item>
 
-      <el-form-item label="주소" style="margin-bottom: 1px">
+      <el-form-item
+        label="주소"
+        prop="address_required"
+        style="margin-bottom: 1px"
+      >
         <el-input v-model="fullAddress.roadAddress" readonly></el-input>
       </el-form-item>
 
@@ -125,6 +129,7 @@ import type { FormInstance, FormRules } from "element-plus";
 import AddressSearchButton from "@/components/common/AddressSearchButton.vue";
 import JoinTerms from "@/components/user/mypage/JoinTerms.vue";
 
+import validation from "@/utils/validation";
 import { join } from "@/api/userApi";
 
 export default defineComponent({
@@ -168,14 +173,42 @@ export default defineComponent({
     );
 
     const joinform = reactive({
-      user_id: null,
-      user_name: null,
-      user_password: null,
+      user_id: "",
+      user_name: "",
+      user_password: "",
       password_confirm: "",
       user_phone,
       user_address,
       corporate_registration_number: null,
     });
+
+    const id_rule = (rule: any, value: any, callback: any) => {
+      if (value === "") {
+        callback(new Error("아이디는 반드시 입력해주세요."));
+      } else if (joinform.user_id.length < 4 || joinform.user_id.length > 12) {
+        callback(new Error("아이디는 4~12글자 사이로 만들어주세요."));
+      } else if (validation.id(joinform.user_id) === false) {
+        callback(new Error("아이디는 소문자와 숫자로 만들어주세요"));
+      } else {
+        callback();
+      }
+    };
+
+    const password_rule = (rule: any, value: any, callback: any) => {
+      if (value === "") {
+        callback(new Error("비밀번호는 반드시 입력해주세요"));
+      } else if (joinform.user_password.length < 8) {
+        callback(new Error("비밀번호는 8글자 이상으로 만들어주세요."));
+      } else if (joinform.user_password.length > 16) {
+        callback(new Error("비밀번호는 16글자 이하로 만들어주세요."));
+      } else if (validation.password(joinform.user_password) === false) {
+        callback(
+          new Error("비밀번호는 문자, 숫자, 특수문자를 섞어 만들어주세요")
+        );
+      } else {
+        callback();
+      }
+    };
 
     const password_confirm = (rule: any, value: any, callback: any) => {
       if (value === "") {
@@ -189,6 +222,21 @@ export default defineComponent({
         joinform.password_confirm.length > 7
       ) {
         callback(new Error("비밀번호가 서로 다릅니다!"));
+      } else {
+        callback();
+      }
+    };
+
+    const name_rule = (rule: any, value: any, callback: any) => {
+      if (value === "") {
+        callback(new Error("이름은 반드시 입력해주세요."));
+      } else if (
+        joinform.user_name.length < 2 ||
+        joinform.user_name.length > 8
+      ) {
+        callback(new Error("이름은 2~8글자 사이로 만들어주세요."));
+      } else if (validation.name(joinform.user_name) === false) {
+        callback(new Error("이름은 한글만 가능합니다!"));
       } else {
         callback();
       }
@@ -211,8 +259,8 @@ export default defineComponent({
     };
 
     const address_confirm = (rule: any, value: any, callback: any) => {
-      if (fullAddress.roadAddress.length > 3) {
-        callback(new Error("핸드폰 번호는 반드시 입력해주세요"));
+      if (!fullAddress.roadAddress || !fullAddress.detailAddress) {
+        callback(new Error("주소는 반드시 입력해주세요"));
         // } else if () {
         //   callback(new Error("Please input the phone"));
         // } else if () {
@@ -226,13 +274,7 @@ export default defineComponent({
       user_id: [
         {
           required: true,
-          message: "아이디를 반드시 입력해주세요.",
-          trigger: "blur",
-        },
-        {
-          min: 4,
-          max: 12,
-          message: "아이디는 4~12",
+          validator: id_rule,
           trigger: "blur",
         },
       ],
@@ -240,17 +282,7 @@ export default defineComponent({
       user_password: [
         {
           required: true,
-          message: "비밀번호는 반드시 입력해주세요.",
-          trigger: "blur",
-        },
-        {
-          min: 8,
-          message: "비밀번호는 8글자 이상으로 만들어주세요.",
-          trigger: "blur",
-        },
-        {
-          max: 16,
-          message: "비밀번호는 16글자 이하로 만들어주세요.",
+          validator: password_rule,
           trigger: "blur",
         },
       ],
@@ -266,17 +298,7 @@ export default defineComponent({
       user_name: [
         {
           required: true,
-          message: "이름은 반드시 입력해주세요",
-          trigger: "blur",
-        },
-        {
-          min: 2,
-          message: "이름은 2글자 이상으로 입력해주세요.",
-          trigger: "blur",
-        },
-        {
-          max: 8,
-          message: "이름은 8글자 이하로 입력해주세요.",
+          validator: name_rule,
           trigger: "blur",
         },
       ],
@@ -288,11 +310,9 @@ export default defineComponent({
           trigger: "blur",
         },
       ],
-
       user_address: [
         {
           validator: address_confirm,
-          required: true,
         },
       ],
     });

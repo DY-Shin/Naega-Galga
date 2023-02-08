@@ -5,4 +5,11 @@ const getOneOnOneMeetingInfo = async (meetingIndex: number) => {
   return response;
 };
 
-export { getOneOnOneMeetingInfo };
+const getOneOnManyMeetingInfo = async (explanationIndex: number) => {
+  const response = await axios.get(
+    `api/meeting/one-on-many/${explanationIndex}`
+  );
+  return response;
+};
+
+export { getOneOnOneMeetingInfo, getOneOnManyMeetingInfo };
