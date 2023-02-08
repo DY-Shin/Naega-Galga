@@ -41,7 +41,7 @@
       ><CircleCloseFilled
     /></el-icon>
     <div id="chatTitle" style="font-size: 20px; margin: 10px 15px 0">
-      {{ nowOpName }}!!
+      {{ nowOpName }}
     </div>
     <div>
       <div class="chat-content">
@@ -217,15 +217,11 @@ export default defineComponent({
       chatContents.splice(0); // 채팅방 내용 초기화(전에 열었던 채팅 목록 남아있음)
       connect();
       isOpenChat.value = true;
-      console.log(
-        "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! " + nowOpIndex.value
-      );
+
       const list = await getChatContent(nowOpIndex.value);
       nowRoomIndex.value = list.data.chatRoomIndex;
-      // nowOpName.value = list.data.opName;
 
       list.data.messageList.forEach(item => chatContents.push(item));
-      console.log(chatContents[0]);
       isOpenChat.value = true;
       isOpenChatRooms.value = false;
     };
@@ -261,7 +257,6 @@ export default defineComponent({
               console.log("구독으로 받은 메시지 : ", res.body);
               let str = JSON.parse(res.body);
               if (str.message.sender != userIndex.value) {
-                console.log("push !!!!!!!!!!!");
                 chatContents.push(str.message);
               }
             }
@@ -283,11 +278,11 @@ export default defineComponent({
       if (inputMsg.value == "") {
         return;
       }
-      send(inputMsg.value, "message");
+      send(inputMsg.value);
       inputMsg.value = ""; // 입력 초기화
     };
 
-    const send = (inputMsg: string, type: string) => {
+    const send = (inputMsg: string) => {
       let today = new Date();
       let str =
         today.getFullYear() +
@@ -315,7 +310,7 @@ export default defineComponent({
           },
         };
 
-        socket.stompClient.send(`/pub/chat/${type}`, JSON.stringify(msg), {});
+        socket.stompClient.send(`/pub/chat/message`, JSON.stringify(msg), {});
 
         chatContents.push({
           //화면에 띄울 컨텐츠 배열에 넣음
@@ -363,6 +358,10 @@ export default defineComponent({
         return;
       }
 
+      if (ampm.value == "오전" && hour.value == 12) {
+        hour.value = 0;
+      }
+
       //"2023-02-01 12:00:00"
       const str =
         year.value +
@@ -382,7 +381,7 @@ export default defineComponent({
       );
 
       if (isPossible.data) {
-        send(str + "예약이 완료 되었습니다.", "reserve");
+        send(str + "\u00a0 예약이 완료 되었습니다.");
         isOpenReserve.value = false;
       } else {
         alert("다른 시간을 선택해주세요.");
