@@ -352,24 +352,18 @@ export default defineComponent({
         alert("시간을 입력해주세요");
         return;
       }
-      const data = new Date( // Date 형식으로 보냄
-        year.value,
-        month.value,
-        date.value,
-        hour.value,
-        minute.value
-      );
+
       //"2023-02-01 12:00:00"
       const str =
-        data.getFullYear() +
+        year.value +
         "-" +
-        data.getMonth().toString(10).padStart(2, "0") +
+        month.value.toString(10).padStart(2, "0") +
         "-" +
-        data.getDate().toString(10).padStart(2, "0") +
+        date.value.toString(10).padStart(2, "0") +
         " " +
-        data.getHours().toString(10).padStart(2, "0") +
+        hour.value.toString(10).padStart(2, "0") +
         ":" +
-        data.getMinutes().toString(10).padStart(2, "0");
+        minute.value.toString(10).padStart(2, "0");
 
       let isPossible = await checkReserve(
         userIndex.value,
@@ -377,7 +371,7 @@ export default defineComponent({
         str
       );
 
-      if (isPossible) {
+      if (isPossible.data) {
         send(str + "예약이 완료 되었습니다.", "reserve");
         isOpenReserve.value = false;
       } else {
