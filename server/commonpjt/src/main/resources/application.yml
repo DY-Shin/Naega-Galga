@@ -1,9 +1,9 @@
 server:
   # 로컬 작업 시
-  address: localhost
-  port: 8888
+#  address: localhost
+#  port: 8888
   # AWS 서버 작업 시 (port 만 사용)
-  # port: 8085
+  port: 8085
   servlet:
     context-path: /
 
