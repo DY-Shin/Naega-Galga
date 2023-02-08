@@ -13,6 +13,6 @@ public interface ExplanationService {
     public void reserveExplanation(ReserveExplanationDTO reserveExplanationDTO)
             throws NotFoundUserException, NoContentException, DuplicatedException, Exception;
 
-    public ExplanationInfoDTO getExplanationInfo(int meetingIndex)
+    public ExplanationInfoDTO getExplanationInfo(int productIndex)
             throws NoContentException, NotFoundUserException, Exception;
 }

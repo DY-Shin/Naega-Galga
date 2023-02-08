@@ -68,11 +68,11 @@ public class ExplanationController {
         return new ResponseEntity<Void>(HttpStatus.CREATED);
     }
 
-    @GetMapping("/{meetingIndex}")
-    public ResponseEntity<?> getMeetingExplanationInfo(@PathVariable("meetingIndex") int meetingIndex){
+    @GetMapping("/{productIndex}")
+    public ResponseEntity<?> getMeetingExplanationInfo(@PathVariable("productIndex") int productIndex){
         ExplanationInfoDTO info = null;
         try {
-            info = explanationService.getExplanationInfo(meetingIndex);
+            info = explanationService.getExplanationInfo(productIndex);
         }
         catch (NoContentException e) {
             return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
