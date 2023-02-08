@@ -99,16 +99,18 @@ public class ExplanationServiceImpl implements  ExplanationService{
     public ExplanationInfoDTO getExplanationInfo(int productIndex)
             throws NoContentException, NotFoundUserException, Exception{
         Product product = productRepository.findById(productIndex).orElseThrow(()-> new NoContentException());
-        Meeting meeting = meetingRepository.findByProduct(product).orElseThrow(()-> new NoContentException());
-        User user = userRepository.findByUserId(SecurityUtil.getLoginUsername()).orElseThrow(() -> new NotFoundUserException());
-        User seller = meeting.getOwner();
+        Meeting meeting = meetingRepository.findByProduct(product);
+        User requestUser = userRepository.findByUserId(SecurityUtil.getLoginUsername()).orElseThrow(() -> new NotFoundUserException());
+        User productSeller = product.getProductSeller();
 
         ExplanationInfoDTO dto = new ExplanationInfoDTO();
 
-        Explanation explanation = explanationRepository.findByMeetingAndReserveUser(meeting, user);
-        dto.setMeetingIndex(meeting.getMeetingIndex());
-        dto.setSellerIndex(seller.getUserIndex());
-        dto.setReservedAt(meeting.getReserveAt().toString());
+        Explanation explanation = explanationRepository.findByMeetingAndReserveUser(meeting, requestUser);
+        if(meeting!=null){
+            dto.setMeetingIndex(meeting.getMeetingIndex());
+            dto.setReservedAt(meeting.getReserveAt().toString());
+        }
+        dto.setSellerIndex(productSeller.getUserIndex());
         if(explanation!=null){
             User buyer = explanation.getReserveUser();
             dto.setBuyerIndex(buyer.getUserIndex());

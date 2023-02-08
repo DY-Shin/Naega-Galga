@@ -26,7 +26,6 @@ public class Meeting {
     @Column(length = 1000)
     private String meetingUrl;
 
-    @CreationTimestamp
     private Timestamp reserveAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
