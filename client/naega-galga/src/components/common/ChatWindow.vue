@@ -25,7 +25,7 @@
   </el-scrollbar>
   <!-- --------------chat room start-------------- -->
   <div class="chat-room" v-show="isOpenChat">
-    <!-- <div class="send-box box">{sd</div> -->
+    <div class="send-box box">{{ nowOpIndex }}</div>
     <el-icon
       id="close-btn"
       @click="CloseChat"
@@ -133,8 +133,7 @@
 import { defineComponent, ref, watch, reactive, computed } from "vue";
 import { Plus, Promotion } from "@element-plus/icons-vue";
 import { getChatRooms, getChatContent } from "@/api/chatApi";
-import { addProductReserve } from "@/api/productApi";
-import ResponseStatus from "@/api/responseStatus";
+import { checkReserve } from "@/api/chatApi";
 import { useStore } from "vuex";
 import Stomp from "webstomp-client";
 import SockJS from "sockjs-client";
@@ -146,11 +145,9 @@ export default defineComponent({
   },
   setup(props) {
     const store = useStore();
-    const userIndex = computed(
-      // 현재 로그인 된 유저 인덱스
-      () => store.getters["userStore/userIndex"]
-    );
+    const userIndex = computed(() => store.getters["userStore/userIndex"]);
     const nowOpIndex = ref(); // 현재 채팅의 상대 인덱스
+    const nowRoomIndex = ref(); // 현재 채팅의 상대 인덱스
     const isOpenList = ref(false); // 채팅 목록 열림 여부
     const isOpenChat = ref(false); // 채팅방 열림 여부
     const isNewChat = ref(false); // 새로운 채팅 여부
@@ -184,11 +181,6 @@ export default defineComponent({
       chatRoomIndex: number;
       message: message;
     }
-    // interface chatContent {
-    //   // 채팅방 전체 메세지 응답
-    //   chatRoomIndex: number;
-    //   list: Array<message>;
-    // }
     const isOpenChatRooms = ref(false);
     let chatRooms = reactive<Array<chatRoomsItem>>([]); // 채팅방 목록
 
@@ -217,9 +209,13 @@ export default defineComponent({
       connect();
       isOpenChat.value = true;
 
-      const content = await getChatContent(nowOpIndex.value);
-      content.data.forEach((msg: message) => chatContents.push(msg));
-
+      const list = await getChatContent(nowOpIndex.value);
+      nowRoomIndex.value = list.data.chatRoomIndex;
+      console.log(
+        userIndex.value + " " + nowOpIndex.value + " " + nowRoomIndex.value
+      );
+      list.data.messageList.forEach(item => chatContents.push(item));
+      console.log(chatContents[0]);
       isOpenChat.value = true;
       isOpenChatRooms.value = false;
     };
@@ -235,7 +231,7 @@ export default defineComponent({
     };
 
     // ------------------------------------채팅 end------------------------------------
-    // ----------------------메세지 전송 start----------------------
+    // ------------------------------------메세지 전송 start------------------------------------
     let serverURL;
     let socket;
 
@@ -247,14 +243,19 @@ export default defineComponent({
       socket.stompClient.connect(
         {},
         frame => {
-          console.log("frame");
           socket.connected = true;
           console.log("소켓 연결 성공 : ", frame);
-          socket.stompClient.subscribe("/sub/chat/room/1", res => {
-            console.log("구독으로 받은 메시지 : ", res.body);
-            let str = JSON.parse(res.body);
-            chatContents.push(str);
-          });
+          socket.stompClient.subscribe(
+            `/sub/chat/room/${nowRoomIndex.value}`,
+            res => {
+              console.log("구독으로 받은 메시지 : ", res.body);
+              let str = JSON.parse(res.body);
+              if (str.message.sender != userIndex.value) {
+                console.log("push !!!!!!!!!!!");
+                chatContents.push(str.message);
+              }
+            }
+          );
         },
         error => {
           // 소켓 연결 실패
@@ -264,13 +265,19 @@ export default defineComponent({
       );
     };
 
-    const sendMessage = () => {
+    const sendMessage = e => {
       // 메세지 보냄
-      send();
+      if (e.isComposing || e.keyCode === 229) {
+        return;
+      }
+      if (inputMsg.value == "") {
+        return;
+      }
+      send(inputMsg.value, "message");
       inputMsg.value = ""; // 입력 초기화
     };
 
-    const send = () => {
+    const send = (inputMsg: string, type: string) => {
       let today = new Date();
       let str =
         today.getFullYear() +
@@ -278,42 +285,48 @@ export default defineComponent({
         (today.getMonth() + 1).toString(10).padStart(2, "0") +
         "-" +
         today.getDate().toString(10).padStart(2, "0") +
-        ":" +
+        " " +
         today.getHours().toString(10).padStart(2, "0") +
         ":" +
         today.getMinutes().toString(10).padStart(2, "0") +
         ":" +
-        today.getMilliseconds().toString(10).padStart(2, "0");
+        today.getSeconds().toString(10).padStart(2, "0") +
+        "." +
+        today.getMilliseconds().toString(10);
+
       if (socket.stompClient && socket.stompClient.connected) {
         const msg: chatMessage = {
           // 서버에 보내줄 거
-          chatRoomIndex: 1,
+          chatRoomIndex: nowRoomIndex.value,
           message: {
-            sender: 1,
-            message: inputMsg.value,
+            sender: userIndex.value,
+            message: inputMsg,
             createdAt: str,
           },
         };
 
+        socket.stompClient.send(`/pub/chat/${type}`, JSON.stringify(msg), {});
+
         chatContents.push({
           //화면에 띄울 컨텐츠 배열에 넣음
           sender: userIndex.value,
-          message: inputMsg.value,
-          createdAt: today.getHours() + ":" + today.getMinutes(),
+          message: inputMsg,
+          createdAt:
+            today.getHours().toString().padStart(2, "0") +
+            ":" +
+            today.getMinutes().toString().padStart(2, "0"),
         });
-        console.log(msg);
-        socket.stompClient.send("/pub/chat/message", JSON.stringify(msg), {});
       }
     };
 
-    // ----------------------메세지 전송 end----------------------
+    // ------------------------------------메세지 전송 end------------------------------------
     // ------------------------------------달력 예약 start------------------------------------
     const ampm = ref("");
     const hour = ref();
     const minute = ref();
     const timeOptions = ["오전", "오후"];
     const hourOptions = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
-    const minuteOptions = [0, 10, 20, 30, 40, 50];
+    const minuteOptions = ["0", "30"];
     const dateValue = ref(new Date());
     const year = ref(dateValue.value.getFullYear());
     const month = ref(dateValue.value.getMonth() + 1);
@@ -339,7 +352,6 @@ export default defineComponent({
         alert("시간을 입력해주세요");
         return;
       }
-
       const data = new Date( // Date 형식으로 보냄
         year.value,
         month.value,
@@ -359,21 +371,19 @@ export default defineComponent({
         ":" +
         data.getMinutes().toString(10).padStart(2, "0");
 
-      const userIndex = 1; // 나중에 로그인 정보로 바꾸기
-      // chatProduct.value = chatRooms[listIdx.value];
-      const status = await addProductReserve(
-        // 예약 신청 수락되면
-        chatProduct.value.sellerIndex,
-        userIndex,
+      let isPossible = await checkReserve(
+        userIndex.value,
+        nowOpIndex.value,
         str
       );
 
-      if (status == ResponseStatus.Ok) {
-        alert("예약 완료");
+      if (isPossible) {
+        send(str + "예약이 완료 되었습니다.", "reserve");
         isOpenReserve.value = false;
       } else {
-        alert("다시 시도");
+        alert("다른 시간을 선택해주세요.");
       }
+
       dateValue.value = new Date(); // 예약 형식 초기화해줌
       ampm.value = "";
       hour.value = "";
@@ -412,6 +422,8 @@ export default defineComponent({
       sendMessage,
       setOpIndex,
       userIndex,
+      nowOpIndex,
+      nowRoomIndex,
     };
   },
 });
@@ -479,7 +491,7 @@ export default defineComponent({
   top: calc(50vh - 350px);
   left: calc(50vw - 200px);
   width: 400px;
-  height: 520px;
+  height: 550px;
   background: rgb(255, 255, 255);
   border: 1px solid rgb(184, 184, 184);
   box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;

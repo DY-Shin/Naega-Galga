@@ -15,5 +15,6 @@ import java.util.List;
 @Builder
 public class MessageListResponseDTO {
     private int chatRoomIndex;
+    private String opName;
     private List<MessageDTO> messageList;
 }
