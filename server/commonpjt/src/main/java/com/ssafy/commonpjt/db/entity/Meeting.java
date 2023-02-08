@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -25,8 +24,6 @@ public class Meeting {
 
     @Column(length = 1000)
     private String meetingUrl;
-
-    @CreationTimestamp
     private Timestamp reserveAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
