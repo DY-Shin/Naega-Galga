@@ -1,5 +1,6 @@
 package com.ssafy.commonpjt.api.controller;
 
+import com.ssafy.commonpjt.api.dto.explanationDTO.ExplanationInfoDTO;
 import com.ssafy.commonpjt.api.dto.explanationDTO.ReserveExplanationDTO;
 import com.ssafy.commonpjt.api.service.ExplanationService;
 import com.ssafy.commonpjt.common.exception.DuplicatedException;
@@ -65,5 +66,20 @@ public class ExplanationController {
             return new ResponseEntity<Void>(HttpStatus.CONFLICT);
         }
         return new ResponseEntity<Void>(HttpStatus.CREATED);
+    }
+
+    @GetMapping("/{productIndex}")
+    public ResponseEntity<?> getMeetingExplanationInfo(@PathVariable("productIndex") int productIndex){
+        ExplanationInfoDTO info = null;
+        try {
+            info = explanationService.getExplanationInfo(productIndex);
+        }
+        catch (NoContentException e) {
+            return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+        }
+        catch (Exception e) {
+            return new ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<ExplanationInfoDTO>(info, HttpStatus.OK);
     }
 }

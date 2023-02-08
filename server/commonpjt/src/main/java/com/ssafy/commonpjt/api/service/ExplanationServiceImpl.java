@@ -1,5 +1,6 @@
 package com.ssafy.commonpjt.api.service;
 
+import com.ssafy.commonpjt.api.dto.explanationDTO.ExplanationInfoDTO;
 import com.ssafy.commonpjt.api.dto.explanationDTO.ReserveExplanationDTO;
 import com.ssafy.commonpjt.common.exception.DuplicatedException;
 import com.ssafy.commonpjt.common.exception.NoContentException;
@@ -95,6 +96,25 @@ public class ExplanationServiceImpl implements  ExplanationService{
         explanationRepository.save(explanation);
     }
 
+    public ExplanationInfoDTO getExplanationInfo(int productIndex)
+            throws NoContentException, NotFoundUserException, Exception{
+        Product product = productRepository.findById(productIndex).orElseThrow(()-> new NoContentException());
+        Meeting meeting = meetingRepository.findByProduct(product).orElseThrow(()-> new NoContentException());
+        User user = userRepository.findByUserId(SecurityUtil.getLoginUsername()).orElseThrow(() -> new NotFoundUserException());
+        User seller = meeting.getOwner();
+
+        ExplanationInfoDTO dto = new ExplanationInfoDTO();
+
+        Explanation explanation = explanationRepository.findByMeetingAndReserveUser(meeting, user);
+        dto.setMeetingIndex(meeting.getMeetingIndex());
+        dto.setSellerIndex(seller.getUserIndex());
+        dto.setReservedAt(meeting.getReserveAt().toString());
+        if(explanation!=null){
+            User buyer = explanation.getReserveUser();
+            dto.setBuyerIndex(buyer.getUserIndex());
+        }
+        return dto;
+    }
     private String createOneOnManyUrl(int index){
         StringBuilder sb = new StringBuilder();
         sb.append(oneOnManyUrl);

@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.sql.Timestamp;
 
+import java.util.Optional;
+
 public interface MeetingRepository extends JpaRepository<Meeting, Integer> {
     boolean existsByProduct(Product product);
 
@@ -15,4 +17,6 @@ public interface MeetingRepository extends JpaRepository<Meeting, Integer> {
     Integer existsMeeting(User user, User op, Timestamp reserveAt);
 
     Meeting findByProductAndOwner(Product product, User owner);
+
+    Optional<Meeting> findByProduct(Product product);
 }
