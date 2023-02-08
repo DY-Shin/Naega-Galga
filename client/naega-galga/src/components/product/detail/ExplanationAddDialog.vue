@@ -54,6 +54,9 @@
 import { toRef, ref } from "vue";
 import { ElConfigProvider } from "element-plus";
 import ko from "element-plus/dist/locale/ko.mjs";
+import { useRoute } from "vue-router";
+import { addExplanation } from "@/api/explanationApi";
+import ResponseStatus from "@/api/responseStatus";
 
 export default {
   props: {
@@ -65,6 +68,8 @@ export default {
     ElConfigProvider,
   },
   setup(props, context) {
+    const route = useRoute();
+    const productIndex = parseInt(route.params.id[0]);
     const isShowRef = toRef(props, "isShow");
     const { emit } = context;
 
@@ -86,11 +91,11 @@ export default {
     const addPadStart = (time: number) => time.toString().padStart(2, "0");
 
     //설명회 등록
-    const onClickAddExplanation = () => {
+    const onClickAddExplanation = async () => {
       const date = selectedDate.value;
       const year = date.getFullYear();
-      const month = date.getMonth() + 1;
-      const day = date.getDate();
+      const month = addPadStart(date.getMonth() + 1);
+      const day = addPadStart(date.getDate());
 
       const hour: string | number =
         selectedTimeOption.value === "오전"
@@ -98,8 +103,15 @@ export default {
           : selectedHour.value + 12;
       const minutes = addPadStart(selectedMinutes.value);
 
-      const dateString = `${year}.${month}.${day} ${hour}:${minutes}`;
-      console.log(dateString);
+      const dateString = `${year}-${month}-${day} ${hour}:${minutes}:00.000`;
+
+      const response = await addExplanation(productIndex, dateString);
+      if (response.status === ResponseStatus.Created) {
+        closeDialog();
+      }
+      if (response.status === ResponseStatus.Conflict) {
+        alert("이미 등록된 정보입니다");
+      }
     };
 
     return {

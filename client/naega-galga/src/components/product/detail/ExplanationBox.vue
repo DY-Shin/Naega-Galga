@@ -6,11 +6,12 @@
     <div class="margin-top">
       <div class="flex">
         <!-- 설명회 정보-->
-        <div class="font-medium">
+        <div v-if="meetingInfo.meetingIndex > 0" class="font-medium">
           {{ meetingInfo.explanationDate }}
         </div>
+        <div v-else>일정이 없습니다</div>
         <!-- 내가 등록한 매물인가 -->
-        <div v-if="isMine" class="flex-self">
+        <div class="flex-self">
           <el-button
             v-if="canAddExplanation"
             type="primary"
@@ -19,16 +20,14 @@
             @click="onClickAddExplanation"
           />
           <el-button
-            v-else
+            v-if="canDeleteExplanation"
             circle
             type="danger"
             :icon="Minus"
             class="button-size"
             @click="onClickDeleteExplanation"
           />
-        </div>
-        <!-- 내가 등록한 매물 아님 -->
-        <div v-if="!isMine && isRegisteredExplanation">
+          <!-- 내가 등록한 매물 아님 -->
           <el-button
             v-if="canAddReservation"
             circle
@@ -38,7 +37,7 @@
             @click="onClickCancelReserveExplanation"
           />
           <el-button
-            v-else
+            v-if="canDeleteReservation"
             type="danger"
             :icon="Minus"
             class="button-size"
@@ -55,7 +54,7 @@
 </template>
 
 <script lang="ts">
-import { ref, reactive, computed } from "vue";
+import { ref, reactive, computed, onUpdated } from "vue";
 import { ProductReservation } from "@/types/MeetingReservationType";
 import { Calendar, Minus, Plus } from "@element-plus/icons-vue";
 import { useStore } from "vuex";
@@ -122,24 +121,27 @@ export default {
     };
     getMeetingInfo();
 
+    onUpdated(() => getMeetingInfo());
+
     const isMine = computed(() => myIndex.value === meetingInfo.sellerIndex);
 
-    //DB에 등록된 설명회가 있는지
-    const isRegisteredExplanation = computed(
-      () => meetingInfo.meetingIndex === -1
-    );
     //내가 등록된 매물인데 설명회가 없는 경우 설명회 등록 가능
     const canAddExplanation = computed(
-      () => isMine.value && !isRegisteredExplanation.value
+      () => isMine.value && meetingInfo.meetingIndex <= 0
     );
 
-    //구매자일 경우 내가 예약 추가한 설명회인지
-    const isReserved = computed(
+    const canDeleteExplanation = computed(
+      () => isMine.value && meetingInfo.meetingIndex > 0
+    );
+
+    //구매자가 예약 삭제
+    const canDeleteReservation = computed(
       () => !isMine.value && meetingInfo.buyerIndex === myIndex.value
     );
 
+    //구매자가 예약 추가
     const canAddReservation = computed(
-      () => isRegisteredExplanation.value && !isReserved.value
+      () => !isMine.value && meetingInfo.buyerIndex !== myIndex.value
     );
 
     //click event
@@ -168,9 +170,10 @@ export default {
       //values
       meetingInfo,
       isMine,
-      isRegisteredExplanation,
       canAddExplanation,
+      canDeleteExplanation,
       canAddReservation,
+      canDeleteReservation,
       //click event
       onClickAddExplanation,
       dialogShow,
