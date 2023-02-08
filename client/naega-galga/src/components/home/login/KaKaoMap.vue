@@ -18,7 +18,7 @@
 <script lang="ts">
 import { defineComponent, onMounted, watch, ref } from "@vue/runtime-core";
 import { useRouter } from "vue-router";
-import { ElContainer } from "element-plus";
+import { ElContainer, ElMain } from "element-plus";
 
 declare global {
   interface Window {
@@ -35,6 +35,7 @@ export default defineComponent({
   },
   components: {
     ElContainer,
+    ElMain,
   },
 
   setup(props, context) {

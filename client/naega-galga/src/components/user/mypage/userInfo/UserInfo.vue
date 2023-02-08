@@ -89,7 +89,7 @@ import { getUserInfo } from "@/api/userApi";
 import { userInfoChange } from "@/api/userApi";
 import ResponseStatus from "@/api/responseStatus";
 
-import { ElForm, ElFormItem, ElInput } from "element-plus";
+import { ElForm, ElFormItem, ElInput, ElButton } from "element-plus";
 
 export default defineComponent({
   name: "UserInfo",
@@ -99,6 +99,7 @@ export default defineComponent({
     ElForm,
     ElFormItem,
     ElInput,
+    ElButton,
   },
   setup() {
     const store = useStore();

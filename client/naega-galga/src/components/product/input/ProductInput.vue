@@ -244,6 +244,9 @@ import {
   ElButton,
   ElInput,
   ElRadioGroup,
+  ElRadio,
+  ElSelect,
+  ElOption,
 } from "element-plus";
 
 export default defineComponent({
@@ -257,6 +260,9 @@ export default defineComponent({
     ElButton,
     ElInput,
     ElRadioGroup,
+    ElRadio,
+    ElSelect,
+    ElOption,
   },
   setup() {
     //edit일때 product index
