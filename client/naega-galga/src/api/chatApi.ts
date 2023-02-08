@@ -24,19 +24,25 @@ async function getChatContent(opIndex: number) {
   return response;
 }
 
-// async function getChatRoomInfo(opIndex: number) {  // 안 씀
-//   const response: AxiosResponse = await axios.post(
-//     `/api/chat/rooms/ask`,
-//     {
-//       opIndex: opIndex,
-//     },
-//     {
-//       headers: {
-//         Authorization: `Bearer ${localStorageManager.getAccessToken()}`,
-//       },
-//     }
-//   );
-//   return response;
-// }
+async function checkReserve(userIndex: number, opIndex: number, date: string) {
+  console.log(
+    userIndex + " " + opIndex + " " + date + "!!!!!!!!!!!!!!!!!!!!!!!!"
+  );
+  const response: AxiosResponse = await axios.post(
+    `/api/reserve`,
+    {
+      userIndex: userIndex,
+      opIndex: opIndex,
+      date: date,
+    },
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${localStorageManager.getAccessToken()}`,
+      },
+    }
+  );
+  return response.status;
+}
 
-export { getChatRooms, getChatContent };
+export { getChatRooms, getChatContent, checkReserve };

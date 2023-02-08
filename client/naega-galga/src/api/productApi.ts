@@ -47,32 +47,4 @@ async function searchProduct(keyword: string) {
   return response;
 }
 
-async function addProductReserve(
-  owner: number,
-  guest: number,
-  date: string
-): Promise<number> {
-  console.log(owner + " " + guest + " " + date + " !!!");
-  const response: AxiosResponse = await axios.post(
-    `/api/reserve/${date}`,
-    {
-      owner: owner,
-      guest: guest,
-      date: date,
-    },
-    {
-      headers: {
-        "Content-Type": "multipart/form-data",
-        Authorization: `Bearer ${localStorageManager.getAccessToken()}`,
-      },
-    }
-  );
-  return response.status;
-}
-export {
-  addProduct,
-  deleteProduct,
-  getProduct,
-  addProductReserve,
-  searchProduct,
-};
+export { addProduct, deleteProduct, getProduct, searchProduct };
