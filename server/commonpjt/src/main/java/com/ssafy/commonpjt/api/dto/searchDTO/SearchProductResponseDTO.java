@@ -27,7 +27,7 @@ public class SearchProductResponseDTO {
         return SearchProductResponseDTO.builder()
                 .productIndex(product.getProductIndex())
                 .sellerIndex(product.getProductSeller().getUserIndex())
-                .sellerName(product.getProductSeller().getUsername())
+                .sellerName(product.getProductSeller().getName())
                 .roadAddr(product.getBuilding().getBuildingRoadAddress())
                 .photo(product.getProductPhoto())
                 .price(product.getProductPrice())
