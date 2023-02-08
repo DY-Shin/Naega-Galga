@@ -137,7 +137,15 @@ import { useStore } from "vuex";
 import Stomp from "webstomp-client";
 import SockJS from "sockjs-client";
 
-import { ElSelect, ElOption, ElIcon, ElButton, ElCalendar } from "element-plus";
+import {
+  ElSelect,
+  ElOption,
+  ElIcon,
+  ElButton,
+  ElCalendar,
+  ElScrollbar,
+  ElInput,
+} from "element-plus";
 
 export default defineComponent({
   props: {
@@ -150,6 +158,8 @@ export default defineComponent({
     ElIcon,
     ElButton,
     ElCalendar,
+    ElScrollbar,
+    ElInput,
     ChatDotRound,
   },
   setup(props) {

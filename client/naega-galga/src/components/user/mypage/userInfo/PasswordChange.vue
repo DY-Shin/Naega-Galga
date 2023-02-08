@@ -59,11 +59,11 @@ import { checkPassword } from "@/api/userApi";
 import { changePassword } from "@/api/userApi";
 import ResponseStatus from "@/api/responseStatus";
 
-import { ElForm, ElFormItem, ElInput } from "element-plus";
+import { ElForm, ElFormItem, ElInput, ElButton } from "element-plus";
 
 export default defineComponent({
   name: "PasswordChange",
-  components: { ElForm, ElFormItem, ElInput },
+  components: { ElForm, ElFormItem, ElInput, ElButton },
   setup() {
     const password_change_form = reactive({
       password: "",

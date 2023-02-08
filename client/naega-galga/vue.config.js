@@ -22,7 +22,7 @@ module.exports = defineConfig({
   pluginOptions: new BundleAnalyzerPlugin({
     analyzerMode: "static",
     reportFilename: "bundle-report.html",
-    openAnalyzer: true,
+    openAnalyzer: false,
     generateStatsFile: true,
     statsFilename: "bundle.stats.json",
   }),
