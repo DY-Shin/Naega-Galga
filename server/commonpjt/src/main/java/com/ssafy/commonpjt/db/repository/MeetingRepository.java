@@ -13,7 +13,7 @@ import java.util.Optional;
 public interface MeetingRepository extends JpaRepository<Meeting, Integer> {
     boolean existsByProduct(Product product);
 
-    @Query("select m from Meeting m where (m.owner in (?1, ?2) or m.guest in (?1, ?2)) and m.reserveAt = ?3")
+    @Query("select count(m) from Meeting m where (m.owner in (?1, ?2) or m.guest in (?1, ?2)) and m.reserveAt = ?3")
     Integer existsMeeting(User user, User op, Timestamp reserveAt);
 
     Meeting findByProductAndOwner(Product product, User owner);
