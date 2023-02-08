@@ -17,11 +17,13 @@ import { getRegistProduct } from "@/api/userApi";
 import ResponseStatus from "@/api/responseStatus";
 import { defineComponent, reactive } from "vue";
 import RegisterListItem from "./RegisterListItem.vue";
+import { ElRow } from "element-plus";
 
 export default defineComponent({
   name: "RegisterList",
   components: {
     RegisterListItem,
+    ElRow,
   },
   setup() {
     const makeRegistProduct = async () => {

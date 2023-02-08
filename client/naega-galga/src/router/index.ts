@@ -11,7 +11,7 @@ const userDeleteRouter = userRouter[3];
 const routes: Array<RouteRecordRaw> = [
   {
     path: "/",
-    component: import("@/views/HomeView.vue"),
+    component: () => import("@/views/HomeView.vue"),
   },
   usersRouter,
   joinRouter,

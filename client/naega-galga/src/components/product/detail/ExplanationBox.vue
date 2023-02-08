@@ -61,6 +61,7 @@ import { useStore } from "vuex";
 import ExplanationAddDialog from "@/components/product/detail/ExplanationAddDialog.vue";
 import { getExplanationInfo } from "@/api/explanationApi";
 import ResponseStatus from "@/api/responseStatus";
+import { ElButton } from "element-plus";
 
 export default {
   props: {
@@ -68,6 +69,7 @@ export default {
   },
   components: {
     ExplanationAddDialog,
+    ElButton,
   },
   setup(props) {
     const productIndexRef = ref(props.productIndex);

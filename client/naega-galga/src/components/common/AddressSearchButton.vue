@@ -7,7 +7,12 @@ import { defineComponent } from "@vue/runtime-core";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 declare const daum: any;
 
+import { ElButton } from "element-plus";
+
 export default defineComponent({
+  components: {
+    ElButton,
+  },
   setup(_, context) {
     const { emit } = context;
 

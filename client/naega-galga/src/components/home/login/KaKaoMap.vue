@@ -18,6 +18,8 @@
 <script lang="ts">
 import { defineComponent, onMounted, watch, ref } from "@vue/runtime-core";
 import { useRouter } from "vue-router";
+import { ElContainer, ElMain } from "element-plus";
+
 declare global {
   interface Window {
     kakao: any;
@@ -30,6 +32,10 @@ export default defineComponent({
     getIdx: { type: Number },
     getList: { type: Array },
     getClick: { type: Boolean },
+  },
+  components: {
+    ElContainer,
+    ElMain,
   },
 
   setup(props, context) {
