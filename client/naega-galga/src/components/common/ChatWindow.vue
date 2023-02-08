@@ -25,7 +25,7 @@
   </el-scrollbar>
   <!-- --------------chat room start-------------- -->
   <div class="chat-room" v-show="isOpenChat">
-    <div class="send-box box">{{ nowOpIndex }}</div>
+    <div class="send-box box"></div>
     <el-icon
       id="close-btn"
       @click="CloseChat"
@@ -40,7 +40,9 @@
       "
       ><CircleCloseFilled
     /></el-icon>
-    <div id="chatTitle" style="font-size: 20px; margin: 10px 15px 0">{{}}</div>
+    <div id="chatTitle" style="font-size: 20px; margin: 10px 15px 0">
+      {{ nowOpName }}!!
+    </div>
     <div>
       <div class="chat-content">
         <div
@@ -141,12 +143,14 @@ import SockJS from "sockjs-client";
 export default defineComponent({
   props: {
     getChatUserIndex: { type: Number },
+    getChatUserName: { type: String },
     getChatOpen: { type: Boolean },
   },
   setup(props) {
     const store = useStore();
     const userIndex = computed(() => store.getters["userStore/userIndex"]);
     const nowOpIndex = ref(); // 현재 채팅의 상대 인덱스
+    const nowOpName = ref(); // 현재 채팅의 상대 이름
     const nowRoomIndex = ref(); // 현재 채팅의 상대 인덱스
     const isOpenList = ref(false); // 채팅 목록 열림 여부
     const isOpenChat = ref(false); // 채팅방 열림 여부
@@ -157,8 +161,9 @@ export default defineComponent({
     watch(
       () => props.getChatOpen,
       () => {
-        console.log(props.getChatUserIndex);
+        console.log(props.getChatUserIndex + " " + props.getChatUserName);
         nowOpIndex.value = props.getChatUserIndex;
+        nowOpName.value = props.getChatUserName;
         openChat();
       },
       { deep: true }
@@ -200,20 +205,25 @@ export default defineComponent({
     const setOpIndex = (index: number) => {
       // 목록에서 열 때
       nowOpIndex.value = chatRooms[index].opIndex; // 현재 채팅 상대 업데이트해주고
+      nowOpName.value = chatRooms[index].opName;
       openChat(); // 채팅방 열기
     };
 
     const openChat = async () => {
       // 채팅방 컨텐츠 요청
+      if (nowOpIndex.value == userIndex.value) {
+        return;
+      }
       chatContents.splice(0); // 채팅방 내용 초기화(전에 열었던 채팅 목록 남아있음)
       connect();
       isOpenChat.value = true;
-
+      console.log(
+        "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! " + nowOpIndex.value
+      );
       const list = await getChatContent(nowOpIndex.value);
       nowRoomIndex.value = list.data.chatRoomIndex;
-      console.log(
-        userIndex.value + " " + nowOpIndex.value + " " + nowRoomIndex.value
-      );
+      // nowOpName.value = list.data.opName;
+
       list.data.messageList.forEach(item => chatContents.push(item));
       console.log(chatContents[0]);
       isOpenChat.value = true;
@@ -418,6 +428,7 @@ export default defineComponent({
       userIndex,
       nowOpIndex,
       nowRoomIndex,
+      nowOpName,
     };
   },
 });
