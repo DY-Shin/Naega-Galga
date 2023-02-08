@@ -66,15 +66,6 @@ import {
   ElCalendar,
 } from "element-plus";
 
-import {
-  ElConfigProvider,
-  ElButton,
-  ElSelect,
-  ElOption,
-  ElDialog,
-  ElCalendar,
-} from "element-plus";
-
 export default {
   props: {
     isShow: {
