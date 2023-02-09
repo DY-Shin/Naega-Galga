@@ -6,33 +6,33 @@ const validateNumber = /^[0-9null]*$/;
 
 const validation = {
   id: id => {
-    if (validId.test(id) == true) {
+    if (validId.test(id)) {
       return true;
     }
     return false;
   },
 
   password: password => {
-    if (validatePassword.test(password) == true) {
+    if (validatePassword.test(password)) {
       return true;
     }
     return false;
   },
 
   name: name => {
-    if (validateName.test(name) == true) {
+    if (validateName.test(name)) {
       return true;
     }
     return false;
   },
   phone: phone => {
-    if (validateNumber.test(phone) == true) {
+    if (validateNumber.test(phone)) {
       return true;
     }
     return false;
   },
   registration_number: registration_number => {
-    if (validateNumber.test(registration_number) == true) {
+    if (validateNumber.test(registration_number)) {
       return;
     }
     return false;

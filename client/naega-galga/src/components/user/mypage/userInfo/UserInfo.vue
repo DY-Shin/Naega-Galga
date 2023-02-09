@@ -6,7 +6,7 @@
     </span>
     <hr />
     <!-- 유저 정보를 보여주는 부분 -->
-    <el-form v-if="isChange == false" label-width="17%" label-position="left">
+    <el-form v-if="!isChange" label-width="17%" label-position="left">
       <el-form-item label="아이디">
         {{ info.user_id }}
       </el-form-item>
@@ -169,12 +169,16 @@ export default defineComponent({
       third_user_phone: null,
     });
 
+    // const user_phone = ref(
+    //   fullUserPhone.first_user_phone +
+    //     "-" +
+    //     fullUserPhone.second_user_phone +
+    //     "-" +
+    //     fullUserPhone.third_user_phone
+    // );
+
     const user_phone = ref(
-      fullUserPhone.first_user_phone +
-        "-" +
-        fullUserPhone.second_user_phone +
-        "-" +
-        fullUserPhone.third_user_phone
+      `${fullUserPhone.first_user_phone} ${fullUserPhone.second_user_phone} - ${fullUserPhone.third_user_phone}`
     );
 
     const fullAddress = reactive({
