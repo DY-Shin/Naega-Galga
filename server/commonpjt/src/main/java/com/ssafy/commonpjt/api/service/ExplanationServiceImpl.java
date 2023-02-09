@@ -83,20 +83,17 @@ public class ExplanationServiceImpl implements  ExplanationService{
         //구매자 정보
         User user = userRepository.findByUserId(SecurityUtil.getLoginUsername())
                                 .orElseThrow(() -> new NotFoundUserException());
-        int meetingIndex = reserveExplanationDTO.getMeetingIndex();
-        log.info("meeting index" + meetingIndex);
+        int productIndex = reserveExplanationDTO.getProductIndex();
+        log.info("meeting index" + productIndex);
 
-        Meeting meeting = meetingRepository.findById(meetingIndex)
+        Product product = productRepository.findById(productIndex)
                                 .orElseThrow(()-> new NoContentException());
+        Meeting meeting = meetingRepository.findByProduct(product);
 
         //이미 등록된 예약이라면
         Explanation reservation = explanationRepository.findByMeetingAndReserveUser(meeting, user);
         if(reservation!=null)
             throw new DuplicatedException();
-
-        User meetingOwner = meeting.getOwner();
-        String meetingUrl = meeting.getMeetingUrl();
-        Product product = meeting.getProduct();
 
         Explanation explanation = Explanation.builder()
                 .meeting(meeting)
