@@ -56,8 +56,8 @@ export default defineComponent({
 
     const goLogin = async () => {
       const response = await login(loginform);
-
-      if (response.status === ResponseStatus.Ok) {
+      const status = response.status;
+      if (status === ResponseStatus.Ok) {
         store.commit("userStore/CHECK_TOKEN");
         localStorageManager.setAccessToken(response.data.accessToken);
         localStorageManager.setRefreshToken(response.data.refreshToken);
@@ -68,14 +68,19 @@ export default defineComponent({
 
           if (response.status === ResponseStatus.Ok) {
             store.commit("userStore/GET_USER_INFO", data);
-          } else {
-            console.log("err");
           }
         };
         composition();
 
         router.push({ path: "/" });
       }
+      if (status === ResponseStatus.Forbidden) {
+        console.log("forbidden");
+      }
+      if (status === ResponseStatus.InternalServerError) {
+        console.log("InternalServerError");
+      }
+      console.log(status);
     };
 
     return { loginform, signup, goLogin, url };
