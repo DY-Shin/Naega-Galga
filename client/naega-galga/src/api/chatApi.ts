@@ -11,26 +11,29 @@ async function getChatRooms() {
   return response;
 }
 
-async function getChatContent(chatRoomIndex: number) {
-  const response: AxiosResponse = await axios.post(
-    `/api/chat/rooms`,
-    {
-      roomIndex: chatRoomIndex,
-    },
+async function getChatContent(opIndex: number) {
+  const response: AxiosResponse = await axios.get(
+    `/api/chat/rooms/${opIndex}`,
     {
       headers: {
         Authorization: `Bearer ${localStorageManager.getAccessToken()}`,
       },
     }
   );
+
   return response;
 }
 
-async function getChatRoomInfo(opIndex: number) {
+async function checkReserve(userIndex: number, opIndex: number, date: string) {
+  console.log(
+    userIndex + " " + opIndex + " " + date + "!!!!!!!!!!!!!!!!!!!!!!!!"
+  );
   const response: AxiosResponse = await axios.post(
-    `/api/chat/rooms/ask`,
+    `/api/reserve`,
     {
+      userIndex: userIndex,
       opIndex: opIndex,
+      date: date,
     },
     {
       headers: {
@@ -41,4 +44,4 @@ async function getChatRoomInfo(opIndex: number) {
   return response;
 }
 
-export { getChatRooms, getChatContent, getChatRoomInfo };
+export { getChatRooms, getChatContent, checkReserve };

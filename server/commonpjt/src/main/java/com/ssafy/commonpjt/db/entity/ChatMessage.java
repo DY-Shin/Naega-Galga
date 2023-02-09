@@ -29,7 +29,6 @@ public class ChatMessage {
     @Column(length = 2000)
     private String message;
 
-    @CreationTimestamp
     private Timestamp createdAt;
 
     @ColumnDefault("false")
