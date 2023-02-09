@@ -16,4 +16,10 @@ public interface ExplanationService {
 
     public ExplanationInfoDTO getExplanationInfo(int productIndex)
             throws NoContentException, NotFoundUserException, Exception;
+
+    public void cancelReservation(int meetingIndex)
+            throws NoContentException, NotFoundUserException, Exception;
+
+    public void deleteReservation(int meetingIndex)
+            throws NoContentException, NotFoundUserException, NotMyContentsException, Exception;
 }
