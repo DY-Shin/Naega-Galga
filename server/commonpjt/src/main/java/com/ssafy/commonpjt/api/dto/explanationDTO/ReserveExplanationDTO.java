@@ -9,5 +9,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ReserveExplanationDTO {
-    private int meetingIndex;
+    private int productIndex;
 }
