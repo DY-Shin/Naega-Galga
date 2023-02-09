@@ -1,5 +1,6 @@
 package com.ssafy.commonpjt.api.controller;
 
+import com.ssafy.commonpjt.api.dto.explanationDTO.ExplanationDateDTO;
 import com.ssafy.commonpjt.api.dto.explanationDTO.ExplanationInfoDTO;
 import com.ssafy.commonpjt.api.dto.explanationDTO.ReserveExplanationDTO;
 import com.ssafy.commonpjt.api.service.ExplanationService;
@@ -21,9 +22,9 @@ public class ExplanationController {
 
     //판매자가 설명회 등록
     @PostMapping("/{productIndex}")
-    public ResponseEntity<?> addExplanation(@PathVariable int productIndex){
+    public ResponseEntity<?> addExplanation(@PathVariable int productIndex, @RequestBody ExplanationDateDTO explanationDate){
         try{
-            explanationService.addProductExplanation(productIndex);
+            explanationService.addProductExplanation(productIndex, explanationDate);
         }
         //잘못된 사용자의 접근
         catch(NotFoundUserException e){
@@ -81,5 +82,46 @@ public class ExplanationController {
             return new ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return new ResponseEntity<ExplanationInfoDTO>(info, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/cancel/{meetingIndex}")
+    public ResponseEntity<?> cancelReservation(@PathVariable int meetingIndex){
+        try{
+            explanationService.cancelReservation(meetingIndex);
+        }
+        catch(NotFoundUserException e){
+            return new ResponseEntity<Void>(HttpStatus.FORBIDDEN);
+        }
+        catch(NoContentException e){
+            e.printStackTrace();
+            return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            return new ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<Void>(HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{meetingIndex}")
+    public ResponseEntity<Void> deleteExplanation(@PathVariable int meetingIndex){
+        try{
+            explanationService.deleteReservation(meetingIndex);
+        }
+        catch(NotMyContentsException e){
+            return new ResponseEntity<Void>(HttpStatus.FORBIDDEN);
+        }
+        catch(NotFoundUserException e){
+            return new ResponseEntity<Void>(HttpStatus.FORBIDDEN);
+        }
+        catch(NoContentException e){
+            e.printStackTrace();
+            return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            return new ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<Void>(HttpStatus.OK);
     }
 }

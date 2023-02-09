@@ -44,7 +44,10 @@ import { reactive, ref, defineComponent, onBeforeUpdate } from "vue";
 import { Search } from "@element-plus/icons-vue";
 import { searchProduct } from "@/api/productApi";
 
+import { ElScrollbar, ElAside, ElInput, ElButton } from "element-plus";
+
 export default defineComponent({
+  components: { ElScrollbar, ElAside, ElInput, ElButton },
   setup(_, context) {
     interface Product {
       productIndex: number;
@@ -64,7 +67,6 @@ export default defineComponent({
     const { emit } = context;
     const whereIs = index => {
       emit("addr_idx", index);
-      emit("productClick", true);
     };
     let productList = reactive<Array<Product>>([]);
 
@@ -73,7 +75,6 @@ export default defineComponent({
       const list = await searchProduct(input.value);
 
       list.data.forEach((product: Product) => productList.push(product));
-      console.log(productList);
       emit("productList", productList);
       //검색 ->  목록 가져오기
       // if (input.value === beforeInput.value) {
