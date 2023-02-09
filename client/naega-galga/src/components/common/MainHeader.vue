@@ -24,10 +24,9 @@
         <el-button
           v-on:click="OpenMenu"
           id="my-btn"
-          circle
           color="#393B44"
-          size="large"
           height="20px"
+          circle
         >
           <el-icon size="40" color="#F1F3F8"><UserFilled /></el-icon
         ></el-button>
