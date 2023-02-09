@@ -76,7 +76,6 @@ export default defineComponent({
       const list = await searchProduct(input.value);
 
       list.data.forEach((product: Product) => productList.push(product));
-      console.log(productList);
       emit("productList", productList);
       //검색 ->  목록 가져오기
       // if (input.value === beforeInput.value) {
