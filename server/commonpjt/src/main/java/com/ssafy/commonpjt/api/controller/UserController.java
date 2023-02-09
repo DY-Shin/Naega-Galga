@@ -9,7 +9,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -76,6 +78,12 @@ public class UserController {
         return ResponseEntity.ok(userService.getUserProductList(userId));
     }
 
+    // 예약 목록 조회
+    @GetMapping("me/reservations")
+    public ResponseEntity<?> getMyReservations(HttpServletResponse response) throws Exception {
+        return ResponseEntity.ok(userService.getMyReserve());
+    }
+
     // 내 정보 수정
     @PutMapping("")
     @ResponseStatus(HttpStatus.OK)
@@ -98,7 +106,7 @@ public class UserController {
 
     // 아이디 찾기
     @PostMapping("find/id")
-    public ResponseEntity<?> findMyUserId(@Validated @RequestBody FindIdDTO findIdDTO) throws Exception {
+    public ResponseEntity<?> findMyUserId(@Validated @RequestBody FindIdDTO findIdDTO) {
         return ResponseEntity.ok(userService.findMyUserId(findIdDTO.getUserName()));
     }
 

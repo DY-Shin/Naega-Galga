@@ -1,10 +1,15 @@
 package com.ssafy.commonpjt.api.service;
 
+import com.ssafy.commonpjt.api.dto.productDTO.ProductInfoDTO;
+import com.ssafy.commonpjt.api.dto.reserveDTO.ReserveResponseDTO;
 import com.ssafy.commonpjt.api.dto.userDTO.*;
 import com.ssafy.commonpjt.common.enums.Authority;
 import com.ssafy.commonpjt.common.jwt.JwtTokenProvider;
 import com.ssafy.commonpjt.common.security.SecurityUtil;
+import com.ssafy.commonpjt.db.entity.Meeting;
+import com.ssafy.commonpjt.db.entity.Product;
 import com.ssafy.commonpjt.db.entity.User;
+import com.ssafy.commonpjt.db.repository.MeetingRepository;
 import com.ssafy.commonpjt.db.repository.ProductRepository;
 import com.ssafy.commonpjt.db.repository.UserRepository;
 import com.ssafy.commonpjt.db.repository.WishListRepository;
@@ -36,6 +41,7 @@ public class UserServiceImpl implements UserService {
     private final RedisTemplate redisTemplate;
     private final WishListRepository wishListRepository;
     private final ProductRepository productRepository;
+    private final MeetingRepository meetingRepository;
 
     // 회원가입 서비스
     @Override
@@ -96,7 +102,7 @@ public class UserServiceImpl implements UserService {
     // 회원정보 수정 서비스
     @Override
     public void update(UserUpdateDTO userUpdateDto) throws Exception {
-        User user = userRepository.findByUserId(SecurityUtil.getLoginUsername()).orElseThrow(() -> new Exception("No User Exists"));
+        User user = userRepository.findByUserId(SecurityUtil.getLoginUsername()).orElseThrow(() -> new Exception("Login Required"));
         if (userUpdateDto.getUserPhone() != null) user.setUserPhone(userUpdateDto.getUserPhone());
         if (userUpdateDto.getUserName() != null) user.setName(userUpdateDto.getUserName());
         if (userUpdateDto.getCorporateRegistrationNumber() != null) user.setCorporateRegistrationNumber(userUpdateDto.getCorporateRegistrationNumber());
@@ -107,14 +113,14 @@ public class UserServiceImpl implements UserService {
     // 비밀번호 확인
     @Override
     public boolean checkPassword(UpdatePasswordDTO updatePasswordDTO) throws Exception {
-        User user = userRepository.findByUserId(SecurityUtil.getLoginUsername()).orElseThrow(() -> new Exception("No User Exists"));
+        User user = userRepository.findByUserId(SecurityUtil.getLoginUsername()).orElseThrow(() -> new Exception("Login Required"));
         return user.matchPassword(passwordEncoder, updatePasswordDTO.getCheckPassword());
     }
 
     // 비밀번호 변경 서비스
     @Override
     public void updatePassword(UpdatePasswordDTO updatePasswordDto) throws Exception {
-        User user = userRepository.findByUserId(SecurityUtil.getLoginUsername()).orElseThrow(() -> new Exception("No User Exists"));
+        User user = userRepository.findByUserId(SecurityUtil.getLoginUsername()).orElseThrow(() -> new Exception("Login Required"));
         user.updatePassword(passwordEncoder, updatePasswordDto.getToBePassword());
         userRepository.save(user);
     }
@@ -129,7 +135,7 @@ public class UserServiceImpl implements UserService {
     // 내 정보 검색
     @Override
     public UserInfoDTO getMyInfo() throws Exception {
-        User user = userRepository.findByUserId(SecurityUtil.getLoginUsername()).orElseThrow(() -> new Exception("No User Exists"));
+        User user = userRepository.findByUserId(SecurityUtil.getLoginUsername()).orElseThrow(() -> new Exception("Login Required"));
         return new UserInfoDTO(user);
     }
 
@@ -141,7 +147,7 @@ public class UserServiceImpl implements UserService {
         }
         Authentication authentication = jwtTokenProvider.getAuthentication(logout.getAccessToken());
         String userId = authentication.getName();
-        User user = userRepository.findByUserId(userId).orElseThrow(() -> new Exception("No User Exists"));
+        User user = userRepository.findByUserId(userId).orElseThrow(() -> new Exception("Login Required"));
         if (!user.matchPassword(passwordEncoder, logout.getCheckPassword())){
             throw new Exception("Incorrect Password");
         }
@@ -160,7 +166,7 @@ public class UserServiceImpl implements UserService {
     // 내가 등록한 매물 목록 조회
     @Override
     public List<?> getMyProductList() throws Exception {
-        User user = userRepository.findByUserId(SecurityUtil.getLoginUsername()).orElseThrow(() -> new Exception("No User Exists"));
+        User user = userRepository.findByUserId(SecurityUtil.getLoginUsername()).orElseThrow(() -> new Exception("Login Required"));
         return productRepository.findAllByProductSeller(user);
     }
 
@@ -171,9 +177,39 @@ public class UserServiceImpl implements UserService {
         return productRepository.findAllByProductSeller(user);
     }
 
+    // 예약 목록 조회
+    @Override
+    @Transactional
+    public List<?> getMyReserve() throws Exception {
+        User user = userRepository.findByUserId(SecurityUtil.getLoginUsername()).orElseThrow(() -> new Exception("Login Required"));
+        List<Meeting> ownerMeeting = meetingRepository.findAllByOwner(user);
+        List<Meeting> guestMeeting = meetingRepository.findAllByGuest(user);
+        List<Integer> meetingIndexList = new ArrayList<>();
+        List<ReserveResponseDTO> meetingList = new ArrayList<>();
+        for (Meeting meeting : ownerMeeting) {
+            meetingIndexList.add(meeting.getMeetingIndex());
+        }
+        for (Meeting meeting : guestMeeting) {
+            meetingIndexList.add(meeting.getMeetingIndex());
+        }
+        for (int index : meetingIndexList) {
+            Meeting meeting = meetingRepository.findByMeetingIndex(index).orElseThrow(() -> new Exception("No Meeting Exists"));
+            Product product = meeting.getProduct();
+            ProductInfoDTO productInfo = new ProductInfoDTO(product);
+            ReserveResponseDTO reserve = ReserveResponseDTO.builder()
+                    .reserveAt(meeting.getReserveAt())
+                    .owner(meeting.getOwner().getUserId())
+                    .guest(meeting.getGuest().getUserId())
+                    .product(productInfo)
+                    .build();
+            meetingList.add(reserve);
+        }
+        return meetingList;
+    }
+
     // 아이디 찾기
     @Override
-    public List<?> findMyUserId(String name) throws Exception {
+    public List<?> findMyUserId(String name) {
         List<User> userList = userRepository.findAllByName(name);
         List<String> userIdList = new ArrayList<>();
         for (User user : userList) {
@@ -196,6 +232,7 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 
+    // 토큰 만료시 토큰 재발급
     @Override
     public TokenDTO reissue(TokenDTO tokenDTO) throws Exception {
         if(!jwtTokenProvider.validateToken(tokenDTO.getRefreshToken())) {

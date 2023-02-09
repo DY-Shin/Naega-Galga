@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.sql.Timestamp;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface MeetingRepository extends JpaRepository<Meeting, Integer> {
@@ -17,6 +18,12 @@ public interface MeetingRepository extends JpaRepository<Meeting, Integer> {
     Integer existsMeeting(User user, User op, Timestamp reserveAt);
 
     Meeting findByProductAndOwner(Product product, User owner);
+
+    Optional<Meeting> findByMeetingIndex(Integer meetingIndex);
+
+    List<Meeting> findAllByOwner(User owner);
+
+    List<Meeting> findAllByGuest(User guest);
 
     Meeting findByProduct(Product product);
 }
