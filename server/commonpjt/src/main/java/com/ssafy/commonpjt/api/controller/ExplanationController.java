@@ -1,5 +1,6 @@
 package com.ssafy.commonpjt.api.controller;
 
+import com.ssafy.commonpjt.api.dto.explanationDTO.ExplanationDateDTO;
 import com.ssafy.commonpjt.api.dto.explanationDTO.ExplanationInfoDTO;
 import com.ssafy.commonpjt.api.dto.explanationDTO.ReserveExplanationDTO;
 import com.ssafy.commonpjt.api.service.ExplanationService;
@@ -21,9 +22,9 @@ public class ExplanationController {
 
     //판매자가 설명회 등록
     @PostMapping("/{productIndex}")
-    public ResponseEntity<?> addExplanation(@PathVariable int productIndex){
+    public ResponseEntity<?> addExplanation(@PathVariable int productIndex, @RequestBody ExplanationDateDTO explanationDate){
         try{
-            explanationService.addProductExplanation(productIndex);
+            explanationService.addProductExplanation(productIndex, explanationDate);
         }
         //잘못된 사용자의 접근
         catch(NotFoundUserException e){

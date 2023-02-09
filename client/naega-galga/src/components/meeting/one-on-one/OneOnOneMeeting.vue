@@ -77,10 +77,28 @@ import ChatBox from "@/components/meeting/one-on-one/ChatBox.vue";
 import { Message } from "@/types/MeetingChatType";
 import { isMobileScreen } from "@/use/useMediaQuery";
 
+import { ElButton, ElIcon } from "element-plus";
+import {
+  Microphone,
+  ArrowUp,
+  VideoCamera,
+  VideoPause,
+  ChatRound,
+  LocationFilled,
+} from "@element-plus/icons-vue";
+
 export default {
   components: {
     OvVideo,
     ChatBox,
+    ElButton,
+    ElIcon,
+    Microphone,
+    ArrowUp,
+    VideoCamera,
+    VideoPause,
+    ChatRound,
+    LocationFilled,
   },
   setup() {
     //--------------------------화상 미팅방 정보

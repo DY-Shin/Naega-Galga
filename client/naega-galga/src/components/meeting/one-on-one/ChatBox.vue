@@ -34,12 +34,16 @@
 import { toRef, ref, PropType } from "vue";
 import { Message } from "@/types/MeetingChatType";
 
+import { ElButton, ElIcon } from "element-plus";
+import { Promotion } from "@element-plus/icons-vue";
+
 export default {
   props: {
     messageList: {
       type: Array as PropType<Array<Message>>,
     },
   },
+  components: { ElButton, ElIcon, Promotion },
   setup(props, context) {
     const messageListRef = toRef(props, "messageList");
     const inputtedMessage = ref("");

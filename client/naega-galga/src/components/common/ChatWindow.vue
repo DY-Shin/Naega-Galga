@@ -133,18 +133,38 @@
 </template>
 <script lang="ts">
 import { defineComponent, ref, watch, reactive, computed } from "vue";
-import { Plus, Promotion } from "@element-plus/icons-vue";
+import { ChatDotRound } from "@element-plus/icons-vue";
 import { getChatRooms, getChatContent } from "@/api/chatApi";
 import { checkReserve } from "@/api/chatApi";
 import { useStore } from "vuex";
 import Stomp from "webstomp-client";
 import SockJS from "sockjs-client";
 
+import {
+  ElSelect,
+  ElOption,
+  ElIcon,
+  ElButton,
+  ElCalendar,
+  ElScrollbar,
+  ElInput,
+} from "element-plus";
+
 export default defineComponent({
   props: {
     getChatUserIndex: { type: Number },
     getChatUserName: { type: String },
     getChatOpen: { type: Boolean },
+  },
+  components: {
+    ElSelect,
+    ElOption,
+    ElIcon,
+    ElButton,
+    ElCalendar,
+    ElScrollbar,
+    ElInput,
+    ChatDotRound,
   },
   setup(props) {
     const store = useStore();
@@ -404,8 +424,6 @@ export default defineComponent({
       isOpenChat,
       isOpenReserve,
       CloseChat,
-      Plus,
-      Promotion,
       dateValue,
       getDate,
       date,

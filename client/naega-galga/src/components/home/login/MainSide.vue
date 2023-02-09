@@ -44,7 +44,10 @@ import { reactive, ref, defineComponent, onBeforeUpdate } from "vue";
 import { Search } from "@element-plus/icons-vue";
 import { searchProduct } from "@/api/productApi";
 
+import { ElScrollbar, ElAside, ElInput, ElButton } from "element-plus";
+
 export default defineComponent({
+  components: { ElScrollbar, ElAside, ElInput, ElButton },
   setup(_, context) {
     interface Product {
       productIndex: number;

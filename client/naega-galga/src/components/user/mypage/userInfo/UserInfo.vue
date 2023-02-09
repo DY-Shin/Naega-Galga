@@ -89,11 +89,17 @@ import { getUserInfo } from "@/api/userApi";
 import { userInfoChange } from "@/api/userApi";
 import ResponseStatus from "@/api/responseStatus";
 
+import { ElForm, ElFormItem, ElInput, ElButton } from "element-plus";
+
 export default defineComponent({
   name: "UserInfo",
   components: {
     PasswordChange,
     UserDeleteDialog,
+    ElForm,
+    ElFormItem,
+    ElInput,
+    ElButton,
   },
   setup() {
     const store = useStore();
