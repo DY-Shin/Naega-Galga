@@ -47,6 +47,7 @@ declare module '@vue/runtime-core' {
     LogoutHome: typeof import('./src/components/home/logout/LogoutHome.vue')['default']
     MainHeader: typeof import('./src/components/common/MainHeader.vue')['default']
     MainSide: typeof import('./src/components/home/login/MainSide.vue')['default']
+    OneOnManyMeeting: typeof import('./src/components/meeting/one-on-many/OneOnManyMeeting.vue')['default']
     OneOnOneMeeting: typeof import('./src/components/meeting/one-on-one/OneOnOneMeeting.vue')['default']
     OvVideo: typeof import('./src/components/meeting/one-on-one/OvVideo.vue')['default']
     PasswordChange: typeof import('./src/components/user/mypage/userInfo/PasswordChange.vue')['default']
