@@ -19,14 +19,26 @@
       </div>
     </div>
     <div class="flex-column">
-      <div v-if="!isMobileScreen" id="map" class="border shadow"></div>
+      <div v-if="!isMobileScreen" class="map border shadow">
+        <kakao-map
+          :centerLatLng="centerLatLng"
+          :trackMyPosition="isSeller"
+          @changeSellerPosition="changeSellerPosition"
+        ></kakao-map>
+      </div>
       <chat-box
         v-if="!isMobileScreen"
         @sendMessage="sendMessage"
         :message-list="messageList"
+        @changeSellerPosition="changeSellerPosition"
       ></chat-box>
       <div v-else>
-        <div v-if="!isChatMode" id="map" class="border shadow"></div>
+        <div v-if="!isChatMode" class="map border shadow">
+          <kakao-map
+            :centerLatLng="centerLatLng"
+            :trackMyPosition="isSeller"
+          ></kakao-map>
+        </div>
         <chat-box
           v-else
           @sendMessage="sendMessage"
@@ -76,6 +88,8 @@ import { OpenVidu, SignalOptions } from "openvidu-browser";
 import ChatBox from "@/components/meeting/one-on-one/ChatBox.vue";
 import { Message } from "@/types/MeetingChatType";
 import { isMobileScreen } from "@/use/useMediaQuery";
+import KakaoMap from "@/components/meeting/one-on-one/KakaoMap.vue";
+import { MapCenterLatLng } from "@/types/MapTypes";
 
 import { ElButton, ElIcon } from "element-plus";
 import {
@@ -86,6 +100,7 @@ import {
   ChatRound,
   LocationFilled,
 } from "@element-plus/icons-vue";
+import ResponseStatus from "@/api/responseStatus";
 
 export default {
   components: {
@@ -99,6 +114,7 @@ export default {
     VideoPause,
     ChatRound,
     LocationFilled,
+    KakaoMap,
   },
   setup() {
     //--------------------------화상 미팅방 정보
@@ -127,6 +143,10 @@ export default {
         if (index.seller === index.my) {
           isSeller.value = true;
           myVideo = sellerVideo;
+        }
+
+        if (response.status === ResponseStatus.Ok) {
+          setSession();
         }
       } catch (error) {
         alert("서버 오류로 실행할 수 없습니다\n잠시 후 다시 시도해 주세요.");
@@ -170,6 +190,12 @@ export default {
         });
       });
 
+      session.on(`signal:map`, event => {
+        const latlng: MapCenterLatLng = JSON.parse(event.data).message;
+        centerLatLng.x = latlng.x;
+        centerLatLng.y = latlng.y;
+      });
+
       await session.connect(token);
       publisher.value = ov.initPublisher(myVideo, {
         audioSource: undefined,
@@ -187,8 +213,25 @@ export default {
       index.meeting = computed(() => parseInt(route.params.id[0])).value;
 
       await getMeetingInfo(index.meeting);
-      setSession();
     });
+
+    //map
+    const centerLatLng = reactive({ x: 33.450701, y: 126.570667 });
+    //emit
+    function changeSellerPosition(coords: MapCenterLatLng) {
+      centerLatLng.x = coords.x;
+      centerLatLng.y = coords.y;
+
+      //판매자면 자신의 위치 정보를 signal로 보냄
+      if (isSeller.value) {
+        const signalOptions: SignalOptions = {
+          data: JSON.stringify({ coords }),
+          type: "map",
+          to: undefined,
+        };
+        session.signal(signalOptions);
+      }
+    }
 
     //--------------------------chat
     const messageList: Array<Message> = reactive([]);
@@ -263,12 +306,18 @@ export default {
       subscriber,
       messageList,
       sendMessage,
+      //지도
+      centerLatLng,
+      changeSellerPosition,
+      //미디어 컨트롤
       myMicMute,
       myVideoMute,
       isChatMode,
       muteMic,
       muteVideo,
+      //모바일
       toggleChatMode,
+      //퇴장
       onClickExit,
     };
   },
@@ -328,7 +377,7 @@ export default {
   background-color: #fafafa;
 }
 
-#map {
+.map {
   width: 28vw;
   height: 40vh;
 }
@@ -395,7 +444,7 @@ export default {
     align-self: center;
   }
 
-  #map {
+  .map {
     width: 90vw;
     height: 30vh;
     margin-bottom: 5vh;
