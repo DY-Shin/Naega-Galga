@@ -25,6 +25,7 @@ import javax.transaction.Transactional;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class ExplanationServiceImpl implements  ExplanationService{
@@ -132,6 +133,29 @@ public class ExplanationServiceImpl implements  ExplanationService{
 
         Explanation explanation = explanationRepository.findByMeetingAndReserveUser(meeting, requestUser);
         explanationRepository.delete(explanation);
+    }
+
+    @Transactional
+    @Override
+    public void deleteReservation(int meetingIndex) throws NoContentException, NotFoundUserException, NotMyContentsException, Exception {
+        User requestUser = userRepository.findByUserId(SecurityUtil.getLoginUsername()).orElseThrow(() -> new NotFoundUserException());
+        Meeting meeting = meetingRepository.findById(meetingIndex).orElseThrow(()-> new NoContentException());
+
+        int requestUerIndex = requestUser.getUserIndex();
+        int meetingOwnerIndex = meeting.getOwner().getUserIndex();
+
+        if(requestUerIndex != meetingOwnerIndex){
+            throw new NotMyContentsException();
+        }
+
+        //구매자들이 등록한 explanation 삭제
+        List<Explanation> explanationList = explanationRepository.findAllByMeeting(meeting);
+        for(Explanation explanation : explanationList){
+            explanationRepository.delete(explanation);
+        }
+
+        //meeting 삭제
+        meetingRepository.delete(meeting);
     }
 
     private String createOneOnManyUrl(int index){

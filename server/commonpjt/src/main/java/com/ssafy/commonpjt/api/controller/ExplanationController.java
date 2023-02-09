@@ -102,4 +102,26 @@ public class ExplanationController {
         }
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
+
+    @DeleteMapping("/{meetingIndex}")
+    public ResponseEntity<Void> deleteExplanation(@PathVariable int meetingIndex){
+        try{
+            explanationService.deleteReservation(meetingIndex);
+        }
+        catch(NotMyContentsException e){
+            return new ResponseEntity<Void>(HttpStatus.FORBIDDEN);
+        }
+        catch(NotFoundUserException e){
+            return new ResponseEntity<Void>(HttpStatus.FORBIDDEN);
+        }
+        catch(NoContentException e){
+            e.printStackTrace();
+            return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            return new ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<Void>(HttpStatus.OK);
+    }
 }

@@ -19,4 +19,7 @@ public interface ExplanationService {
 
     public void cancelReservation(int meetingIndex)
             throws NoContentException, NotFoundUserException, Exception;
+
+    public void deleteReservation(int meetingIndex)
+            throws NoContentException, NotFoundUserException, NotMyContentsException, Exception;
 }
