@@ -201,7 +201,8 @@ export default defineComponent({
 
       const moveToDetail = () => {
         // 상세보기 페이지 이동
-        router.push(`/product/${product.index}`);
+        console.log(product + "!!!!!!!!!!!!!!");
+        router.push(`/product/${product.productIndex}`);
       };
 
       let chatbtn = document.createElement("button");
@@ -210,6 +211,7 @@ export default defineComponent({
 
       chatbtn.onclick = function () {
         emit("chatUserIndex", product.sellerIndex);
+        emit("chatUserName", product.sellerName);
         emit("chatOpen", isOpen);
         isOpen.value = !isOpen.value;
       };
