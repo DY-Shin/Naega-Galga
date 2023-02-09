@@ -83,4 +83,23 @@ public class ExplanationController {
         }
         return new ResponseEntity<ExplanationInfoDTO>(info, HttpStatus.OK);
     }
+
+    @DeleteMapping("/cancel/{meetingIndex}")
+    public ResponseEntity<?> cancelReservation(@PathVariable int meetingIndex){
+        try{
+            explanationService.cancelReservation(meetingIndex);
+        }
+        catch(NotFoundUserException e){
+            return new ResponseEntity<Void>(HttpStatus.FORBIDDEN);
+        }
+        catch(NoContentException e){
+            e.printStackTrace();
+            return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            return new ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<Void>(HttpStatus.OK);
+    }
 }

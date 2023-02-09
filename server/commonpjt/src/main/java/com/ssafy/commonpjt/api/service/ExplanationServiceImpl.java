@@ -123,6 +123,17 @@ public class ExplanationServiceImpl implements  ExplanationService{
         }
         return dto;
     }
+
+    @Transactional
+    @Override
+    public void cancelReservation(int meetingIndex) throws NoContentException, NotFoundUserException, Exception {
+        User requestUser = userRepository.findByUserId(SecurityUtil.getLoginUsername()).orElseThrow(() -> new NotFoundUserException());
+        Meeting meeting = meetingRepository.findById(meetingIndex).orElseThrow(()-> new NoContentException());
+
+        Explanation explanation = explanationRepository.findByMeetingAndReserveUser(meeting, requestUser);
+        explanationRepository.delete(explanation);
+    }
+
     private String createOneOnManyUrl(int index){
         StringBuilder sb = new StringBuilder();
         sb.append(oneOnManyUrl);
