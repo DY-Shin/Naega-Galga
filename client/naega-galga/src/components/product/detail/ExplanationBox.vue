@@ -34,14 +34,14 @@
             type="primary"
             :icon="Plus"
             class="button-size"
-            @click="onClickCancelReserveExplanation"
+            @click="onClickReserveExplanation"
           />
           <el-button
             v-if="canDeleteReservation"
             type="danger"
             :icon="Minus"
             class="button-size"
-            @click="onClickReserveExplanation"
+            @click="onClickCancelReserveExplanation"
           />
         </div>
       </div>
@@ -59,7 +59,10 @@ import { ProductReservation } from "@/types/MeetingReservationType";
 import { Calendar, Minus, Plus } from "@element-plus/icons-vue";
 import { useStore } from "vuex";
 import ExplanationAddDialog from "@/components/product/detail/ExplanationAddDialog.vue";
-import { getExplanationInfo } from "@/api/explanationApi";
+import {
+  getExplanationInfo,
+  addExplanationReservation,
+} from "@/api/explanationApi";
 import ResponseStatus from "@/api/responseStatus";
 import { ElButton } from "element-plus";
 
@@ -157,8 +160,18 @@ export default {
     const onClickDeleteExplanation = () => {
       //
     };
-    const onClickReserveExplanation = () => {
-      //
+    const onClickReserveExplanation = async () => {
+      try {
+        const response = await addExplanationReservation(
+          meetingInfo.productIndex
+        );
+
+        if (response.status === ResponseStatus.Created) {
+          meetingInfo.buyerIndex = myIndex.value;
+        }
+      } catch (error) {
+        alert("요청을 실행할 수 없습니다");
+      }
     };
     const onClickCancelReserveExplanation = () => {
       //
