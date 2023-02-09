@@ -46,4 +46,21 @@ const getExplanationInfo = async (productIndex: number | undefined) => {
   return response;
 };
 
-export { addExplanation, addExplanationReservation, getExplanationInfo };
+const cancelReservation = async (meetingIndex: number | undefined) => {
+  const response = await axios.delete(
+    `/api/meetings/explanations/cancel/${meetingIndex}`,
+    {
+      headers: {
+        Authorization: `Bearer ${localStorageManager.getAccessToken()}`,
+      },
+    }
+  );
+  return response;
+};
+
+export {
+  addExplanation,
+  addExplanationReservation,
+  getExplanationInfo,
+  cancelReservation,
+};

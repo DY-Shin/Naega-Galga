@@ -29,7 +29,7 @@
           />
           <!-- 내가 등록한 매물 아님 -->
           <el-button
-            v-if="canAddReservation"
+            v-if="meetingInfo.meetingIndex > 0 && canAddReservation"
             circle
             type="primary"
             :icon="Plus"
@@ -37,7 +37,7 @@
             @click="onClickReserveExplanation"
           />
           <el-button
-            v-if="canDeleteReservation"
+            v-if="meetingInfo.meetingIndex > 0 && canDeleteReservation"
             type="danger"
             :icon="Minus"
             class="button-size"
@@ -62,6 +62,7 @@ import ExplanationAddDialog from "@/components/product/detail/ExplanationAddDial
 import {
   getExplanationInfo,
   addExplanationReservation,
+  cancelReservation,
 } from "@/api/explanationApi";
 import ResponseStatus from "@/api/responseStatus";
 import { ElButton } from "element-plus";
@@ -173,8 +174,11 @@ export default {
         alert("요청을 실행할 수 없습니다");
       }
     };
-    const onClickCancelReserveExplanation = () => {
-      //
+    const onClickCancelReserveExplanation = async () => {
+      const response = await cancelReservation(meetingInfo.meetingIndex);
+      if (response.status === ResponseStatus.Ok) {
+        meetingInfo.buyerIndex = -1;
+      }
     };
 
     return {
