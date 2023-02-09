@@ -1,27 +1,18 @@
 <template>
   <div class="common-layout">
     <el-container>
-      <main-side
-        @addr_idx="sendIdx"
-        @productClick="sendClick"
-        @productList="sendList"
-      ></main-side>
+      <main-side @addr_idx="sendIdx" @productList="sendList"></main-side>
       <el-container>
         <ka-kao-map
           :getIdx="idxProxy"
           :getList="listProxy"
-          :getClick="clickProxy"
           @chatUserIndex="sendUserIndex"
           @chatUserName="sendUserName"
           @chatOpen="sendChatOpen"
         ></ka-kao-map>
       </el-container>
     </el-container>
-    <chat-window
-      :getChatUserIndex="chatUserIndexProxy"
-      :getChatUserName="chatUserNameProxy"
-      :getChatOpen="chatOpenProxy"
-    ></chat-window>
+    <chat-window></chat-window>
   </div>
 </template>
 
@@ -42,11 +33,6 @@ export default defineComponent({
     const sendIdx = (sendIdx: number) => {
       idxProxy.value = sendIdx;
     };
-    let clickProxy = ref(false);
-    const sendClick = () => {
-      clickProxy.value = !clickProxy.value;
-    };
-
     let listProxy = ref([]);
     const sendList = (list: []) => {
       listProxy.value.splice(0);
@@ -77,8 +63,6 @@ export default defineComponent({
       sendUserIndex,
       sendChatOpen,
       chatOpenProxy,
-      sendClick,
-      clickProxy,
       chatUserIndexProxy,
       sendUserName,
       chatUserNameProxy,
