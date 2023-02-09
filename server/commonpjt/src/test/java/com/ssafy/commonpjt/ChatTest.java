@@ -39,6 +39,7 @@ class ChatTest {
         for(ChatMessage message : messageList) {
 //            "Sender : "+message.getSender().getName()+
             System.out.println("SENDER : " + message.getSender().getUserIndex() + " MESSAGE : "+ message.getMessage() + " TIME : " + new SimpleDateFormat("HH:mm:ss").format(message.getCreatedAt()));
+            System.out.println("gitignore TEST");
         }
     }
 }
