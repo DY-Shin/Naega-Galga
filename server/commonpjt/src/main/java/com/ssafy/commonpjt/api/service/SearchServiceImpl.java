@@ -52,12 +52,10 @@ public class SearchServiceImpl implements SearchService{
                         .build()
                 )
                 .header("Authorization", "KakaoAK "+restApiKey)
-                .exchangeToMono(response -> {
-                    return response.bodyToMono(String.class);
-                });
+                .exchangeToMono(response -> response.bodyToMono(String.class));
 
         JSONObject addressObject = new JSONObject(mono.block());
-        List<KakaoAddressDTO> addressList = new ArrayList<KakaoAddressDTO>();
+        List<KakaoAddressDTO> addressList = new ArrayList<>();
         if(addressObject.has("errorType")) {
             return addressList;
         }
@@ -96,7 +94,7 @@ public class SearchServiceImpl implements SearchService{
             for(Integer idx : buildings) {
                 List<Product> product = productRepository.productFetchJoin(idx);
                 for(Product productInfo : product) {
-                    searchResult.add(SearchProductResponseDTO.toDTO(productInfo, meetingRepository.countByProduct(productInfo) != 0));
+                    searchResult.add(SearchProductResponseDTO.toDTO(productInfo, meetingRepository.existsByProduct(productInfo)));
                 }
             }
         }

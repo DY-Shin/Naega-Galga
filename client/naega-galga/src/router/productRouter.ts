@@ -1,6 +1,6 @@
 export default {
   path: "/product",
-  component: import("@/views/ProductView.vue"),
+  component: () => import("@/views/ProductView.vue"),
   children: [
     {
       path: ":id",

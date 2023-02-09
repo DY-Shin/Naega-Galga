@@ -1,4 +1,4 @@
-package com.ssafy.commonpjt.api.dto.chatDTO;
+package com.ssafy.commonpjt.api.dto.reserveDTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -6,14 +6,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
-
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class MessageListResponseDTO {
-    private int chatRoomIndex;
-    private List<MessageDTO> messageList;
+public class ReserveRequestDTO {
+    private int userIndex;
+    private int opIndex;
+    private String date;
 }

@@ -12,12 +12,14 @@
 <script lang="ts">
 import { defineComponent, reactive } from "vue";
 import WishListItem from "./WishListItem.vue";
+import { ElRow } from "element-plus";
 // import apiTokenInstance from "@/api/apiTokenInstance";
 
 export default defineComponent({
   name: "WishList",
   components: {
     WishListItem,
+    ElRow,
   },
   setup() {
     // const getProduct = () => {
@@ -74,4 +76,5 @@ export default defineComponent({
 });
 </script>
 
+<style></style>
 <style></style>

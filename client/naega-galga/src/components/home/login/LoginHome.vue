@@ -12,12 +12,14 @@
           :getList="listProxy"
           :getClick="clickProxy"
           @chatUserIndex="sendUserIndex"
+          @chatUserName="sendUserName"
           @chatOpen="sendChatOpen"
         ></ka-kao-map>
       </el-container>
     </el-container>
     <chat-window
       :getChatUserIndex="chatUserIndexProxy"
+      :getChatUserName="chatUserNameProxy"
       :getChatOpen="chatOpenProxy"
     ></chat-window>
   </div>
@@ -29,9 +31,11 @@ import MainSide from "@/components/home/login/MainSide.vue";
 import KaKaoMap from "@/components/home/login/KaKaoMap.vue";
 import ChatWindow from "@/components/common/ChatWindow.vue";
 
+import { ElContainer } from "element-plus";
+
 export default defineComponent({
   name: "addressInfo",
-  components: { MainSide, KaKaoMap, ChatWindow },
+  components: { MainSide, KaKaoMap, ChatWindow, ElContainer },
 
   setup() {
     const idxProxy = ref();
@@ -54,6 +58,12 @@ export default defineComponent({
     const sendUserIndex = (product: number) => {
       chatUserIndexProxy.value = product;
     };
+
+    const chatUserNameProxy = ref();
+    const sendUserName = (product: string) => {
+      chatUserNameProxy.value = product;
+    };
+
     const chatOpenProxy = ref(false);
     const sendChatOpen = (isOpen: boolean) => {
       chatOpenProxy.value = isOpen;
@@ -70,6 +80,8 @@ export default defineComponent({
       sendClick,
       clickProxy,
       chatUserIndexProxy,
+      sendUserName,
+      chatUserNameProxy,
     };
   },
 });

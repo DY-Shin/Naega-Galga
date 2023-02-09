@@ -3,14 +3,13 @@
     <el-carousel
       :interval="5000"
       trigger="click"
-      autoplay="false"
       type="card"
       class="carousel-width"
     >
       <el-carousel-item
-        v-for="image in imageList"
-        :key="image"
+        v-for="(image, index) in imageList"
         initial-index="0"
+        :key="index"
       >
         <el-image
           class="justify-center full-width"
@@ -24,12 +23,18 @@
 
 <script lang="ts">
 import { PropType, computed, toRef } from "vue";
+import { ElCarousel, ElCarouselItem, ElImage } from "element-plus";
 
 export default {
   props: {
     imagePaths: {
       type: Array as PropType<string[]>,
     },
+  },
+  components: {
+    ElCarousel,
+    ElCarouselItem,
+    ElImage,
   },
   setup(props) {
     interface ImageData {
