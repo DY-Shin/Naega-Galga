@@ -16,8 +16,9 @@
 </style>
 
 <script lang="ts">
-import { defineComponent, onMounted, watch, ref } from "@vue/runtime-core";
+import { defineComponent, onMounted, watch } from "@vue/runtime-core";
 import { useRouter } from "vue-router";
+import { useStore } from "vuex";
 import { ElContainer, ElMain } from "element-plus";
 
 declare global {
@@ -38,9 +39,10 @@ export default defineComponent({
     ElMain,
   },
 
-  setup(props, context) {
-    const { emit } = context;
+  setup(props) {
     const router = useRouter();
+    const store = useStore();
+
     watch(
       () => props.getClick,
       () => {
@@ -149,7 +151,6 @@ export default defineComponent({
       // 모든 마커 범위 포함하도록 지도 범위 재설정
       window.map.setBounds(bounds);
     };
-    const isOpen = ref(false);
 
     const setOverlay = (coords, marker, product) => {
       let customOverlay = new window.kakao.maps.CustomOverlay({
@@ -201,7 +202,6 @@ export default defineComponent({
 
       const moveToDetail = () => {
         // 상세보기 페이지 이동
-        console.log(product + "!!!!!!!!!!!!!!");
         router.push(`/product/${product.productIndex}`);
       };
 
@@ -210,10 +210,18 @@ export default defineComponent({
       chatbtn.appendChild(document.createTextNode("문의하기"));
 
       chatbtn.onclick = function () {
-        emit("chatUserIndex", product.sellerIndex);
-        emit("chatUserName", product.sellerName);
-        emit("chatOpen", isOpen);
-        isOpen.value = !isOpen.value;
+        // emit("chatUserIndex", product.sellerIndex);
+        // emit("chatUserName", product.sellerName);
+        // emit("chatOpen", isOpen);
+
+        let productInfo = {
+          userIndex: product.sellerIndex,
+          userName: product.sellerName,
+        };
+
+        store.commit("chatStore/GET_PRODUCT_INFO", productInfo);
+        store.commit("chatStore/CHANGE_CHATROOM_STATUS", true);
+        store.commit("chatStore/CHANGE_GET_CHAT_CONTENT", true);
       };
       bottombox.appendChild(chatbtn);
 
