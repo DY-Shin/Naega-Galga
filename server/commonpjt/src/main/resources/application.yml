@@ -3,14 +3,14 @@ server:
 #  address: localhost
 #  port: 8888
   # AWS 서버 작업 시 (port 만 사용)
-  port: 8085
-  servlet:
-    context-path: /
+ port: 8085
+ servlet:
+  context-path: /
 
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://i8d106.p.ssafy.io:3306/naegagalga?serverTimezone=UTC&useUnicode=true&characterEncoding=utf8
+    url: jdbc:mysql://i8d106.p.ssafy.io:3306/naegagalga?serverTimezone=Asia/Seoul&useUnicode=true&characterEncoding=utf8
     username: ssafyD106
     password: ssafycommonD106
   #    url: jdbc:mysql://stg-yswa-kr-practice-db-master.mariadb.database.azure.com:3306/S08P12D106?serverTimezone=UTC&useUnicode=true&characterEncoding=utf8

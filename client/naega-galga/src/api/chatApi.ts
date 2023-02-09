@@ -37,12 +37,11 @@ async function checkReserve(userIndex: number, opIndex: number, date: string) {
     },
     {
       headers: {
-        "Content-Type": "multipart/form-data",
         Authorization: `Bearer ${localStorageManager.getAccessToken()}`,
       },
     }
   );
-  return response.status;
+  return response;
 }
 
 export { getChatRooms, getChatContent, checkReserve };

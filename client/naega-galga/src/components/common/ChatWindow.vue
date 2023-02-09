@@ -25,7 +25,7 @@
   </el-scrollbar>
   <!-- --------------chat room start-------------- -->
   <div class="chat-room" v-show="isOpenChat">
-    <div class="send-box box">{{ nowOpIndex }}</div>
+    <div class="send-box box"></div>
     <el-icon
       id="close-btn"
       @click="CloseChat"
@@ -38,8 +38,11 @@
         top: -30px;
         z-index: 2021;
       "
-    ></el-icon>
-    <div id="chatTitle" style="font-size: 20px; margin: 10px 15px 0">{{}}</div>
+      ><CircleCloseFilled
+    /></el-icon>
+    <div id="chatTitle" style="font-size: 20px; margin: 10px 15px 0">
+      {{ nowOpName }}
+    </div>
     <div>
       <div class="chat-content">
         <div
@@ -150,6 +153,7 @@ import {
 export default defineComponent({
   props: {
     getChatUserIndex: { type: Number },
+    getChatUserName: { type: String },
     getChatOpen: { type: Boolean },
   },
   components: {
@@ -166,6 +170,7 @@ export default defineComponent({
     const store = useStore();
     const userIndex = computed(() => store.getters["userStore/userIndex"]);
     const nowOpIndex = ref(); // 현재 채팅의 상대 인덱스
+    const nowOpName = ref(); // 현재 채팅의 상대 이름
     const nowRoomIndex = ref(); // 현재 채팅의 상대 인덱스
     const isOpenList = ref(false); // 채팅 목록 열림 여부
     const isOpenChat = ref(false); // 채팅방 열림 여부
@@ -176,8 +181,9 @@ export default defineComponent({
     watch(
       () => props.getChatOpen,
       () => {
-        console.log(props.getChatUserIndex);
+        console.log(props.getChatUserIndex + " " + props.getChatUserName);
         nowOpIndex.value = props.getChatUserIndex;
+        nowOpName.value = props.getChatUserName;
         openChat();
       },
       { deep: true }
@@ -219,22 +225,23 @@ export default defineComponent({
     const setOpIndex = (index: number) => {
       // 목록에서 열 때
       nowOpIndex.value = chatRooms[index].opIndex; // 현재 채팅 상대 업데이트해주고
+      nowOpName.value = chatRooms[index].opName;
       openChat(); // 채팅방 열기
     };
 
     const openChat = async () => {
       // 채팅방 컨텐츠 요청
+      if (nowOpIndex.value == userIndex.value) {
+        return;
+      }
       chatContents.splice(0); // 채팅방 내용 초기화(전에 열었던 채팅 목록 남아있음)
       connect();
       isOpenChat.value = true;
 
       const list = await getChatContent(nowOpIndex.value);
       nowRoomIndex.value = list.data.chatRoomIndex;
-      console.log(
-        userIndex.value + " " + nowOpIndex.value + " " + nowRoomIndex.value
-      );
+
       list.data.messageList.forEach(item => chatContents.push(item));
-      console.log(chatContents[0]);
       isOpenChat.value = true;
       isOpenChatRooms.value = false;
     };
@@ -270,7 +277,6 @@ export default defineComponent({
               console.log("구독으로 받은 메시지 : ", res.body);
               let str = JSON.parse(res.body);
               if (str.message.sender != userIndex.value) {
-                console.log("push !!!!!!!!!!!");
                 chatContents.push(str.message);
               }
             }
@@ -292,11 +298,11 @@ export default defineComponent({
       if (inputMsg.value == "") {
         return;
       }
-      send(inputMsg.value, "message");
+      send(inputMsg.value);
       inputMsg.value = ""; // 입력 초기화
     };
 
-    const send = (inputMsg: string, type: string) => {
+    const send = (inputMsg: string) => {
       let today = new Date();
       let str =
         today.getFullYear() +
@@ -324,7 +330,7 @@ export default defineComponent({
           },
         };
 
-        socket.stompClient.send(`/pub/chat/${type}`, JSON.stringify(msg), {});
+        socket.stompClient.send(`/pub/chat/message`, JSON.stringify(msg), {});
 
         chatContents.push({
           //화면에 띄울 컨텐츠 배열에 넣음
@@ -371,24 +377,22 @@ export default defineComponent({
         alert("시간을 입력해주세요");
         return;
       }
-      const data = new Date( // Date 형식으로 보냄
-        year.value,
-        month.value,
-        date.value,
-        hour.value,
-        minute.value
-      );
+
+      if (ampm.value == "오전" && hour.value == 12) {
+        hour.value = 0;
+      }
+
       //"2023-02-01 12:00:00"
       const str =
-        data.getFullYear() +
+        year.value +
         "-" +
-        data.getMonth().toString(10).padStart(2, "0") +
+        month.value.toString(10).padStart(2, "0") +
         "-" +
-        data.getDate().toString(10).padStart(2, "0") +
+        date.value.toString(10).padStart(2, "0") +
         " " +
-        data.getHours().toString(10).padStart(2, "0") +
+        hour.value.toString(10).padStart(2, "0") +
         ":" +
-        data.getMinutes().toString(10).padStart(2, "0");
+        minute.value.toString(10).padStart(2, "0");
 
       let isPossible = await checkReserve(
         userIndex.value,
@@ -396,8 +400,8 @@ export default defineComponent({
         str
       );
 
-      if (isPossible) {
-        send(str + "예약이 완료 되었습니다.", "reserve");
+      if (isPossible.data) {
+        send(str + "\u00a0 예약이 완료 되었습니다.");
         isOpenReserve.value = false;
       } else {
         alert("다른 시간을 선택해주세요.");
@@ -441,6 +445,7 @@ export default defineComponent({
       userIndex,
       nowOpIndex,
       nowRoomIndex,
+      nowOpName,
     };
   },
 });
