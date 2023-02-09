@@ -63,6 +63,7 @@ import {
   getExplanationInfo,
   addExplanationReservation,
   cancelReservation,
+  deleteExplanation,
 } from "@/api/explanationApi";
 import ResponseStatus from "@/api/responseStatus";
 import { ElButton } from "element-plus";
@@ -158,8 +159,15 @@ export default {
     const closeDialog = () => {
       dialogShow.value = false;
     };
-    const onClickDeleteExplanation = () => {
-      //
+    const onClickDeleteExplanation = async () => {
+      try {
+        const response = await deleteExplanation(meetingInfo.meetingIndex);
+        if (response.status === ResponseStatus.Ok) {
+          meetingInfo.meetingIndex = -1;
+        }
+      } catch (error) {
+        alert("요청을 처리할 수 없습니다");
+      }
     };
     const onClickReserveExplanation = async () => {
       try {
