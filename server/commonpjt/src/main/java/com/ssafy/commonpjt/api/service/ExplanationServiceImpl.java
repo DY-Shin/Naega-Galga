@@ -3,10 +3,8 @@ package com.ssafy.commonpjt.api.service;
 import com.ssafy.commonpjt.api.dto.explanationDTO.ExplanationDateDTO;
 import com.ssafy.commonpjt.api.dto.explanationDTO.ExplanationInfoDTO;
 import com.ssafy.commonpjt.api.dto.explanationDTO.ReserveExplanationDTO;
-import com.ssafy.commonpjt.common.exception.DuplicatedException;
-import com.ssafy.commonpjt.common.exception.NoContentException;
-import com.ssafy.commonpjt.common.exception.NotFoundUserException;
-import com.ssafy.commonpjt.common.exception.NotMyContentsException;
+import com.ssafy.commonpjt.common.exception.CustomException;
+import com.ssafy.commonpjt.common.exception.ErrorCode;
 import com.ssafy.commonpjt.common.security.SecurityUtil;
 import com.ssafy.commonpjt.db.entity.Explanation;
 import com.ssafy.commonpjt.db.entity.Meeting;
@@ -45,14 +43,15 @@ public class ExplanationServiceImpl implements  ExplanationService{
     String oneOnManyUrl = "/meeting/one-on-many/";
     @Override
     @Transactional
-    public void addProductExplanation(int productIndex, ExplanationDateDTO explanationDate) throws NotMyContentsException, NotFoundUserException, NoContentException, DuplicatedException, Exception {
-        User user = userRepository.findByUserId(SecurityUtil.getLoginUsername()).orElseThrow(() -> new NotFoundUserException());
-        Product product = productRepository.findById(productIndex).orElseThrow(()-> new NoContentException());
+    public void addProductExplanation(int productIndex, ExplanationDateDTO explanationDate) throws Exception {
+        User user = userRepository.findByUserId(SecurityUtil.getLoginUsername()).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
+        Product product = productRepository.findById(productIndex).orElseThrow(()-> new CustomException(ErrorCode.NO_CONTENT));
 
         Meeting meeting = meetingRepository.findByProductAndOwner(product, user);
 
-        if(meeting !=null)
-            throw new DuplicatedException();
+        if(meeting !=null) {
+            throw new CustomException(ErrorCode.DUPLICATED_VALUE);
+        }
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.sss");
         log.info("date : " + explanationDate.getDateString());
@@ -64,10 +63,14 @@ public class ExplanationServiceImpl implements  ExplanationService{
 
         //본인이 등록한 매물이 아니라면
         if(userIndex != productSellerIndex){
-            throw new NotMyContentsException();
+            throw new CustomException(ErrorCode.NOT_MY_CONTENTS);
         }
 
-        meeting = new Meeting().builder().owner(user).product(product).reserveAt(timestamp).build();
+        meeting = Meeting.builder()
+                .owner(user).
+                product(product).
+                reserveAt(timestamp)
+                .build();
         meetingRepository.save(meeting);
 
         meeting = meetingRepository.findByProductAndOwner(product, user);
@@ -79,22 +82,22 @@ public class ExplanationServiceImpl implements  ExplanationService{
 
     @Transactional
     @Override
-    public void reserveExplanation(ReserveExplanationDTO reserveExplanationDTO)
-            throws NotFoundUserException, NoContentException, DuplicatedException, Exception {
+    public void reserveExplanation(ReserveExplanationDTO reserveExplanationDTO) throws Exception {
         //구매자 정보
         User user = userRepository.findByUserId(SecurityUtil.getLoginUsername())
-                                .orElseThrow(() -> new NotFoundUserException());
+                                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
         int productIndex = reserveExplanationDTO.getProductIndex();
         log.info("meeting index" + productIndex);
 
         Product product = productRepository.findById(productIndex)
-                                .orElseThrow(()-> new NoContentException());
+                                .orElseThrow(()-> new CustomException(ErrorCode.NO_CONTENT));
         Meeting meeting = meetingRepository.findByProduct(product);
 
         //이미 등록된 예약이라면
         Explanation reservation = explanationRepository.findByMeetingAndReserveUser(meeting, user);
-        if(reservation!=null)
-            throw new DuplicatedException();
+        if(reservation!=null) {
+            throw new CustomException(ErrorCode.DUPLICATED_VALUE);
+        }
 
         Explanation explanation = Explanation.builder()
                 .meeting(meeting)
@@ -103,11 +106,10 @@ public class ExplanationServiceImpl implements  ExplanationService{
         explanationRepository.save(explanation);
     }
 
-    public ExplanationInfoDTO getExplanationInfo(int productIndex)
-            throws NoContentException, NotFoundUserException, Exception{
-        Product product = productRepository.findById(productIndex).orElseThrow(()-> new NoContentException());
+    public ExplanationInfoDTO getExplanationInfo(int productIndex) throws Exception {
+        Product product = productRepository.findById(productIndex).orElseThrow(()-> new CustomException(ErrorCode.NO_CONTENT));
         Meeting meeting = meetingRepository.findByProduct(product);
-        User requestUser = userRepository.findByUserId(SecurityUtil.getLoginUsername()).orElseThrow(() -> new NotFoundUserException());
+        User requestUser = userRepository.findByUserId(SecurityUtil.getLoginUsername()).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
         User productSeller = product.getProductSeller();
 
         ExplanationInfoDTO dto = new ExplanationInfoDTO();
@@ -127,9 +129,9 @@ public class ExplanationServiceImpl implements  ExplanationService{
 
     @Transactional
     @Override
-    public void cancelReservation(int meetingIndex) throws NoContentException, NotFoundUserException, Exception {
-        User requestUser = userRepository.findByUserId(SecurityUtil.getLoginUsername()).orElseThrow(() -> new NotFoundUserException());
-        Meeting meeting = meetingRepository.findById(meetingIndex).orElseThrow(()-> new NoContentException());
+    public void cancelReservation(int meetingIndex) throws Exception {
+        User requestUser = userRepository.findByUserId(SecurityUtil.getLoginUsername()).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
+        Meeting meeting = meetingRepository.findById(meetingIndex).orElseThrow(()-> new CustomException(ErrorCode.NO_CONTENT));
 
         Explanation explanation = explanationRepository.findByMeetingAndReserveUser(meeting, requestUser);
         explanationRepository.delete(explanation);
@@ -137,15 +139,15 @@ public class ExplanationServiceImpl implements  ExplanationService{
 
     @Transactional
     @Override
-    public void deleteReservation(int meetingIndex) throws NoContentException, NotFoundUserException, NotMyContentsException, Exception {
-        User requestUser = userRepository.findByUserId(SecurityUtil.getLoginUsername()).orElseThrow(() -> new NotFoundUserException());
-        Meeting meeting = meetingRepository.findById(meetingIndex).orElseThrow(()-> new NoContentException());
+    public void deleteReservation(int meetingIndex) throws Exception {
+        User requestUser = userRepository.findByUserId(SecurityUtil.getLoginUsername()).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
+        Meeting meeting = meetingRepository.findById(meetingIndex).orElseThrow(()-> new CustomException(ErrorCode.NO_CONTENT));
 
         int requestUerIndex = requestUser.getUserIndex();
         int meetingOwnerIndex = meeting.getOwner().getUserIndex();
 
         if(requestUerIndex != meetingOwnerIndex){
-            throw new NotMyContentsException();
+            throw new CustomException(ErrorCode.NOT_MY_CONTENTS);
         }
 
         //구매자들이 등록한 explanation 삭제
