@@ -19,7 +19,6 @@
 import { defineComponent, onMounted, watch } from "@vue/runtime-core";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
-import { ElContainer, ElMain } from "element-plus";
 
 declare global {
   interface Window {
@@ -33,10 +32,6 @@ export default defineComponent({
     getIdx: { type: Number },
     getList: { type: Array },
     getClick: { type: Boolean },
-  },
-  components: {
-    ElContainer,
-    ElMain,
   },
 
   setup(props) {
@@ -58,10 +53,11 @@ export default defineComponent({
     watch(
       () => props.getList,
       () => {
-        displayMarker(window.map, props.getList);
         for (let i = 0; i < overlays.length; i++) {
           overlays[i].setMap(null);
         }
+
+        displayMarker(window.map, props.getList);
       },
       { deep: true }
     );
@@ -99,7 +95,7 @@ export default defineComponent({
 
       if (markers.length > 0) {
         for (let i = 0; i < markers.length; i++) {
-          // markers[i].setMap(null);
+          markers[i].setMap(null);
         }
       }
       let num = 0;
@@ -133,7 +129,6 @@ export default defineComponent({
                 image: markerImage,
               });
               setOverlay(coords, marker, markerList[i]); // 상세 정보 창 만들어주고
-
               marker.setMap(map);
               markers[num] = marker;
 
@@ -250,6 +245,8 @@ export default defineComponent({
       });
       overlays.push(customOverlay);
       customOverlay.setContent(content);
+
+      console.log(overlays.length);
     };
 
     const changeCenter = addr_idx => {

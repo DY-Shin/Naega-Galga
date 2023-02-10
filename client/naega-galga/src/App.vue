@@ -17,6 +17,7 @@ export default {
   setup() {
     const store = useStore();
     const isLog = computed(() => store.getters["userStore/isLogin"]);
+    store.commit("chatStore/CHANGE_CHATROOM_STATUS", false);
     return { isLog };
   },
 };
@@ -24,6 +25,9 @@ export default {
 
 <style>
 @import "./assets/css/reset.css";
+@import "./assets/css/font-family.css";
+@import "./assets/css/color.css";
+
 html {
   scroll-behavior: smooth;
 }
