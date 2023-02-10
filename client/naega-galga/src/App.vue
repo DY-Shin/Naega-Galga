@@ -23,6 +23,7 @@ export default {
 </script>
 
 <style>
+@import "./assets/css/reset.css";
 html {
   scroll-behavior: smooth;
 }
