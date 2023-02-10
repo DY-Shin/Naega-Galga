@@ -9,11 +9,20 @@
 
   <div class="container-2">
     <div style="text-align: center">
-      <img
-        src="https://cdn.pixabay.com/photo/2016/11/22/19/11/brick-wall-1850095_960_720.jpg"
-        alt="img"
-        vertical:middle
-      />
+      <video
+        loop
+        autoplay
+        muted
+        width="350"
+        style="
+          vertical-align: middle;
+          box-shadow: rgba(0, 0, 0, 0.2) 0px 5px 15px;
+          border-radius: 5px;
+        "
+      >
+        <source src="@/assets/image/main-content/main-1.mp4" type="video/mp4" />
+      </video>
+
       <div class="content" style="display: inline-block">
         <div class="main-text-right">온라인으로 집을 구경하세요.</div>
         <div class="sub-text-right">
@@ -31,29 +40,47 @@
           매물 정보를 볼 수 있어요.
         </div>
       </div>
-      <img
-        src="https://cdn.pixabay.com/photo/2016/11/22/19/11/brick-wall-1850095_960_720.jpg"
-        alt="img"
-        vertical:middle
-        width="500"
-        height="350"
-      />
+      <video
+        loop
+        autoplay
+        muted
+        width="550"
+        style="
+          vertical-align: middle;
+          box-shadow: rgba(0, 0, 0, 0.2) 0px 5px 15px;
+          border-radius: 5px;
+        "
+      >
+        <source src="@/assets/image/main-content/main-2.mp4" type="video/mp4" />
+      </video>
     </div>
   </div>
 
   <div class="container-4">
     <div style="text-align: center">
-      <img
+      <!-- <img
         src="https://cdn.pixabay.com/photo/2016/11/22/19/11/brick-wall-1850095_960_720.jpg"
         alt="img"
         width="450"
         height="600"
         vertical:middle
-      />
+      /> -->
+      <!-- <video
+        loop
+        autoplay
+        width="550"
+        style="
+          vertical-align: middle;
+          box-shadow: rgba(0, 0, 0, 0.2) 0px 5px 15px;
+        "
+      >
+        <source src="@/assets/image/main-content/main-3.mp4" type="video/mp4" />
+      </video> -->
+
       <div class="content" style="display: inline-block">
         <div class="main-text-right">판매자에게 문의하세요.</div>
         <div class="sub-text-right">
-          판매자는 구매자의 관심 목록을 <br />미리 보고 준비할 수 있어요.
+          일대일 채팅을 통해 <br />화상 미팅을 예약할 수 있어요.
         </div>
       </div>
     </div>
@@ -142,5 +169,8 @@ img {
 .content div {
   /* margin-left: 100px; */
   padding: 20px 0;
+}
+.media {
+  box-shadow: rgba(0, 0, 0, 0.2) 0px 5px 15px;
 }
 </style>

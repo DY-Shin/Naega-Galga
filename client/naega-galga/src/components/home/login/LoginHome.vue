@@ -22,11 +22,9 @@ import MainSide from "@/components/home/login/MainSide.vue";
 import KaKaoMap from "@/components/home/login/KaKaoMap.vue";
 import ChatWindow from "@/components/common/ChatWindow.vue";
 
-import { ElContainer } from "element-plus";
-
 export default defineComponent({
   name: "addressInfo",
-  components: { MainSide, KaKaoMap, ChatWindow, ElContainer },
+  components: { MainSide, KaKaoMap, ChatWindow },
 
   setup() {
     const idxProxy = ref();
