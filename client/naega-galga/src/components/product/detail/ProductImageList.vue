@@ -23,18 +23,12 @@
 
 <script lang="ts">
 import { PropType, computed, toRef } from "vue";
-import { ElCarousel, ElCarouselItem, ElImage } from "element-plus";
 
 export default {
   props: {
     imagePaths: {
       type: Array as PropType<string[]>,
     },
-  },
-  components: {
-    ElCarousel,
-    ElCarouselItem,
-    ElImage,
   },
   setup(props) {
     interface ImageData {
