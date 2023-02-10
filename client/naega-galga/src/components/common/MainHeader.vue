@@ -1,6 +1,6 @@
 <template>
   <div id="nav" v-if="isHeaderShow">
-    <router-link to="/" id="title">내가갈가[家]</router-link>
+    <a @click="redirect" id="title">내가갈가[家]</a>
     <div class="home-btn" v-if="isLog == false">
       <!-- 로그인 안 했을 때 -->
       <el-button
@@ -100,21 +100,10 @@ import ResponseStatus from "@/api/responseStatus";
 
 import { UserFilled } from "@element-plus/icons-vue";
 
-import {
-  ElDropdown,
-  ElDropdownMenu,
-  ElDropdownItem,
-  ElIcon,
-  ElButton,
-} from "element-plus";
+import {} from "element-plus";
 
 export default defineComponent({
   components: {
-    ElDropdown,
-    ElDropdownMenu,
-    ElDropdownItem,
-    ElIcon,
-    ElButton,
     UserFilled,
   },
   setup() {
@@ -129,7 +118,10 @@ export default defineComponent({
     // isLog.value = computed(() => store.getters["userStore/isLogin"]).value;
     // console.log(isLog.value);
     // console.log(isLog.value);
-
+    const redirect = () => {
+      store.commit("chatStore/CHANGE_CHATROOM_STATUS", false);
+      router.push("/");
+    };
     const OpenMenu = () => {
       isMenu.value = true;
     };
@@ -172,6 +164,7 @@ export default defineComponent({
       close,
       Logout,
       changeEmpty,
+      redirect,
     };
   },
 
@@ -264,6 +257,7 @@ export default defineComponent({
 }
 
 #title {
+  cursor: pointer;
   white-space: nowrap;
   color: black;
   text-decoration: none;

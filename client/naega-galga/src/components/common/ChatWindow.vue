@@ -75,8 +75,12 @@
         @click="sendMessage"
       />
     </div>
-    <div id="clock-icon" @click="openReserve">
-      <img src="@/assets/image/icon-clock.png" width="30" />
+    <div id="clock-icon">
+      <img
+        src="@/assets/image/icon-clock.png"
+        @click="openReserve"
+        width="30"
+      />
     </div>
   </div>
   <!-- --------------chat room end-------------- -->
@@ -138,16 +142,6 @@ import { useStore } from "vuex";
 import Stomp from "webstomp-client";
 import SockJS from "sockjs-client";
 
-import {
-  ElSelect,
-  ElOption,
-  ElIcon,
-  ElButton,
-  ElCalendar,
-  ElScrollbar,
-  ElInput,
-} from "element-plus";
-
 export default defineComponent({
   props: {
     getChatUserIndex: { type: Number },
@@ -155,13 +149,6 @@ export default defineComponent({
     getChatOpen: { type: Boolean },
   },
   components: {
-    ElSelect,
-    ElOption,
-    ElIcon,
-    ElButton,
-    ElCalendar,
-    ElScrollbar,
-    ElInput,
     ChatDotRound,
     CircleCloseFilled,
   },
@@ -234,24 +221,26 @@ export default defineComponent({
       // 목록에서 열 때
       store.commit("chatStore/CHANGE_OP_INDEX", chatRooms[index].opIndex); // 현재 채팅 상대 업데이트해주고
       store.commit("chatStore/CHANGE_OP_NAME", chatRooms[index].opName);
+      console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
       openChat(); // 채팅방 열기
     };
 
     const openChat = async () => {
       // 채팅방 컨텐츠 요청
-      console.log("?!?!!?!??!?!?!?!?!?");
       if (nowOpIndex.value == userIndex.value) {
         return;
       }
+
       chatContents.splice(0); // 채팅방 내용 초기화(전에 열었던 채팅 목록 남아있음)
-      connect();
+
       store.commit("chatStore/CHANGE_CHATROOM_STATUS", true);
-      console.log(nowOpIndex.value + "!!!!!!!!!!!!!!!!!!!!!");
       const list = await getChatContent(nowOpIndex.value);
       store.commit("chatStore/CHANGE_CHATROOM_INDEX", list.data.chatRoomIndex);
 
       list.data.messageList.forEach(item => chatContents.push(item));
       isOpenChatRooms.value = false;
+
+      connect();
     };
 
     const CloseChat = () => {
@@ -263,6 +252,9 @@ export default defineComponent({
       ampm.value = "";
       hour.value = "";
       minute.value = "";
+      socket.stompClient.disconnect(function () {
+        console.log("끊겠음");
+      });
     };
 
     // ------------------------------------채팅 end------------------------------------
@@ -270,14 +262,21 @@ export default defineComponent({
     let serverURL;
     let socket;
 
+    let socketConnectedIdx = -1;
+
     const connect = () => {
+      if (socketConnectedIdx == nowOpIndex.value) {
+        return;
+      }
+      console.log(`소켓 연결을 시도 -> 서버 주소: ${serverURL}`);
       serverURL = `${process.env.VUE_APP_API_BASE_URL}stomp`;
       socket = new SockJS(serverURL);
       socket.stompClient = Stomp.over(socket);
-      console.log(`소켓 연결을 시도 -> 서버 주소: ${serverURL}`);
+
       socket.stompClient.connect(
         {},
         frame => {
+          socketConnectedIdx = nowOpIndex.value;
           socket.connected = true;
           console.log("소켓 연결 성공 : ", frame);
           socket.stompClient.subscribe(
@@ -285,9 +284,10 @@ export default defineComponent({
             res => {
               console.log("구독으로 받은 메시지 : ", res.body);
               let str = JSON.parse(res.body);
-              if (str.message.sender != userIndex.value) {
-                chatContents.push(str.message);
-              }
+              console.log(str.message.sender + " " + userIndex.value);
+              // if (str.message.sender !== userIndex.value) {
+              chatContents.push(str.message);
+              // }
             }
           );
         },
@@ -341,15 +341,15 @@ export default defineComponent({
 
         socket.stompClient.send(`/pub/chat/message`, JSON.stringify(msg), {});
 
-        chatContents.push({
-          //화면에 띄울 컨텐츠 배열에 넣음
-          sender: userIndex.value,
-          message: inputMsg,
-          createdAt:
-            today.getHours().toString().padStart(2, "0") +
-            ":" +
-            today.getMinutes().toString().padStart(2, "0"),
-        });
+        // chatContents.push({
+        //   //화면에 띄울 컨텐츠 배열에 넣음
+        //   sender: userIndex.value,
+        //   message: inputMsg,
+        //   createdAt:
+        //     today.getHours().toString().padStart(2, "0") +
+        //     ":" +
+        //     today.getMinutes().toString().padStart(2, "0"),
+        // });
       }
     };
 
@@ -513,6 +513,7 @@ export default defineComponent({
   font-size: 15px;
 }
 #clock-icon {
+  cursor: pointer;
   padding: 10px;
 }
 .chat-room {

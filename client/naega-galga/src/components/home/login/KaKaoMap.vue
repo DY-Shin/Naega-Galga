@@ -19,7 +19,6 @@
 import { defineComponent, onMounted, watch } from "@vue/runtime-core";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
-import { ElContainer, ElMain } from "element-plus";
 
 declare global {
   interface Window {
@@ -33,10 +32,6 @@ export default defineComponent({
     getIdx: { type: Number },
     getList: { type: Array },
     getClick: { type: Boolean },
-  },
-  components: {
-    ElContainer,
-    ElMain,
   },
 
   setup(props) {
