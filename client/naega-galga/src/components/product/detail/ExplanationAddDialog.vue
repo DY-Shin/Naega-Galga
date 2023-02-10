@@ -52,33 +52,18 @@
 
 <script lang="ts">
 import { toRef, ref } from "vue";
-import ko from "element-plus/dist/locale/ko.mjs";
 import { useRoute } from "vue-router";
+
 import { addExplanation } from "@/api/explanationApi";
 import ResponseStatus from "@/api/responseStatus";
 
-import {
-  ElConfigProvider,
-  ElButton,
-  ElSelect,
-  ElOption,
-  ElDialog,
-  ElCalendar,
-} from "element-plus";
+import ko from "element-plus/dist/locale/ko.mjs";
 
 export default {
   props: {
     isShow: {
       type: Boolean,
     },
-  },
-  components: {
-    ElConfigProvider,
-    ElButton,
-    ElSelect,
-    ElOption,
-    ElDialog,
-    ElCalendar,
   },
   setup(props, context) {
     const route = useRoute();

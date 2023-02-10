@@ -91,7 +91,6 @@ import { isMobileScreen } from "@/use/useMediaQuery";
 import KakaoMap from "@/components/meeting/one-on-one/KakaoMap.vue";
 import { MapCenterLatLng } from "@/types/MapTypes";
 
-import { ElButton, ElIcon } from "element-plus";
 import {
   Microphone,
   ArrowUp,
@@ -106,8 +105,6 @@ export default {
   components: {
     OvVideo,
     ChatBox,
-    ElButton,
-    ElIcon,
     Microphone,
     ArrowUp,
     VideoCamera,
