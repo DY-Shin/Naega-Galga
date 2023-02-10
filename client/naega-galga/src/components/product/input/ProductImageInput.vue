@@ -15,22 +15,23 @@
   </el-dialog>
 </template>
 <script lang="ts" setup>
-import { Plus } from "@element-plus/icons-vue";
-import type { UploadFile } from "element-plus";
 import { defineEmits, defineProps, ref } from "vue";
+
+import type { UploadFile } from "element-plus";
+import { Plus } from "@element-plus/icons-vue";
 
 const props = defineProps({
   fileList: Array,
 });
 const files = ref(props.fileList);
 
+const emit = defineEmits(["fileAdd", "fileDelete"]);
 const handleRemove = (file: UploadFile) => {
   emit("fileDelete", file.name);
 };
 const handleAdd = (file: UploadFile): void => {
   emit("fileAdd", file);
 };
-const emit = defineEmits(["fileAdd", "fileDelete"]);
 
 const dialogImageUrl = ref("");
 const dialogVisible = ref(false);

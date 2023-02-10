@@ -52,10 +52,12 @@
 
 <script lang="ts">
 import { toRef, ref } from "vue";
-import ko from "element-plus/dist/locale/ko.mjs";
 import { useRoute } from "vue-router";
+
 import { addExplanation } from "@/api/explanationApi";
 import ResponseStatus from "@/api/responseStatus";
+
+import ko from "element-plus/dist/locale/ko.mjs";
 
 export default {
   props: {
