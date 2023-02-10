@@ -13,6 +13,7 @@ import java.sql.Timestamp;
 @Setter
 @Builder
 public class ReserveResponseDTO {
+    private Integer meetingIndex;
     private String type;
     private String role;
     private Timestamp reserveAt;

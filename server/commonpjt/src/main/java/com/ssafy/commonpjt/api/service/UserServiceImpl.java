@@ -200,6 +200,7 @@ public class UserServiceImpl implements UserService {
                     // 설명회 판매자
                     // explanation table 접근
                     ReserveResponseDTO reserve = ReserveResponseDTO.builder()
+                            .meetingIndex(meeting.getMeetingIndex())
                             .type("Explanation")
                             .role("Owner")
                             .meetingUrl(meeting.getMeetingUrl())
@@ -212,6 +213,7 @@ public class UserServiceImpl implements UserService {
                     // 설명회 구매자
                     // explanation table 에 접근
                     ReserveResponseDTO reserve = ReserveResponseDTO.builder()
+                            .meetingIndex(meeting.getMeetingIndex())
                             .type("Explanation")
                             .role("Guest")
                             .meetingUrl(meeting.getMeetingUrl())
@@ -224,6 +226,7 @@ public class UserServiceImpl implements UserService {
             } else {
                 if (meeting.getOwner().getUserIndex() == user.getUserIndex()) {
                     ReserveResponseDTO reserve = ReserveResponseDTO.builder()
+                            .meetingIndex(meeting.getMeetingIndex())
                             .type("Meeting")
                             .role("Owner")
                             .meetingUrl(meeting.getMeetingUrl())
@@ -233,6 +236,7 @@ public class UserServiceImpl implements UserService {
                     meetingList.add(reserve);
                 } else {
                     ReserveResponseDTO reserve = ReserveResponseDTO.builder()
+                            .meetingIndex(meeting.getMeetingIndex())
                             .type("Meeting")
                             .role("Guest")
                             .meetingUrl(meeting.getMeetingUrl())
