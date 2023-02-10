@@ -23,7 +23,6 @@
 <script lang="ts">
 import { computed, defineComponent } from "vue";
 import { Plus } from "@element-plus/icons-vue";
-import { ElButton } from "element-plus";
 
 export default defineComponent({
   props: {
@@ -39,9 +38,6 @@ export default defineComponent({
         sellerIndex: Number,
       },
     },
-  },
-  components: {
-    ElButton,
   },
   setup(props) {
     // const userIndex = 1;
@@ -100,25 +96,7 @@ export default defineComponent({
   align-items: center;
 }
 
-.heart-icon {
-  width: 20px;
-  height: 20px;
-}
-
-.heart-btn {
-  position: relative;
-  right: -90px;
-}
-
 .width-full {
   width: 100%;
-}
-
-.explanation-text {
-  background-color: var(--el-color-error);
-  color: #f4f4f5;
-  padding: 8px 15px;
-  margin-right: 10px;
-  border-radius: 5px;
 }
 </style>

@@ -229,40 +229,21 @@
 
 <script lang="ts">
 import { computed, defineComponent, reactive } from "vue";
-import ProductImageInput from "@/components/product/input/ProductImageInput.vue";
-import AddressSearchButton from "@/components/common/AddressSearchButton.vue";
 import { useRoute } from "vue-router";
 import router from "@/router";
-import type { UploadFile } from "element-plus";
+
 import { addProduct } from "@/api/productApi";
 import ResponseStatus from "@/api/responseStatus";
-import {
-  ElRow,
-  ElCol,
-  ElCheckboxGroup,
-  ElCheckbox,
-  ElButton,
-  ElInput,
-  ElRadioGroup,
-  ElRadio,
-  ElSelect,
-  ElOption,
-} from "element-plus";
+
+import type { UploadFile } from "element-plus";
+
+import ProductImageInput from "@/components/product/input/ProductImageInput.vue";
+import AddressSearchButton from "@/components/common/AddressSearchButton.vue";
 
 export default defineComponent({
   components: {
     ProductImageInput,
     AddressSearchButton,
-    ElRow,
-    ElCol,
-    ElCheckboxGroup,
-    ElCheckbox,
-    ElButton,
-    ElInput,
-    ElRadioGroup,
-    ElRadio,
-    ElSelect,
-    ElOption,
   },
   setup() {
     //edit일때 product index

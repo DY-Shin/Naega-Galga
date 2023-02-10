@@ -55,10 +55,9 @@
 
 <script lang="ts">
 import { ref, reactive, computed, onUpdated } from "vue";
-import { ProductReservation } from "@/types/MeetingReservationType";
-import { Calendar, Minus, Plus } from "@element-plus/icons-vue";
 import { useStore } from "vuex";
-import ExplanationAddDialog from "@/components/product/detail/ExplanationAddDialog.vue";
+
+import { ProductReservation } from "@/types/MeetingReservationType";
 import {
   getExplanationInfo,
   addExplanationReservation,
@@ -66,7 +65,10 @@ import {
   deleteExplanation,
 } from "@/api/explanationApi";
 import ResponseStatus from "@/api/responseStatus";
-import { ElButton } from "element-plus";
+
+import { Calendar, Minus, Plus } from "@element-plus/icons-vue";
+
+import ExplanationAddDialog from "@/components/product/detail/ExplanationAddDialog.vue";
 
 export default {
   props: {
@@ -74,7 +76,6 @@ export default {
   },
   components: {
     ExplanationAddDialog,
-    ElButton,
   },
   setup(props) {
     const productIndexRef = ref(props.productIndex);
