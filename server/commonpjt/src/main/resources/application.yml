@@ -36,5 +36,6 @@ spring:
 
   redis:
 #    host: i8d106.p.ssafy.io
+#    port: 7963
     host: localhost
     port: 6379
