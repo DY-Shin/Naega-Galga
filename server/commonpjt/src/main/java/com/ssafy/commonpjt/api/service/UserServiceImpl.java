@@ -6,17 +6,14 @@ import com.ssafy.commonpjt.api.dto.userDTO.*;
 import com.ssafy.commonpjt.common.enums.Authority;
 import com.ssafy.commonpjt.common.jwt.JwtTokenProvider;
 import com.ssafy.commonpjt.common.security.SecurityUtil;
+import com.ssafy.commonpjt.db.entity.Explanation;
 import com.ssafy.commonpjt.db.entity.Meeting;
 import com.ssafy.commonpjt.db.entity.Product;
 import com.ssafy.commonpjt.db.entity.User;
-import com.ssafy.commonpjt.db.repository.MeetingRepository;
-import com.ssafy.commonpjt.db.repository.ProductRepository;
-import com.ssafy.commonpjt.db.repository.UserRepository;
-import com.ssafy.commonpjt.db.repository.WishListRepository;
+import com.ssafy.commonpjt.db.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -39,9 +36,10 @@ public class UserServiceImpl implements UserService {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final JwtTokenProvider jwtTokenProvider;
     private final RedisTemplate redisTemplate;
-    private final WishListRepository wishListRepository;
+//    private final WishListRepository wishListRepository;
     private final ProductRepository productRepository;
     private final MeetingRepository meetingRepository;
+    private final ExplanationRepository explanationRepository;
 
     // 회원가입 서비스
     @Override
@@ -195,14 +193,55 @@ public class UserServiceImpl implements UserService {
         for (int index : meetingIndexList) {
             Meeting meeting = meetingRepository.findByMeetingIndex(index).orElseThrow(() -> new Exception("No Meeting Exists"));
             Product product = meeting.getProduct();
-            ProductInfoDTO productInfo = new ProductInfoDTO(product);
-            ReserveResponseDTO reserve = ReserveResponseDTO.builder()
-                    .reserveAt(meeting.getReserveAt())
-                    .owner(meeting.getOwner().getUserId())
-                    .guest(meeting.getGuest().getUserId())
-                    .product(productInfo)
-                    .build();
-            meetingList.add(reserve);
+            if (product != null) {
+                List<Explanation> explanation = explanationRepository.findAllByMeeting(meeting);
+                // 설명회
+                if (meeting.getOwner().getUserIndex() == user.getUserIndex()){
+                    // 설명회 판매자
+                    // explanation table 접근
+                    ReserveResponseDTO reserve = ReserveResponseDTO.builder()
+                            .type("Explanation")
+                            .role("Owner")
+                            .meetingUrl(meeting.getMeetingUrl())
+                            .reserveAt(meeting.getReserveAt())
+                            .guestNumber(explanation.size())
+                            .build();
+                    meetingList.add(reserve);
+                } else {
+                    ProductInfoDTO productInfo = new ProductInfoDTO(product);
+                    // 설명회 구매자
+                    // explanation table 에 접근
+                    ReserveResponseDTO reserve = ReserveResponseDTO.builder()
+                            .type("Explanation")
+                            .role("Guest")
+                            .meetingUrl(meeting.getMeetingUrl())
+                            .reserveAt(meeting.getReserveAt())
+                            .owner(new OwnerDTO(meeting.getOwner()))
+                            .product(productInfo)
+                            .build();
+                    meetingList.add(reserve);
+                }
+            } else {
+                if (meeting.getOwner().getUserIndex() == user.getUserIndex()) {
+                    ReserveResponseDTO reserve = ReserveResponseDTO.builder()
+                            .type("Meeting")
+                            .role("Owner")
+                            .meetingUrl(meeting.getMeetingUrl())
+                            .reserveAt(meeting.getReserveAt())
+                            .guest(new GuestDTO(meeting.getGuest()))
+                            .build();
+                    meetingList.add(reserve);
+                } else {
+                    ReserveResponseDTO reserve = ReserveResponseDTO.builder()
+                            .type("Meeting")
+                            .role("Guest")
+                            .meetingUrl(meeting.getMeetingUrl())
+                            .reserveAt(meeting.getReserveAt())
+                            .owner(new OwnerDTO(meeting.getOwner()))
+                            .build();
+                    meetingList.add(reserve);
+                }
+            }
         }
         return meetingList;
     }

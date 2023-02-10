@@ -1,11 +1,10 @@
 package com.ssafy.commonpjt.api.dto.reserveDTO;
 
 import com.ssafy.commonpjt.api.dto.productDTO.ProductInfoDTO;
-import com.ssafy.commonpjt.db.entity.Product;
-import lombok.AllArgsConstructor;
+import com.ssafy.commonpjt.api.dto.userDTO.GuestDTO;
+import com.ssafy.commonpjt.api.dto.userDTO.OwnerDTO;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.sql.Timestamp;
@@ -14,8 +13,12 @@ import java.sql.Timestamp;
 @Setter
 @Builder
 public class ReserveResponseDTO {
+    private String type;
+    private String role;
     private Timestamp reserveAt;
-    private String owner;
-    private String guest;
+    private String meetingUrl;
+    private Integer guestNumber;
+    private OwnerDTO owner;
+    private GuestDTO guest;
     private ProductInfoDTO product;
 }
