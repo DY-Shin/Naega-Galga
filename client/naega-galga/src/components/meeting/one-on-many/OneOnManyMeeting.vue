@@ -1,6 +1,6 @@
 <template>
-  <ov-video></ov-video>
-  <chat-box></chat-box>
+  <ov-video style="border: 1px solid"></ov-video>
+  <chat-box @sendMessage="sendMessage" :message-list="messageList"></chat-box>
 
   <el-button round type="danger" @click="onClickExit">
     <el-icon><Close /></el-icon>
@@ -9,13 +9,22 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, ref, onMounted, computed } from "vue";
+import {
+  defineComponent,
+  reactive,
+  ref,
+  onMounted,
+  computed,
+  watch,
+} from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useStore } from "vuex";
 
-import OvVideo from "./OvVideo.vue";
-import { OpenVidu } from "openvidu-browser";
+import OvVideo from "@/components/meeting/one-on-one/OvVideo.vue";
+import { OpenVidu, SignalOptions } from "openvidu-browser";
 import ChatBox from "@/components/meeting/one-on-one/ChatBox.vue";
+import { Message } from "@/types/MeetingChatType";
+
 import { getOneOnManyMeetingInfo } from "@/api/meetingApi";
 
 export default defineComponent({
@@ -37,7 +46,7 @@ export default defineComponent({
       meeting_index: -1,
     });
 
-    const isSeller = ref(false);
+    // const isSeller = ref(false);
     const getMeetingInfo = async (explanationIndex: number) => {
       try {
         const response = await getOneOnManyMeetingInfo(explanationIndex);
@@ -48,11 +57,11 @@ export default defineComponent({
         token = data.token;
 
         if (index.seller_index === index.my_index) {
-          isSeller.value = true;
+          // isSeller.value = true;
           myVideo = sellerVideo;
         }
       } catch (error) {
-        alert("서버 오류로 실행할 수 없습니다\n잠시 후 다시 시도해 주세요.");
+        alert("오류 발생");
       }
     };
     const sellerVideo = document.querySelector("video#sellerVideo");
@@ -85,6 +94,15 @@ export default defineComponent({
         console.warn(exception);
       });
 
+      session.on(`signal:chat`, event => {
+        const msg = JSON.parse(event.data).message;
+        messageList.push({
+          isMine: false,
+          text: msg,
+          sendedTime: new Date(),
+        });
+      });
+
       await session.connect(token);
       publisher.value = ov.initPublisher(myVideo, {
         audioSource: undefined,
@@ -95,6 +113,26 @@ export default defineComponent({
         mirror: false,
       });
       session.publish(publisher);
+    };
+
+    const messageList: Array<Message> = reactive([]);
+
+    watch(
+      () => messageList.length,
+      () =>
+        messageList.sort(
+          (a: Message, b: Message) =>
+            a.sendedTime.valueOf() - b.sendedTime.valueOf()
+        )
+    );
+    const sendMessage = (message: Message) => {
+      messageList.push(message);
+      const signalOptions: SignalOptions = {
+        data: JSON.stringify({ message }),
+        type: "chat",
+        to: undefined,
+      };
+      session.signal(signalOptions);
     };
 
     const leaveSession = () => {
@@ -127,7 +165,7 @@ export default defineComponent({
       }
     };
 
-    return { onClickExit };
+    return { onClickExit, sendMessage, messageList };
   },
 });
 </script>
