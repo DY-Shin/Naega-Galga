@@ -3,17 +3,19 @@
   <main-header></main-header>
   <router-view></router-view>
   <chat-window v-if="isLog"></chat-window>
+  <main-footer></main-footer>
 </template>
 
 <script lang="ts">
 import MainHeader from "@/components/common/MainHeader.vue";
+import MainFooter from "./components/common/MainFooter.vue";
 import { computed } from "vue";
 import AlertBox from "@/components/common/AlertComponent.vue";
 import chatWindow from "@/components/common/ChatWindow.vue";
 import { useStore } from "vuex";
 export default {
   name: "app",
-  components: { MainHeader, AlertBox, chatWindow },
+  components: { MainHeader, AlertBox, chatWindow, MainFooter },
   setup() {
     const store = useStore();
     const isLog = computed(() => store.getters["userStore/isLogin"]);
