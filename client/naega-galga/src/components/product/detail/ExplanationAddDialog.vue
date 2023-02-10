@@ -104,11 +104,12 @@ export default {
       const dateString = `${year}-${month}-${day} ${hour}:${minutes}:00.000`;
 
       const response = await addExplanation(productIndex, dateString);
+
       if (response.status === ResponseStatus.Created) {
         closeDialog();
       }
-      if (response.status === ResponseStatus.Conflict) {
-        alert("이미 등록된 정보입니다");
+      if (response.status === ResponseStatus.NoContent) {
+        alert("잘못된 요청입니다");
       }
     };
 
@@ -162,5 +163,13 @@ export default {
 
 .margin-right {
   margin-right: 20px;
+}
+.el-calendar {
+  background-color: var(--el-bg-color);
+}
+
+.el-calendar-table td.is-today {
+  background-color: var(--el-color-black);
+  color: var(--el-color-white);
 }
 </style>
