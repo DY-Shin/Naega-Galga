@@ -20,14 +20,14 @@ public class ExplanationController {
     @PostMapping("/{productIndex}")
     public ResponseEntity<?> addExplanation(@PathVariable int productIndex, @RequestBody ExplanationDateDTO explanationDate) throws Exception {
         explanationService.addProductExplanation(productIndex, explanationDate);
-        return ResponseEntity.ok(HttpStatus.CREATED);
+        return new ResponseEntity<Void>(HttpStatus.CREATED);
     }
 
     //등록된 설명회를 구매자가 예약 추가
     @PostMapping("")
     public ResponseEntity<?> reserveExplanation(@RequestBody ReserveExplanationDTO reserveExplanationDTO) throws Exception {
         explanationService.reserveExplanation(reserveExplanationDTO);
-        return ResponseEntity.ok(HttpStatus.CREATED);
+        return new ResponseEntity<Void>(HttpStatus.CREATED);
     }
 
     @GetMapping("/{productIndex}")
@@ -40,12 +40,12 @@ public class ExplanationController {
     @DeleteMapping("/cancel/{meetingIndex}")
     public ResponseEntity<?> cancelReservation(@PathVariable int meetingIndex) throws Exception {
         explanationService.cancelReservation(meetingIndex);
-        return ResponseEntity.ok(HttpStatus.OK);
+        return new ResponseEntity<Void>(HttpStatus.OK);
     }
 
     @DeleteMapping("/{meetingIndex}")
     public ResponseEntity<?> deleteExplanation(@PathVariable int meetingIndex) throws Exception {
         explanationService.deleteReservation(meetingIndex);
-        return ResponseEntity.ok(HttpStatus.OK);
+        return new ResponseEntity<Void>(HttpStatus.OK);
     }
 }

@@ -17,7 +17,6 @@
             type="primary"
             :icon="Calendar"
             class="button-size"
-            @click="onClickAddExplanation"
           />
           <el-button
             v-if="canDeleteExplanation"
@@ -69,6 +68,7 @@ import ResponseStatus from "@/api/responseStatus";
 import { Calendar, Minus, Plus } from "@element-plus/icons-vue";
 
 import ExplanationAddDialog from "@/components/product/detail/ExplanationAddDialog.vue";
+import { useRouter } from "vue-router";
 
 export default {
   props: {
@@ -80,6 +80,7 @@ export default {
   setup(props) {
     const productIndexRef = ref(props.productIndex);
     const store = useStore();
+    const router = useRouter();
     const myIndex = computed(() => store.getters["userStore/userIndex"]);
 
     const meetingInfo: ProductReservation = reactive({
@@ -112,18 +113,18 @@ export default {
 
     const getMeetingInfo = async () => {
       const response = await getExplanationInfo(meetingInfo.productIndex);
+      const status = response.data.status;
 
-      if (response.status === ResponseStatus.NoContent) {
+      if (status === ResponseStatus.NoContent) {
+        router.back();
         return;
       }
-      if (response.status === ResponseStatus.InternalServerError) {
-        alert("서버 오류로 실행할 수 없습니다");
-      }
+
       const data = response.data;
       meetingInfo.meetingIndex = data.meetingIndex;
       meetingInfo.sellerIndex = data.sellerIndex;
       meetingInfo.buyerIndex = data.buyerIndex;
-      if (meetingInfo.explanationDate !== null) {
+      if (data.reservedAt != null) {
         meetingInfo.explanationDate = dateToFormatString(data.reservedAt);
       }
     };
@@ -154,35 +155,41 @@ export default {
 
     //click event
     const dialogShow = ref(false);
+
+    //dialog on
     const onClickAddExplanation = () => {
       dialogShow.value = !dialogShow.value;
     };
     const closeDialog = () => {
       dialogShow.value = false;
     };
-    const onClickDeleteExplanation = async () => {
-      try {
-        const response = await deleteExplanation(meetingInfo.meetingIndex);
-        if (response.status === ResponseStatus.Ok) {
-          meetingInfo.meetingIndex = -1;
-        }
-      } catch (error) {
-        alert("요청을 처리할 수 없습니다");
-      }
-    };
-    const onClickReserveExplanation = async () => {
-      try {
-        const response = await addExplanationReservation(
-          meetingInfo.productIndex
-        );
 
-        if (response.status === ResponseStatus.Created) {
-          meetingInfo.buyerIndex = myIndex.value;
-        }
-      } catch (error) {
-        alert("요청을 실행할 수 없습니다");
+    //판매자가 설명회를 삭제
+    const onClickDeleteExplanation = async () => {
+      const response = await deleteExplanation(meetingInfo.meetingIndex);
+      if (response.status === ResponseStatus.Ok) {
+        meetingInfo.meetingIndex = -1;
+      }
+      if (response.status === ResponseStatus.NoContent) {
+        alert("잘못된 요청입니다");
       }
     };
+
+    //구매자가 설명회를 예약 목록에 추가
+    const onClickReserveExplanation = async () => {
+      const response = await addExplanationReservation(
+        meetingInfo.productIndex
+      );
+
+      if (response.status === ResponseStatus.Created) {
+        meetingInfo.buyerIndex = myIndex.value;
+      }
+      if (response.status === ResponseStatus.NoContent) {
+        alert("잘못된 요청입니다");
+      }
+    };
+
+    //구매자가 설명회 예약을 취소함
     const onClickCancelReserveExplanation = async () => {
       const response = await cancelReservation(meetingInfo.meetingIndex);
       if (response.status === ResponseStatus.Ok) {
