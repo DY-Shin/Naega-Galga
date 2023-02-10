@@ -17,6 +17,7 @@ export default {
   setup() {
     const store = useStore();
     const isLog = computed(() => store.getters["userStore/isLogin"]);
+    store.commit("chatStore/CHANGE_CHATROOM_STATUS", false);
     return { isLog };
   },
 };
