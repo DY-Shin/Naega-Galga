@@ -24,6 +24,9 @@ export default {
 
 <style>
 @import "./assets/css/reset.css";
+@import "./assets/css/font-family.css";
+@import "./assets/css/color.css";
+
 html {
   scroll-behavior: smooth;
 }
