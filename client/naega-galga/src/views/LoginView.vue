@@ -1,11 +1,7 @@
 <template>
   <div class="wrapper">
     <el-form :model="loginform" class="loginForm" label-width="100px">
-      <img
-        fit:fill
-        src="@/assets/image/logo/NGGG.png"
-        style="width: 100px; height: 100px"
-      />
+      <img fit:fill src="@/assets/image/logo/NGGG.png" style="height: 80px" />
       <div class="logincontnet">
         <el-form-item label="아이디">
           <el-input v-model="loginform.id" />
@@ -56,8 +52,8 @@ export default defineComponent({
 
     const goLogin = async () => {
       const response = await login(loginform);
-
-      if (response.status === ResponseStatus.Ok) {
+      const status = response.status;
+      if (status === ResponseStatus.Ok) {
         store.commit("userStore/CHECK_TOKEN");
         localStorageManager.setAccessToken(response.data.accessToken);
         localStorageManager.setRefreshToken(response.data.refreshToken);
@@ -68,14 +64,19 @@ export default defineComponent({
 
           if (response.status === ResponseStatus.Ok) {
             store.commit("userStore/GET_USER_INFO", data);
-          } else {
-            console.log("err");
           }
         };
         composition();
 
         router.push({ path: "/" });
       }
+      if (status === ResponseStatus.Forbidden) {
+        console.log("forbidden");
+      }
+      if (status === ResponseStatus.InternalServerError) {
+        console.log("InternalServerError");
+      }
+      console.log(status);
     };
 
     return { loginform, signup, goLogin, url };

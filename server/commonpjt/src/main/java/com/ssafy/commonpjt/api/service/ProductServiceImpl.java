@@ -4,14 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssafy.commonpjt.api.dto.productDTO.*;
 import com.ssafy.commonpjt.common.security.SecurityUtil;
-import com.ssafy.commonpjt.db.entity.Building;
-import com.ssafy.commonpjt.db.entity.Options;
-import com.ssafy.commonpjt.db.entity.Product;
-import com.ssafy.commonpjt.db.entity.User;
-import com.ssafy.commonpjt.db.repository.BuildingRepository;
-import com.ssafy.commonpjt.db.repository.OptionsRepository;
-import com.ssafy.commonpjt.db.repository.ProductRepository;
-import com.ssafy.commonpjt.db.repository.UserRepository;
+import com.ssafy.commonpjt.db.entity.*;
+import com.ssafy.commonpjt.db.repository.*;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +33,11 @@ public class ProductServiceImpl implements ProductService {
     private BuildingRepository buildingRepository;
     @Autowired
     private OptionsRepository optionsRepository;
+    @Autowired
+    private MeetingRepository meetingRepository;
+    @Autowired
+    private ExplanationRepository explanationRepository;
+
     @Autowired
     private ModelMapper modelMapper;
 
@@ -278,6 +277,18 @@ public class ProductServiceImpl implements ProductService {
             image.delete();
         }
         directory.delete();
+
+        //관련 미팅 정보 다 지우기
+        List<Meeting> meetingList = meetingRepository.findAllByProduct(product);
+        for(Meeting meeting : meetingList){
+            List<Explanation> explanationList = explanationRepository.findAllByMeeting(meeting);
+            
+            //미팅과 관련된 설명회 지우기
+            for(Explanation explanation : explanationList){
+                explanationRepository.delete(explanation);
+            }
+            meetingRepository.delete(meeting);
+        }
 
         productRepository.deleteProductByProductIndex(productIndex);
         optionsRepository.deleteById(optionsIndex);
