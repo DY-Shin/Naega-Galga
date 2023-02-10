@@ -1,6 +1,6 @@
 <template>
   <div id="nav" v-if="isHeaderShow">
-    <a @click="redirect" id="title">내가갈가[家]</a>
+    <img src="@/assets/image/logo/NGGG.png" class="logo" @click="redirect" />
     <div class="home-btn" v-if="isLog == false">
       <!-- 로그인 안 했을 때 -->
       <el-button
@@ -185,6 +185,13 @@ export default defineComponent({
 </script>
 
 <style scoped>
+.logo {
+  height: 80px;
+}
+
+.logo:hover {
+  cursor: pointer;
+}
 .el-dropdown {
   float: right;
   right: 20px;
@@ -251,9 +258,12 @@ export default defineComponent({
 }
 
 #nav {
-  padding: 30px 50px 30px 50px;
+  padding: 25px 50px;
   font-size: 40px;
-  text-decoration: none;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
 }
 
 #title {
@@ -280,14 +290,14 @@ export default defineComponent({
 #login-btn,
 #join-btn {
   /* float: right; */
-  margin-left: 20px;
-  margin-top: 20px;
   bottom: 30px;
   color: white;
 }
 
 .home-btn {
   float: right;
+  display: flex;
+  flex-direction: row;
 }
 
 .el-button--large {

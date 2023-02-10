@@ -1,11 +1,7 @@
 <template>
   <div class="wrapper">
     <el-form :model="loginform" class="loginForm" label-width="100px">
-      <img
-        fit:fill
-        src="@/assets/image/logo/NGGG.png"
-        style="width: 100px; height: 100px"
-      />
+      <img fit:fill src="@/assets/image/logo/NGGG.png" style="height: 80px" />
       <div class="logincontnet">
         <el-form-item label="아이디">
           <el-input v-model="loginform.id" />
