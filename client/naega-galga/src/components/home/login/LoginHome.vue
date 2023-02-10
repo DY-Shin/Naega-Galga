@@ -69,4 +69,8 @@ export default defineComponent({
 });
 </script>
 
-<style scoped></style>
+<style scoped>
+.common-layout {
+  overflow-y: hidden;
+}
+</style>

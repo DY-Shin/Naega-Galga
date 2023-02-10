@@ -13,14 +13,18 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, ref } from "vue";
+import { defineComponent, ref, computed } from "vue";
+import { useStore } from "vuex";
 
 export default defineComponent({
   setup() {
     const isFooterShow = ref(true);
+    const store = useStore();
+    const isLogin = computed(() => store.getters["userStore/isLogin"]);
 
     return {
       isFooterShow,
+      isLogin,
     };
   },
   watch: {
@@ -28,7 +32,8 @@ export default defineComponent({
       if (
         to.path === "/join" ||
         to.path === "/login" ||
-        to.path.includes("/meeting")
+        to.path.includes("/meeting") ||
+        (to.path === "/" && this.isLogin)
       ) {
         this.isFooterShow = false;
         return;
