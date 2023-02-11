@@ -2,7 +2,6 @@
   <div id="mypagedetail">
     <span>
       <h1>내 정보</h1>
-      <h1>보안</h1>
     </span>
     <hr />
     <!-- 유저 정보를 보여주는 부분 -->
@@ -24,13 +23,18 @@
         {{ info.user_address }}
       </el-form-item>
       <el-form-item label="사업자 번호">
-        <div class="content">
+        <div class="content" v-show="info.corporate_registration_number > 1">
           {{ info.corporate_registration_number?.slice(0, 3) }}
           -
           {{ info.corporate_registration_number?.slice(3, 5) }}
           -
           {{ info.corporate_registration_number?.slice(5, 10) }}
         </div>
+
+        <div
+          class="content"
+          v-show="info.corporate_registration_number == 0"
+        ></div>
 
         <el-button @click="putUserInfo">수정하기</el-button>
       </el-form-item>
@@ -175,16 +179,8 @@ export default defineComponent({
       third_user_phone: null,
     });
 
-    // const user_phone = ref(
-    //   fullUserPhone.first_user_phone +
-    //     "-" +
-    //     fullUserPhone.second_user_phone +
-    //     "-" +
-    //     fullUserPhone.third_user_phone
-    // );
-
     const user_phone = ref(
-      `${fullUserPhone.first_user_phone} ${fullUserPhone.second_user_phone} - ${fullUserPhone.third_user_phone}`
+      `${fullUserPhone.first_user_phone} ${fullUserPhone.second_user_phone} ${fullUserPhone.third_user_phone}`
     );
 
     const fullAddress = reactive({
@@ -193,7 +189,7 @@ export default defineComponent({
     });
 
     const user_address = ref(
-      fullAddress.roadAddress + " " + fullAddress.detailAddress
+      `${fullAddress.roadAddress} ${fullAddress.detailAddress}`
     );
 
     const changeform = reactive({

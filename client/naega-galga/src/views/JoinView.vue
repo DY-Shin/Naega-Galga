@@ -88,7 +88,7 @@
       <el-form-item v-show="visible" prop="corporate_registration_number">
         <el-input
           v-model="joinform.corporate_registration_number"
-          placeholder=" '-' 를 뺀 10자리 사업자 번호를 입력해주세요."
+          placeholder="'-' 를 뺀 10자리 사업자 번호를 입력해주세요."
         ></el-input>
       </el-form-item>
 
@@ -117,7 +117,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, ref } from "vue";
+import { defineComponent, reactive, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import type { FormInstance, FormRules } from "element-plus";
 
@@ -140,6 +140,15 @@ export default defineComponent({
 
     const joinformRef = ref<FormInstance>();
 
+    watch(
+      () => visible.value,
+      (_, prev) => {
+        if (prev) {
+          joinform.corporate_registration_number == null;
+        }
+      }
+    );
+
     const setRoadAddress = (address: string) => {
       fullAddress.roadAddress = address;
     };
@@ -151,11 +160,9 @@ export default defineComponent({
     });
 
     const user_phone = ref(
-      fullUserPhone.first_user_phone +
-        "-" +
-        fullUserPhone.second_user_phone +
-        "-" +
-        fullUserPhone.third_user_phone
+      `${fullUserPhone.first_user_phone} +
+        ${fullUserPhone.second_user_phone} +
+        ${fullUserPhone.third_user_phone}`
     );
 
     const fullAddress = reactive({
@@ -164,7 +171,7 @@ export default defineComponent({
     });
 
     const user_address = ref(
-      fullAddress.roadAddress + " " + fullAddress.detailAddress
+      `${fullAddress.roadAddress} ${fullAddress.detailAddress}`
     );
 
     const joinform = reactive({
@@ -256,7 +263,10 @@ export default defineComponent({
     };
 
     const address_rule = (rule: any, value: any, callback: any) => {
-      if (fullAddress.roadAddress && !fullAddress.detailAddress) {
+      if (
+        fullAddress.roadAddress &&
+        fullAddress.detailAddress?.["length"] == 0
+      ) {
         callback(new Error("주소는 반드시 입력해주세요"));
       } else {
         callback();

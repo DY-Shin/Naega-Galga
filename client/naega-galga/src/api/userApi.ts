@@ -114,7 +114,7 @@ async function getRegistProduct() {
 }
 
 async function getReservateProduct() {
-  const response: AxiosResponse = await axios.get(``, {
+  const response: AxiosResponse = await axios.get(`api/users/me/reservations`, {
     headers: {
       Authorization: `Bearer ${localStorageManager.getAccessToken()}`,
     },
