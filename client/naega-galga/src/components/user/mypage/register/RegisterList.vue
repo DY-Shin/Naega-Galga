@@ -1,8 +1,8 @@
 <template>
   <h1>등록된 매물</h1>
+  {{ registList.all }}
+
   <hr />
-  <!-- <div>{{ registList }}</div> -->
-  <button @click="makeRegistProduct">매물목록을 가져오는 버튼</button>
   <el-row :gutter="20">
     <register-list-item
       v-for="regist in registList.all"
@@ -17,13 +17,11 @@ import { getRegistProduct } from "@/api/userApi";
 import ResponseStatus from "@/api/responseStatus";
 import { defineComponent, reactive } from "vue";
 import RegisterListItem from "./RegisterListItem.vue";
-import { ElRow } from "element-plus";
 
 export default defineComponent({
   name: "RegisterList",
   components: {
     RegisterListItem,
-    ElRow,
   },
   setup() {
     const makeRegistProduct = async () => {
@@ -34,6 +32,7 @@ export default defineComponent({
         registList.all = data;
       }
     };
+    makeRegistProduct();
 
     const registList = reactive({
       all: [],

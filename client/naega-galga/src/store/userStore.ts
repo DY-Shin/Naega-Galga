@@ -1,10 +1,10 @@
 const state = {
   user_info: {
-    user_index: "0",
+    user_index: "-1",
     user_id: "로그인이 되지 않음!",
-    user_phone: "로그인이 되지 않음!",
-    user_name: "로그인이 되지 않음!",
-    user_address: "로그인이 되지 않음!",
+    user_phone: "",
+    user_name: "",
+    user_address: "",
     corporate_registration_number: null,
   },
   isToken: false,
