@@ -21,12 +21,16 @@ import { defineComponent, ref } from "vue";
 import MainSide from "@/components/home/login/MainSide.vue";
 import KaKaoMap from "@/components/home/login/KaKaoMap.vue";
 import ChatWindow from "@/components/common/ChatWindow.vue";
+import { useStore } from "vuex";
 
 export default defineComponent({
   name: "addressInfo",
   components: { MainSide, KaKaoMap, ChatWindow },
 
   setup() {
+    const store = useStore();
+    store.commit("chatStore/CHANGE_CHATROOM_STATUS", false);
+
     const idxProxy = ref();
     const sendIdx = (sendIdx: number) => {
       idxProxy.value = sendIdx;

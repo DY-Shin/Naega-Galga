@@ -175,10 +175,6 @@ export default defineComponent({
       () => nowOpIndex.value,
       () => {
         if (isOpenChat.value) {
-          console.log(isOpenChat.value + "999999999999999999999999999");
-          console.log(
-            nowOpIndex.value + " " + nowOpName.value + " " + "!!!!!!"
-          );
           openChat();
         }
       }
@@ -221,7 +217,6 @@ export default defineComponent({
       // 목록에서 열 때
       store.commit("chatStore/CHANGE_OP_INDEX", chatRooms[index].opIndex); // 현재 채팅 상대 업데이트해주고
       store.commit("chatStore/CHANGE_OP_NAME", chatRooms[index].opName);
-      console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
       openChat(); // 채팅방 열기
     };
 
@@ -252,9 +247,10 @@ export default defineComponent({
       ampm.value = "";
       hour.value = "";
       minute.value = "";
-      socket.stompClient.disconnect(function () {
-        console.log("끊겠음");
-      });
+      // socket.stompClient.disconnect(function () {
+      //   console.log("끊겠음");
+      //   console.log(socket.stompClient.command);
+      // });
     };
 
     // ------------------------------------채팅 end------------------------------------
@@ -268,26 +264,30 @@ export default defineComponent({
       if (socketConnectedIdx == nowOpIndex.value) {
         return;
       }
-      console.log(`소켓 연결을 시도 -> 서버 주소: ${serverURL}`);
+
+      console.log("소켓 연결 시도 !");
       serverURL = `${process.env.VUE_APP_API_BASE_URL}stomp`;
       socket = new SockJS(serverURL);
       socket.stompClient = Stomp.over(socket);
+      socket.stompClient.debug = () => {
+        // 로그가 출력 되지 않게
+        ("");
+      };
 
       socket.stompClient.connect(
         {},
-        frame => {
+        () => {
           socketConnectedIdx = nowOpIndex.value;
           socket.connected = true;
-          console.log("소켓 연결 성공 : ", frame);
+          console.log("소켓 연결 성공 : ");
           socket.stompClient.subscribe(
             `/sub/chat/room/${nowRoomIndex.value}`,
             res => {
-              console.log("구독으로 받은 메시지 : ", res.body);
               let str = JSON.parse(res.body);
-              console.log(str.message.sender + " " + userIndex.value);
-              // if (str.message.sender !== userIndex.value) {
-              chatContents.push(str.message);
-              // }
+              if (str.message.sender !== userIndex.value) {
+                chatContents.push(str.message);
+                console.log("메세지 수신");
+              }
             }
           );
         },
@@ -338,18 +338,18 @@ export default defineComponent({
             createdAt: str,
           },
         };
-
+        console.log("메세지 송신");
         socket.stompClient.send(`/pub/chat/message`, JSON.stringify(msg), {});
 
-        // chatContents.push({
-        //   //화면에 띄울 컨텐츠 배열에 넣음
-        //   sender: userIndex.value,
-        //   message: inputMsg,
-        //   createdAt:
-        //     today.getHours().toString().padStart(2, "0") +
-        //     ":" +
-        //     today.getMinutes().toString().padStart(2, "0"),
-        // });
+        chatContents.push({
+          //화면에 띄울 컨텐츠 배열에 넣음
+          sender: userIndex.value,
+          message: inputMsg,
+          createdAt:
+            today.getHours().toString().padStart(2, "0") +
+            ":" +
+            today.getMinutes().toString().padStart(2, "0"),
+        });
       }
     };
 
