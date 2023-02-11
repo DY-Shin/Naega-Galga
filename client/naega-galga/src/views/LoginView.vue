@@ -69,14 +69,16 @@ export default defineComponent({
         composition();
 
         router.push({ path: "/" });
+      } else {
+        console.log("hello");
+        alert("오류 발생!");
       }
-      if (status === ResponseStatus.Forbidden) {
-        console.log("forbidden");
-      }
-      if (status === ResponseStatus.InternalServerError) {
-        console.log("InternalServerError");
-      }
-      console.log(status);
+      // if (status === ResponseStatus.Forbidden) {
+      //   console.log("forbidden");
+      // }
+      // if (status === ResponseStatus.InternalServerError) {
+      //   console.log("InternalServerError");
+      // }
     };
 
     return { loginform, signup, goLogin, url };

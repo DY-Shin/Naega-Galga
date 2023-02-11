@@ -15,11 +15,6 @@ export default [
           import("@/components/user/mypage/reservation/ReservationList.vue"),
       },
       {
-        path: "wish",
-        name: "WishList",
-        component: () => import("@/components/user/mypage/wish/WishList.vue"),
-      },
-      {
         path: "register",
         name: "RegisterList",
         component: () =>

@@ -2,7 +2,6 @@
   <div class="sidebar">
     <div @click="goToMyPage">내 정보</div>
     <div @click="goToReservation">예약 목록</div>
-    <div @click="goToWish">찜 목록</div>
     <div @click="goToRegister">등록된 매물</div>
   </div>
 </template>

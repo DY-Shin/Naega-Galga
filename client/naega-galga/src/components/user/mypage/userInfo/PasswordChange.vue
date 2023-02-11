@@ -5,18 +5,18 @@
     status-icon
     scroll-to-error
   >
-    <el-form-item prop="password">
-      <p>기존 비밀번호</p>
+    <el-form-item label="기존 비밀번호" label-width="17%" prop="password">
       <el-input
         v-model="password_change_form.password"
         type="password"
-        placeholder="비밀번호를 입력해주세요."
+        class="content"
+        placeholder="기존 비밀번호를 입력해주세요."
         show-password
       />
     </el-form-item>
   </el-form>
 
-  <el-button @click="confirmPassword">비밀번호 체크</el-button>
+  <el-button @click="confirmPassword">비밀번호 확인</el-button>
 
   <el-form
     :model="password_change_form"
@@ -25,10 +25,10 @@
     scroll-to-error
   >
     <el-form-item prop="new_password">
-      <p>새 비밀번호</p>
       <el-input
         v-model="password_change_form.new_password"
         v-bind:disabled="!isChecked"
+        class="content"
         type="password"
         placeholder="새 비밀번호를 입력해주세요."
         show-password
@@ -36,7 +36,6 @@
     </el-form-item>
 
     <el-form-item prop="new_password_confirm">
-      <p>새 비밀번호 확인</p>
       <el-input
         v-model="password_change_form.new_password_confirm"
         v-bind:disabled="!isChecked"
@@ -169,4 +168,8 @@ export default defineComponent({
 });
 </script>
 
-<style></style>
+<style scoped>
+.content {
+  width: 60%;
+}
+</style>
