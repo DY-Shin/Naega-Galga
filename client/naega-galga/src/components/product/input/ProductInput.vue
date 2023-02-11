@@ -472,12 +472,6 @@ export default defineComponent({
       if (status === ResponseStatus.Ok) {
         router.replace("/");
       }
-      if (status === ResponseStatus.Conflict) {
-        alert("이미 등록된 매물입니다");
-      }
-      if (status === ResponseStatus.InternalServerError) {
-        alert("서버 오류로 처리할 수 없습니다");
-      }
     };
 
     const cancelEditProduct = () => {
