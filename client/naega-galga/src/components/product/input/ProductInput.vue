@@ -195,12 +195,16 @@
           class="margin-right-small"
           type="info"
         ></el-input>
-        <el-input
-          v-model="productInfo.productHo"
-          placeholder="방 호수"
-          class="margin-right-small"
-          type="info"
-        ></el-input>
+        <div class="flex-row">
+          <el-input
+            v-model="productInfo.productHo"
+            placeholder="방 호수"
+            class="margin-right-small"
+            type="number"
+          >
+          </el-input>
+          <div>호</div>
+        </div>
       </el-row>
     </el-col>
   </el-row>
@@ -549,6 +553,12 @@ hr {
 .flex-column {
   display: flex;
   flex-direction: column;
+  align-items: center;
+}
+
+.flex-row {
+  display: flex;
+  flex-direction: row;
   align-items: center;
 }
 span {
