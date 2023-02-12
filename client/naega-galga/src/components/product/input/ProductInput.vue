@@ -473,8 +473,8 @@ export default defineComponent({
 
       //등록
       const status = await addProduct(data);
-      if (status === ResponseStatus.Ok) {
-        router.replace("/");
+      if (status === ResponseStatus.Created) {
+        alert("등록되었습니다");
       }
     };
 
