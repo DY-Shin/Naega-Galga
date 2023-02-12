@@ -60,7 +60,7 @@
           </tr>
           <tr>
             {{
-              `${buildingValue?.buildingName} ${productValue?.productDetail}호`
+              `${buildingValue?.buildingName} ${productValue?.productDetail}`
             }}
           </tr>
         </td>
