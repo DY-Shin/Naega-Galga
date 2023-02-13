@@ -205,10 +205,6 @@ export default defineComponent({
       chatbtn.appendChild(document.createTextNode("문의하기"));
 
       chatbtn.onclick = function () {
-        // emit("chatUserIndex", product.sellerIndex);
-        // emit("chatUserName", product.sellerName);
-        // emit("chatOpen", isOpen);
-
         let productInfo = {
           userIndex: product.sellerIndex,
           userName: product.sellerName,
@@ -217,6 +213,8 @@ export default defineComponent({
         store.commit("chatStore/GET_PRODUCT_INFO", productInfo);
         store.commit("chatStore/CHANGE_CHATROOM_STATUS", true);
         store.commit("chatStore/CHANGE_GET_CHAT_CONTENT", true);
+        store.commit("chatStore/CHANGE_ASK_STATUS", true);
+        console.log("click");
       };
       bottombox.appendChild(chatbtn);
 
@@ -245,8 +243,6 @@ export default defineComponent({
       });
       overlays.push(customOverlay);
       customOverlay.setContent(content);
-
-      console.log(overlays.length);
     };
 
     const changeCenter = addr_idx => {
