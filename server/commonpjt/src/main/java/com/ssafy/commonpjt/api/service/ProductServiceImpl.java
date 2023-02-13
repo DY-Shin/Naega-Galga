@@ -43,7 +43,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Autowired
     private ObjectMapper objectMapper;
-    private String imagePath = "C:/D106/product/img/";
+    private String imagePath = "product/img/";
 
     private Product findProductByAddress(String productDetail, String jibunAddress){
         return productRepository.findByProductDetailAndBuildingBuildingAddress(productDetail, jibunAddress);
