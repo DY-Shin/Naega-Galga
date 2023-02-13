@@ -23,8 +23,6 @@ public interface MeetingRepository extends JpaRepository<Meeting, Integer> {
 
     List<Meeting> findAllByOwner(User owner);
 
-    List<Meeting> findAllByGuest(User guest);
-
     Meeting findByProduct(Product product);
 
     List<Meeting> findAllByProduct(Product product);

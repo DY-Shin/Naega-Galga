@@ -13,6 +13,7 @@ public interface ExplanationRepository extends JpaRepository<Explanation, Intege
 
     Explanation findByMeetingAndReserveUser(Meeting meeting, User buyer);
 
-    List<Explanation> findAllByMeeting(Meeting meeting);
+    List<Explanation> findAllByReserveUser(User guest);
+
     List<Explanation> findAllByMeeting(Meeting meeting);
 }

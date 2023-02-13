@@ -16,7 +16,6 @@ public interface UserService {
     UserInfoDTO getMyInfo() throws Exception;
     List<?> getMyReserve() throws Exception;
     void delete(UserLogoutDTO logout) throws Exception;
-//    List<?> wishList(String userId) throws Exception;
     List<?> getMyProductList() throws Exception;
     List<?> getUserProductList(String userId) throws Exception;
     List<?> findMyUserId(String name);

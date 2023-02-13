@@ -4,6 +4,8 @@ import com.ssafy.commonpjt.api.dto.productDTO.ProductInfoDTO;
 import com.ssafy.commonpjt.api.dto.reserveDTO.ReserveResponseDTO;
 import com.ssafy.commonpjt.api.dto.userDTO.*;
 import com.ssafy.commonpjt.common.enums.Authority;
+import com.ssafy.commonpjt.common.exception.CustomException;
+import com.ssafy.commonpjt.common.exception.ErrorCode;
 import com.ssafy.commonpjt.common.jwt.JwtTokenProvider;
 import com.ssafy.commonpjt.common.security.SecurityUtil;
 import com.ssafy.commonpjt.db.entity.Explanation;
@@ -36,7 +38,6 @@ public class UserServiceImpl implements UserService {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final JwtTokenProvider jwtTokenProvider;
     private final RedisTemplate redisTemplate;
-//    private final WishListRepository wishListRepository;
     private final ProductRepository productRepository;
     private final MeetingRepository meetingRepository;
     private final ExplanationRepository explanationRepository;
@@ -46,7 +47,7 @@ public class UserServiceImpl implements UserService {
     public void join(UserDTO userDto) throws Exception {
         // 회원 중복 확인
         if (userRepository.existsByUserId(userDto.getUserId())){
-            throw new Exception("Already Exists Id");
+            throw new CustomException(ErrorCode.DUPLICATED_VALUE);
         }
         // DB에 저장
         User user = User.builder()
@@ -66,7 +67,7 @@ public class UserServiceImpl implements UserService {
     public TokenDTO login(UserLoginDTO login) throws Exception {
         // 회원 정보 조회
         if (userRepository.findByUserId(login.getUserId()).orElse(null) == null) {
-            throw new Exception("No User Exists");
+            throw new CustomException(ErrorCode.NOT_FOUND_USER);
         }
         // 로그인시 토큰 생성
         UsernamePasswordAuthenticationToken authenticationToken = login.toAuthentication();
@@ -84,7 +85,7 @@ public class UserServiceImpl implements UserService {
     public void logout(UserLogoutDTO logout) throws Exception {
         // 토큰 유효성 검사
         if (!jwtTokenProvider.validateToken(logout.getAccessToken())) {
-            throw new Exception("Invalid Request");
+            throw new CustomException(ErrorCode.NOT_FOUND_USER);
         }
         // 토큰이 유효하다면 Access 토큰을 받아옴
         Authentication authentication = jwtTokenProvider.getAuthentication(logout.getAccessToken());
@@ -100,7 +101,7 @@ public class UserServiceImpl implements UserService {
     // 회원정보 수정 서비스
     @Override
     public void update(UserUpdateDTO userUpdateDto) throws Exception {
-        User user = userRepository.findByUserId(SecurityUtil.getLoginUsername()).orElseThrow(() -> new Exception("Login Required"));
+        User user = userRepository.findByUserId(SecurityUtil.getLoginUsername()).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
         if (userUpdateDto.getUserPhone() != null) user.setUserPhone(userUpdateDto.getUserPhone());
         if (userUpdateDto.getUserName() != null) user.setName(userUpdateDto.getUserName());
         if (userUpdateDto.getCorporateRegistrationNumber() != null) user.setCorporateRegistrationNumber(userUpdateDto.getCorporateRegistrationNumber());
@@ -111,14 +112,14 @@ public class UserServiceImpl implements UserService {
     // 비밀번호 확인
     @Override
     public boolean checkPassword(UpdatePasswordDTO updatePasswordDTO) throws Exception {
-        User user = userRepository.findByUserId(SecurityUtil.getLoginUsername()).orElseThrow(() -> new Exception("Login Required"));
+        User user = userRepository.findByUserId(SecurityUtil.getLoginUsername()).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
         return user.matchPassword(passwordEncoder, updatePasswordDTO.getCheckPassword());
     }
 
     // 비밀번호 변경 서비스
     @Override
     public void updatePassword(UpdatePasswordDTO updatePasswordDto) throws Exception {
-        User user = userRepository.findByUserId(SecurityUtil.getLoginUsername()).orElseThrow(() -> new Exception("Login Required"));
+        User user = userRepository.findByUserId(SecurityUtil.getLoginUsername()).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
         user.updatePassword(passwordEncoder, updatePasswordDto.getToBePassword());
         userRepository.save(user);
     }
@@ -126,14 +127,14 @@ public class UserServiceImpl implements UserService {
     // 유저 정보 검색
     @Override
     public UserInfoDTO getInfo(String userId) throws Exception {
-        User user = userRepository.findByUserId(userId).orElseThrow(() -> new Exception("No User Exists"));
+        User user = userRepository.findByUserId(userId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
         return new UserInfoDTO(user);
     }
 
     // 내 정보 검색
     @Override
     public UserInfoDTO getMyInfo() throws Exception {
-        User user = userRepository.findByUserId(SecurityUtil.getLoginUsername()).orElseThrow(() -> new Exception("Login Required"));
+        User user = userRepository.findByUserId(SecurityUtil.getLoginUsername()).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
         return new UserInfoDTO(user);
     }
 
@@ -141,37 +142,29 @@ public class UserServiceImpl implements UserService {
     @Override
     public void delete(UserLogoutDTO logout) throws Exception {
         if (!jwtTokenProvider.validateToken(logout.getAccessToken())) {
-            throw new Exception("Invalid Request");
+            throw new CustomException(ErrorCode.NOT_FOUND_USER);
         }
         Authentication authentication = jwtTokenProvider.getAuthentication(logout.getAccessToken());
         String userId = authentication.getName();
-        User user = userRepository.findByUserId(userId).orElseThrow(() -> new Exception("Login Required"));
+        User user = userRepository.findByUserId(userId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
         if (!user.matchPassword(passwordEncoder, logout.getCheckPassword())){
-            throw new Exception("Incorrect Password");
+            throw new CustomException(ErrorCode.NOT_MY_CONTENTS);
         }
         userRepository.delete(user);
         logout(logout);
     }
 
-    // 내 관심 목록 조회
-//    @Override
-//    public List<?> wishList(String userId) throws Exception {
-//        User user = userRepository.findByUserId(SecurityUtil.getLoginUsername()).orElseThrow(() -> new Exception("No User Exists"));
-//        Integer userIndex = user.getUserIndex();
-//        return wishListRepository.findAllByUser(userIndex);
-//    }
-
     // 내가 등록한 매물 목록 조회
     @Override
     public List<?> getMyProductList() throws Exception {
-        User user = userRepository.findByUserId(SecurityUtil.getLoginUsername()).orElseThrow(() -> new Exception("Login Required"));
+        User user = userRepository.findByUserId(SecurityUtil.getLoginUsername()).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
         return productRepository.findAllByProductSeller(user);
     }
 
     // 다른 유저가 등록한 매물 목록 조회
     @Override
     public List<?> getUserProductList(String userId) throws Exception {
-        User user = userRepository.findByUserId(userId).orElseThrow(() -> new Exception("No User Exists"));
+        User user = userRepository.findByUserId(userId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
         return productRepository.findAllByProductSeller(user);
     }
 
@@ -179,19 +172,19 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public List<?> getMyReserve() throws Exception {
-        User user = userRepository.findByUserId(SecurityUtil.getLoginUsername()).orElseThrow(() -> new Exception("Login Required"));
+        User user = userRepository.findByUserId(SecurityUtil.getLoginUsername()).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
         List<Meeting> ownerMeeting = meetingRepository.findAllByOwner(user);
-        List<Meeting> guestMeeting = meetingRepository.findAllByGuest(user);
+        List<Explanation> guestMeeting = explanationRepository.findAllByReserveUser(user);
         List<Integer> meetingIndexList = new ArrayList<>();
         List<ReserveResponseDTO> meetingList = new ArrayList<>();
         for (Meeting meeting : ownerMeeting) {
             meetingIndexList.add(meeting.getMeetingIndex());
         }
-        for (Meeting meeting : guestMeeting) {
-            meetingIndexList.add(meeting.getMeetingIndex());
+        for (Explanation explanation : guestMeeting) {
+            meetingIndexList.add(explanation.getMeeting().getMeetingIndex());
         }
         for (int index : meetingIndexList) {
-            Meeting meeting = meetingRepository.findByMeetingIndex(index).orElseThrow(() -> new Exception("No Meeting Exists"));
+            Meeting meeting = meetingRepository.findByMeetingIndex(index).orElseThrow(() -> new CustomException(ErrorCode.NO_CONTENT));
             Product product = meeting.getProduct();
             if (product != null) {
                 List<Explanation> explanation = explanationRepository.findAllByMeeting(meeting);
@@ -264,12 +257,12 @@ public class UserServiceImpl implements UserService {
     // 비밀번호 재설정 (암호화로 인해 복호화가 불가능) -> true 를 반환받으면 updatePassword 메소드 실행
     @Override
     public void findMyPassword(FindPasswordDTO findPasswordDTO) throws Exception {
-        User user = userRepository.findByUserId(findPasswordDTO.getUserId()).orElseThrow(() -> new Exception("No User Exists"));
+        User user = userRepository.findByUserId(findPasswordDTO.getUserId()).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
         if (!user.getName().equals(findPasswordDTO.getUserName())){
-            throw new Exception("Incorrect Name");
+            throw new CustomException(ErrorCode.NOT_MY_CONTENTS);
         }
         if (!user.getUserPhone().equals(findPasswordDTO.getUserPhone())){
-            throw new Exception("Incorrect Phone Number");
+            throw new CustomException(ErrorCode.NOT_MY_CONTENTS);
         }
         user.updatePassword(passwordEncoder, findPasswordDTO.getToBePassword());
         userRepository.save(user);
@@ -279,12 +272,12 @@ public class UserServiceImpl implements UserService {
     @Override
     public TokenDTO reissue(TokenDTO tokenDTO) throws Exception {
         if(!jwtTokenProvider.validateToken(tokenDTO.getRefreshToken())) {
-            throw new Exception("Invalid Refresh Token");
+            throw new CustomException(ErrorCode.NOT_FOUND_USER);
         }
         Authentication authentication = jwtTokenProvider.getAuthentication(tokenDTO.getAccessToken());
         String refreshToken = (String) redisTemplate.opsForValue().get("RT:" + authentication.getName());
         if (!refreshToken.equals(tokenDTO.getRefreshToken())) {
-            throw new Exception("User Information Does Not Match");
+            throw new CustomException(ErrorCode.NO_CONTENT);
         }
         TokenDTO token = jwtTokenProvider.generateToken(authentication);
         redisTemplate.opsForValue()

@@ -9,9 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.List;
 
 @Slf4j
 @RestController
@@ -38,7 +36,6 @@ public class UserController {
 
     // 로그아웃
     @PostMapping("logout")
-//    @PreAuthorize("hasAnyRole('USER')")
     @ResponseStatus(HttpStatus.OK)
     public void logout(@Validated @RequestBody UserLogoutDTO logout) throws Exception {
         userService.logout(logout);
@@ -46,7 +43,6 @@ public class UserController {
 
     // 회원 탈퇴
     @PostMapping("delete")
-//    @PreAuthorize("hasAnyRole('USER')")
     @ResponseStatus(HttpStatus.OK)
     public void delete(@Validated @RequestBody UserLogoutDTO logout) throws Exception {
         userService.delete(logout);
@@ -54,14 +50,12 @@ public class UserController {
 
     // 내 정보 조회
     @GetMapping("")
-//    @PreAuthorize("hasAnyRole('USER')")
     public ResponseEntity<?> getMyUserInfo(HttpServletResponse response) throws Exception {
         return ResponseEntity.ok(userService.getMyInfo());
     }
 
     // 내가 등록한 매물 목록 조회
     @GetMapping("me/products")
-//    @PreAuthorize("hasAnyRole('USER')")
     public ResponseEntity<?> getMyProductList(HttpServletResponse response) throws Exception {
         return ResponseEntity.ok(userService.getMyProductList());
     }
