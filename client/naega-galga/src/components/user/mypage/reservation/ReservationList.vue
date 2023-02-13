@@ -1,8 +1,7 @@
 <template>
-  <!-- 1{{ reservateList.meeting }}
+  <h1>예약 목록</h1>
   <hr />
-  2{{ reservateList.explanation }}
-  <hr /> -->
+  <!-- {{ reservateList.all }} -->
   <meeting-item
     v-for="meeting in reservateList.meeting"
     :key="meeting.meetingIndex"
@@ -35,6 +34,8 @@ export default defineComponent({
       const data = response.data;
 
       if (response.status == ResponseStatus.Ok) {
+        // console.log(data);
+        // reservateList.all.push(data);
         data.forEach(item => {
           if (item.type === "Meeting") {
             reservateList.meeting.push(item);
@@ -50,11 +51,13 @@ export default defineComponent({
     const reservateList: ReservateList = reactive({
       meeting: [],
       explanation: [],
+      all: [],
     });
 
     interface ReservateList {
       meeting: Array<any>;
       explanation: Array<any>;
+      all: Array<any>;
     }
 
     return {

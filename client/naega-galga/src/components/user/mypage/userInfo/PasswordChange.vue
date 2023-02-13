@@ -4,8 +4,11 @@
     :rules="first_rules"
     status-icon
     scroll-to-error
+    label-width="22%"
+    label-position="left"
+    v-bind:disabled="isChecked"
   >
-    <el-form-item label="기존 비밀번호" label-width="17%" prop="password">
+    <el-form-item label="기존 비밀번호" prop="password">
       <el-input
         v-model="password_change_form.password"
         type="password"
@@ -13,18 +16,21 @@
         placeholder="기존 비밀번호를 입력해주세요."
         show-password
       />
+      <el-button @click="confirmPassword" class="button-size"
+        >비밀번호 확인
+      </el-button>
     </el-form-item>
   </el-form>
-
-  <el-button @click="confirmPassword">비밀번호 확인</el-button>
 
   <el-form
     :model="password_change_form"
     :rules="second_rules"
     status-icon
     scroll-to-error
+    label-width="22%"
+    label-position="left"
   >
-    <el-form-item prop="new_password">
+    <el-form-item label="새 비밀번호" prop="new_password">
       <el-input
         v-model="password_change_form.new_password"
         v-bind:disabled="!isChecked"
@@ -35,17 +41,18 @@
       />
     </el-form-item>
 
-    <el-form-item prop="new_password_confirm">
+    <el-form-item label="새 비밀번호 확인" prop="new_password_confirm">
       <el-input
         v-model="password_change_form.new_password_confirm"
         v-bind:disabled="!isChecked"
+        class="content"
         type="password"
         placeholder="새 비밀번호를 다시 입력해주세요."
         show-password
       />
-    </el-form-item>
-    <el-form-item>
-      <el-button @click="sendChangePassword"> 비밀번호 변경 </el-button>
+      <el-button @click="sendChangePassword" class="button-size"
+        >비밀번호 변경
+      </el-button>
     </el-form-item>
   </el-form>
 </template>
@@ -170,6 +177,10 @@ export default defineComponent({
 
 <style scoped>
 .content {
-  width: 60%;
+  width: 70%;
+}
+.button-size {
+  margin-left: 5px;
+  width: 22%;
 }
 </style>
