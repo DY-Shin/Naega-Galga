@@ -13,6 +13,7 @@ export default defineComponent({
 
   setup(props) {
     const explanationItem = { ...props.explanation };
+
     return { explanationItem };
   },
 });

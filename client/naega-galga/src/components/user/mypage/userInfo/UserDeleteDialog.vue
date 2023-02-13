@@ -1,18 +1,19 @@
 <template>
-  <el-button text @click="centerDialogVisible = true"> 회원탈퇴 </el-button>
+  <el-button type="danger" @click="centerDialogVisible = true"
+    >회원탈퇴</el-button
+  >
 
   <el-dialog v-model="centerDialogVisible" title="경고" width="20%" center>
     <span id="confirm"> 정말로 회원탈퇴 하시겠습니까? </span>
     <template #footer>
       <span class="dialog-footer">
-        <el-button class="dialogbutton" @click="centerDialogVisible = false"
-          >아니오
-        </el-button>
         <el-button
           class="dialogbutton"
-          @click="goToDelete"
-          type="primary"
-          style="width: 70px"
+          type="danger"
+          @click="centerDialogVisible = false"
+          >아니오
+        </el-button>
+        <el-button class="dialogbutton" @click="goToDelete" style="width: 70px"
           >예
         </el-button>
       </span>
