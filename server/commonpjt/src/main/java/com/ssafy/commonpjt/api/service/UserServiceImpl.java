@@ -192,24 +192,25 @@ public class UserServiceImpl implements UserService {
             Product product = meeting.getProduct();
             if (product != null) {
                 List<Explanation> explanation = explanationRepository.findAllByMeeting(meeting);
+                ProductInfoDTO productInfo = new ProductInfoDTO(product);
                 // 설명회
+                ReserveResponseDTO reserve;
                 if (meeting.getOwner().getUserIndex() == user.getUserIndex()){
                     // 설명회 판매자
                     // explanation table 접근
-                    ReserveResponseDTO reserve = ReserveResponseDTO.builder()
+                    reserve = ReserveResponseDTO.builder()
                             .meetingIndex(meeting.getMeetingIndex())
                             .type("Explanation")
                             .role("Owner")
                             .meetingUrl(meeting.getMeetingUrl())
                             .reserveAt(meeting.getReserveAt())
                             .guestNumber(explanation.size())
+                            .product(productInfo)
                             .build();
-                    meetingList.add(reserve);
                 } else {
-                    ProductInfoDTO productInfo = new ProductInfoDTO(product);
                     // 설명회 구매자
                     // explanation table 에 접근
-                    ReserveResponseDTO reserve = ReserveResponseDTO.builder()
+                    reserve = ReserveResponseDTO.builder()
                             .meetingIndex(meeting.getMeetingIndex())
                             .type("Explanation")
                             .role("Guest")
@@ -218,8 +219,8 @@ public class UserServiceImpl implements UserService {
                             .owner(new OwnerDTO(meeting.getOwner()))
                             .product(productInfo)
                             .build();
-                    meetingList.add(reserve);
                 }
+                meetingList.add(reserve);
             } else {
                 if (meeting.getOwner().getUserIndex() == user.getUserIndex()) {
                     ReserveResponseDTO reserve = ReserveResponseDTO.builder()
