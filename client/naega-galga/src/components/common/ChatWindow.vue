@@ -10,8 +10,8 @@
     color="#393B44"
     size="large"
   >
-    <el-icon size="40" color="#F1F3F8">
-      <ChatDotRound />
+    <el-icon size="35" color="#F1F3F8">
+      <ChatRound />
     </el-icon>
   </el-button>
   <!-- --------------chat icon end-------------- -->
@@ -40,9 +40,19 @@
       "
       ><CircleCloseFilled
     /></el-icon>
-    <div id="chatTitle" style="font-size: 20px; margin: 10px 15px 0">
-      {{ nowOpName }}
+    <div>
+      <div
+        id="chatTitle"
+        style="font-size: 20px; margin: 10px 15px 0; float: left"
+      >
+        {{ nowOpName }}
+      </div>
+      <div id="reserve-btn" style="float: right" @click="openReserve">
+        <el-button type="primary" style="margin-left: 5px">예약</el-button>
+      </div>
     </div>
+    <div style="clear: both"></div>
+
     <div>
       <div class="chat-content">
         <div
@@ -69,17 +79,10 @@
       <el-input v-model="inputMsg" @keyup.enter="sendMessage" />
       <img
         src="@/assets/image/icon-send.png"
-        width="30"
-        height="30"
-        style="padding: 3px 7px"
+        width="20"
+        height="20"
+        style="padding: 7px 10px 7px 7px; margin: 0 5px"
         @click="sendMessage"
-      />
-    </div>
-    <div id="clock-icon">
-      <img
-        src="@/assets/image/icon-clock.png"
-        @click="openReserve"
-        width="30"
       />
     </div>
   </div>
@@ -87,7 +90,9 @@
   <!-- --------------reserve start-------------- -->
   <div v-if="isOpenReserve" class="reserveWindow">
     <div style="text-align: center">
-      <el-calendar v-model="dateValue" @click="getDate" />
+      <el-config-provider :locale="ko">
+        <el-calendar v-model="dateValue" @click="getDate" />
+      </el-config-provider>
       <form id="reserveForm">
         <div style="padding: 5px 10px 15px">
           {{ year }}년 {{ month }}월 {{ date }}일
@@ -135,12 +140,14 @@
 </template>
 <script lang="ts">
 import { defineComponent, ref, reactive, computed, watch } from "vue";
-import { ChatDotRound, CircleCloseFilled } from "@element-plus/icons-vue";
+import { ChatRound, CircleCloseFilled } from "@element-plus/icons-vue";
 import { getChatRooms, getChatContent } from "@/api/chatApi";
 import { checkReserve } from "@/api/chatApi";
 import { useStore } from "vuex";
 import Stomp from "webstomp-client";
 import SockJS from "sockjs-client";
+
+import ko from "element-plus/dist/locale/ko.mjs";
 
 export default defineComponent({
   props: {
@@ -149,7 +156,7 @@ export default defineComponent({
     getChatOpen: { type: Boolean },
   },
   components: {
-    ChatDotRound,
+    ChatRound,
     CircleCloseFilled,
   },
   setup() {
@@ -247,10 +254,6 @@ export default defineComponent({
       ampm.value = "";
       hour.value = "";
       minute.value = "";
-      // socket.stompClient.disconnect(function () {
-      //   console.log("끊겠음");
-      //   console.log(socket.stompClient.command);
-      // });
     };
 
     // ------------------------------------채팅 end------------------------------------
@@ -410,7 +413,7 @@ export default defineComponent({
       );
 
       if (isPossible.data) {
-        send(str + "\u00a0 예약이 완료 되었습니다.");
+        send(str + "\u000A 예약이 완료 되었습니다.");
         isOpenReserve.value = false;
       } else {
         alert("다른 시간을 선택해주세요.");
@@ -423,6 +426,7 @@ export default defineComponent({
     };
     // ------------------------------------달력 예약 end------------------------------------
     return {
+      ko,
       isNewChat,
       inputMsg,
       OpenChatRooms,
@@ -475,7 +479,7 @@ export default defineComponent({
 ::-webkit-scrollbar-track {
   background: rgba(218, 218, 218, 0.1); /*스크롤바 뒷 배경 색상*/
 }
-/* -----------------달력 css start----------------- */
+/* -----------------reserve css start----------------- */
 .el-calendar__body {
   padding: 15px 20px;
 }
@@ -492,7 +496,7 @@ export default defineComponent({
   padding: 8px;
   height: 40px;
 }
-/* -----------------달력 css end----------------- */
+
 .reserveWindow {
   background: rgb(255, 255, 255);
   border: 1px solid rgb(184, 184, 184);
@@ -506,13 +510,13 @@ export default defineComponent({
   width: 320px;
   height: 450px;
 }
-
+/* -----------------reserve css end----------------- */
 /* -----------------chat css start----------------- */
 #chatTitle {
-  margin: 10px 20px;
+  padding: 10px 0 15px 10px;
   font-size: 15px;
 }
-#clock-icon {
+#reserve-btn {
   cursor: pointer;
   padding: 10px;
 }
@@ -523,10 +527,9 @@ export default defineComponent({
   top: calc(50vh - 350px);
   left: calc(50vw - 200px);
   width: 400px;
-  height: 550px;
+  height: 565px;
   background: rgb(255, 255, 255);
-  border: 1px solid rgb(184, 184, 184);
-  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 20px;
   border-radius: 15px;
 }
 .chat-room .chat-content {
@@ -535,7 +538,7 @@ export default defineComponent({
   overflow-y: auto;
   border-radius: 5px;
   padding: 10px;
-  height: 400px;
+  height: 420px;
 }
 .chat-room .item {
   margin-top: 15px;
@@ -545,37 +548,38 @@ export default defineComponent({
 }
 .chat-room .item .box {
   display: inline-block;
-  max-width: 180px;
+  max-width: 220px;
   position: relative;
 }
 .chat-room .item .box .msg {
-  background: rgb(196, 196, 196);
-  border-radius: 25px;
+  background: rgb(223, 223, 223);
+  border-radius: 20px;
   padding: 8px 15px;
   text-align: left;
   word-break: break-word;
-  box-shadow: 2px 2px 2px 2px rgba(203, 203, 203, 0.2);
+  /* box-shadow: rgba(0, 0, 0, 0.1) 0px 5px 5px; */
 }
 .chat-room .item .box .time {
   font-size: 11px;
   color: #999;
   position: absolute;
   right: -75px;
-  bottom: 5px;
+  bottom: 20px;
   width: 70px;
 }
 .chat-room .item.mymsg {
   text-align: right;
 }
 .chat-room .item.mymsg .box .msg {
-  background: #d9ff71;
+  border: 1px solid rgb(111, 111, 111);
+  background: #ffffff;
 }
 .chat-room .item.mymsg .box .time {
   right: auto;
   left: -75px;
+  bottom: 20px;
 }
 .chat-room .item.on .box {
-  /* margin: 0; */
   opacity: 1;
 }
 .message-input {
@@ -583,22 +587,9 @@ export default defineComponent({
   /* position: fix; */
   top: calc(50vh + 170px);
   left: calc(50vw - 100px);
-  padding-left: 10px;
+  padding: 15px 15px;
   width: 390px;
   height: 40px;
-}
-
-.chat-list-item {
-  cursor: pointer;
-  font-weight: 700;
-  color: rgb(93, 93, 93);
-  text-align: left;
-  font-size: 15px;
-  border: none;
-  background-color: transparent;
-  width: 100%;
-  padding: 20px 30px;
-  border-bottom: 1px solid rgb(163, 163, 163);
 }
 .chat-list {
   box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
@@ -611,10 +602,19 @@ export default defineComponent({
   background-color: rgb(255, 255, 255);
   border-radius: 15px;
 }
-/* .el-popper .is-light .el-popover .el-popover--plain {
-  background-color: black;
-  width: 100px;
-} */
+
+.chat-list-item {
+  cursor: pointer;
+  font-weight: 900;
+  color: rgb(93, 93, 93);
+  text-align: left;
+  font-size: 17px;
+  border: none;
+  background-color: transparent;
+  width: 100%;
+  padding: 20px 30px;
+  border-bottom: 1px solid rgb(215, 215, 215);
+}
 
 #chat-btn {
   position: fixed;

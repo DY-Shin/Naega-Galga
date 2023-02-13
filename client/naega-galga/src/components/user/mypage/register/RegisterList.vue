@@ -1,7 +1,6 @@
 <template>
-  <h1>등록된 매물</h1>
-  {{ registList.all }}
-
+  <h1>등록한 매물</h1>
+  <!-- {{ registList.all }} -->
   <hr />
   <el-row :gutter="20">
     <register-list-item

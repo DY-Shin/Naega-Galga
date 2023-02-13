@@ -20,7 +20,7 @@ axios.interceptors.response.use(
       router.push("/");
     }
     if (status === ResponseStatus.InternalServerError) {
-      router.replace("/");
+      router.replace("/login");
     }
     return Promise.reject(error);
   }

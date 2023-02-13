@@ -1,8 +1,8 @@
 <template>
   <div class="sidebar">
-    <div @click="goToMyPage">내 정보</div>
-    <div @click="goToReservation">예약 목록</div>
-    <div @click="goToRegister">등록된 매물</div>
+    <div style="margin-bottom: 10px" @click="goToMyPage">내 정보</div>
+    <div style="margin-bottom: 10px" @click="goToReservation">예약 목록</div>
+    <div style="margin-bottom: 10px" @click="goToRegister">등록한 매물</div>
   </div>
 </template>
 
@@ -21,22 +21,19 @@ export default defineComponent({
     const goToReservation = () => {
       router.push({ name: "ReservationList" });
     };
-    const goToWish = () => {
-      router.push({ name: "WishList" });
-    };
     const goToRegister = () => {
       router.push({ name: "RegisterList" });
     };
 
-    return { goToMyPage, goToReservation, goToWish, goToRegister };
+    return { goToMyPage, goToReservation, goToRegister };
   },
 });
 </script>
 
 <style scoped>
 .sidebar {
-  border-radius: 0.5rem;
-  border: 2px solid;
-  padding: 2rem;
+  font-size: 30px;
 }
+
+/* . */
 </style>
