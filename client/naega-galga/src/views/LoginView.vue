@@ -1,7 +1,10 @@
 <template>
   <div class="wrapper">
-    <el-form :model="loginform" class="loginForm" label-width="100px">
-      <img fit:fill src="@/assets/image/logo/NGGG.png" style="height: 80px" />
+    <el-form :model="loginform" class="loginForm" label-width="25%">
+      <img
+        src="@/assets/image/logo/NGGG.png"
+        style="height: 100px; margin-bottom: 20px"
+      />
       <div class="logincontnet">
         <el-form-item label="아이디">
           <el-input v-model="loginform.id" />
@@ -67,18 +70,8 @@ export default defineComponent({
           }
         };
         composition();
-
         router.push({ path: "/" });
-      } else {
-        console.log("hello");
-        alert("오류 발생!");
       }
-      // if (status === ResponseStatus.Forbidden) {
-      //   console.log("forbidden");
-      // }
-      // if (status === ResponseStatus.InternalServerError) {
-      //   console.log("InternalServerError");
-      // }
     };
 
     return { loginform, signup, goLogin, url };
@@ -88,12 +81,12 @@ export default defineComponent({
 
 <style scoped>
 .loginForm {
-  width: 25%;
+  width: 20%;
 
-  padding-top: 30px;
+  padding-top: 40px;
   padding-bottom: 30px;
-  padding-left: 30px;
-  padding-right: 30px;
+  padding-left: 40px;
+  padding-right: 40px;
 
   text-align: center;
 
@@ -106,6 +99,6 @@ export default defineComponent({
   justify-content: center;
   align-items: center;
 
-  height: 80vh;
+  height: 85vh;
 }
 </style>

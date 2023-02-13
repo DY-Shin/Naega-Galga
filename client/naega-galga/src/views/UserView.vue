@@ -1,11 +1,8 @@
 <template>
-  <div id="mypage">
-    <div />
-    <user-side-bar />
-    <main>
-      <div id="mainpage">
-        <router-view />
-      </div>
+  <div class="wrapper">
+    <user-side-bar class="userSideBar" />
+    <main class="main">
+      <router-view />
     </main>
   </div>
 </template>
@@ -23,22 +20,21 @@ export default defineComponent({
 </script>
 
 <style scoped>
-#mypage {
-  height: flex;
+.wrapper {
+  display: flex;
+  justify-content: center;
 
   margin-top: 1rem;
-
-  display: grid;
-  grid-template-columns: 1fr 1fr 3fr 1fr;
-  column-gap: 1rem;
+  column-gap: 5rem;
 }
 
-#mainpage {
-  margin: 2rem;
+.userSideBar {
+  min-width: 180px;
+  width: 10%;
 }
 
-main {
-  border: 2px solid;
-  border-radius: 0.5rem;
+.main {
+  min-width: 540px;
+  width: 40%;
 }
 </style>
