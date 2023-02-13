@@ -1,5 +1,5 @@
 <template>
-  <div class="container-1">
+  <div class="box background-color-grey flex-column">
     <div class="main-text">온라인으로 집을 구경하고 계약까지.</div>
     <br />
     <div class="sub-text">
@@ -7,65 +7,88 @@
     </div>
   </div>
 
-  <div class="container-2">
-    <div style="text-align: center">
-      <img
-        src="https://cdn.pixabay.com/photo/2016/11/22/19/11/brick-wall-1850095_960_720.jpg"
-        alt="img"
-        vertical:middle
-      />
-      <div class="content" style="display: inline-block">
-        <div class="main-text-right">온라인으로 집을 구경하세요.</div>
-        <div class="sub-text-right">
-          원하는 지역으로 검색해 <br />매물을 볼 수 있어요.
-        </div>
-      </div>
+  <div class="box flex-row">
+    <div>
+      <video
+        loop
+        autoplay
+        muted
+        width="350"
+        style="box-shadow: rgba(0, 0, 0, 0.2) 0px 5px 15px; border-radius: 5px"
+      >
+        <source src="@/assets/image/main-content/main-1.mp4" type="video/mp4" />
+      </video>
     </div>
-  </div>
-  <div class="container-3">
-    <div style="text-align: center">
-      <div class="content" style="display: inline-block">
-        <div class="main-text-left">지도를 이용하세요.</div>
-        <div class="sub-text-left">
-          지도를 움직여 해당하는 지역의<br />
-          매물 정보를 볼 수 있어요.
-        </div>
+    <div>
+      <div class="main-text">온라인으로 집을 구경하세요.</div>
+      <div class="sub-text">
+        원하는 지역으로 검색해 <br />매물을 볼 수 있어요.
       </div>
-      <img
-        src="https://cdn.pixabay.com/photo/2016/11/22/19/11/brick-wall-1850095_960_720.jpg"
-        alt="img"
-        vertical:middle
-        width="500"
-        height="350"
-      />
     </div>
   </div>
 
-  <div class="container-4">
-    <div style="text-align: center">
-      <img
+  <div class="box flex-row background-color-grey">
+    <div>
+      <div class="main-text">지도를 이용하세요.</div>
+      <div class="sub-text">
+        지도를 움직여 해당하는 지역의<br />
+        매물 정보를 볼 수 있어요.
+      </div>
+    </div>
+    <div>
+      <video
+        loop
+        autoplay
+        muted
+        width="550"
+        style="
+          vertical-align: middle;
+          box-shadow: rgba(0, 0, 0, 0.2) 0px 5px 15px;
+          border-radius: 5px;
+        "
+      >
+        <source src="@/assets/image/main-content/main-2.mp4" type="video/mp4" />
+      </video>
+    </div>
+  </div>
+
+  <div class="box flex-column">
+    <div>
+      <!-- <img
         src="https://cdn.pixabay.com/photo/2016/11/22/19/11/brick-wall-1850095_960_720.jpg"
         alt="img"
         width="450"
         height="600"
         vertical:middle
-      />
-      <div class="content" style="display: inline-block">
-        <div class="main-text-right">판매자에게 문의하세요.</div>
-        <div class="sub-text-right">
-          판매자는 구매자의 관심 목록을 <br />미리 보고 준비할 수 있어요.
-        </div>
+      /> -->
+      <!-- <video
+        loop
+        autoplay
+        width="550"
+        style="
+          vertical-align: middle;
+          box-shadow: rgba(0, 0, 0, 0.2) 0px 5px 15px;
+        "
+      >
+        <source src="@/assets/image/main-content/main-3.mp4" type="video/mp4" />
+      </video> -->
+    </div>
+    <div>
+      <div class="main-text">판매자에게 문의하세요.</div>
+      <div class="sub-text">
+        일대일 채팅을 통해 <br />화상 미팅을 예약할 수 있어요.
       </div>
     </div>
   </div>
-  <div class="container-5">
-    <div style="text-align: center">
-      <div class="content" style="display: inline-block">
-        <div class="main-text-left">온라인 설명회에 참여하세요.</div>
-        <div class="sub-text-left">
-          매물에 온라인 설명회가 예정되어있다면 <br />누구라도 참여할 수 있어요.
-        </div>
+
+  <div class="box flex-row background-color-grey margin-bottom-minus">
+    <div>
+      <div class="main-text">온라인 설명회에 참여하세요.</div>
+      <div class="sub-text">
+        매물에 온라인 설명회가 예정되어있다면 <br />누구라도 참여할 수 있어요.
       </div>
+    </div>
+    <div>
       <img
         src="https://cdn.pixabay.com/photo/2016/11/22/19/11/brick-wall-1850095_960_720.jpg"
         alt="img"
@@ -83,64 +106,60 @@ export default {
 </script>
 
 <style scoped>
+* {
+  box-sizing: border-box;
+  scroll-behavior: smooth;
+}
+section {
+  height: 100vh;
+  overflow: auto;
+  scroll-snap-type: y mandatory;
+}
 .main-text {
-  font-size: 50px;
+  font-size: 35px;
+  margin-bottom: 15px;
 }
 .sub-text {
-  font-size: 40px;
+  font-size: 20px;
+  text-align: center;
 }
-.main-text-right {
-  margin-left: 200px;
-  font-size: 45px;
-}
-.sub-text-right {
-  margin-left: 200px;
-  font-size: 30px;
-}
-.main-text-left {
-  margin-right: 200px;
-  font-size: 45px;
-}
-.sub-text-left {
-  margin-right: 200px;
-  font-size: 30px;
-}
+
 img {
   vertical-align: middle;
 }
-.container-1 {
-  text-align: center;
-  padding: 150px 0;
-  font-size: 40px;
+
+.box {
+  scroll-snap-align: start;
+  height: 100vh;
+  padding: 0 10vw;
+}
+
+.flex-column {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.flex-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.background-color-grey {
   background-color: #ececec;
 }
-.container-2 {
-  text-align: center;
-  padding: 150px 0;
-  font-size: 40px;
+
+.box:nth-child(0) {
+  height: calc(100vh-100px);
 }
-.container-3 {
-  text-align: center;
-  padding: 150px 0;
-  font-size: 40px;
-  background-color: #ececec;
+.media {
+  box-shadow: rgba(0, 0, 0, 0.2) 0px 5px 15px;
 }
-.container-4 {
-  text-align: center;
-  padding: 100px 0;
-  font-size: 40px;
-}
-.container-5 {
-  text-align: center;
-  padding: 200px 0;
-  font-size: 40px;
-  background-color: #ececec;
-}
-.content {
-  vertical-align: middle;
-}
-.content div {
-  /* margin-left: 100px; */
-  padding: 20px 0;
+
+.margin-bottom-minus {
+  margin-bottom: -10vh;
 }
 </style>

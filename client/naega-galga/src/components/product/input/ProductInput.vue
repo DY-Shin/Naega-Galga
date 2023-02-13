@@ -195,12 +195,16 @@
           class="margin-right-small"
           type="info"
         ></el-input>
-        <el-input
-          v-model="productInfo.productHo"
-          placeholder="방 호수"
-          class="margin-right-small"
-          type="info"
-        ></el-input>
+        <div class="flex-row">
+          <el-input
+            v-model="productInfo.productHo"
+            placeholder="방 호수"
+            class="margin-right-small"
+            type="number"
+          >
+          </el-input>
+          <div>호</div>
+        </div>
       </el-row>
     </el-col>
   </el-row>
@@ -229,40 +233,21 @@
 
 <script lang="ts">
 import { computed, defineComponent, reactive } from "vue";
-import ProductImageInput from "@/components/product/input/ProductImageInput.vue";
-import AddressSearchButton from "@/components/common/AddressSearchButton.vue";
 import { useRoute } from "vue-router";
 import router from "@/router";
-import type { UploadFile } from "element-plus";
+
 import { addProduct } from "@/api/productApi";
 import ResponseStatus from "@/api/responseStatus";
-import {
-  ElRow,
-  ElCol,
-  ElCheckboxGroup,
-  ElCheckbox,
-  ElButton,
-  ElInput,
-  ElRadioGroup,
-  ElRadio,
-  ElSelect,
-  ElOption,
-} from "element-plus";
+
+import type { UploadFile } from "element-plus";
+
+import ProductImageInput from "@/components/product/input/ProductImageInput.vue";
+import AddressSearchButton from "@/components/common/AddressSearchButton.vue";
 
 export default defineComponent({
   components: {
     ProductImageInput,
     AddressSearchButton,
-    ElRow,
-    ElCol,
-    ElCheckboxGroup,
-    ElCheckbox,
-    ElButton,
-    ElInput,
-    ElRadioGroup,
-    ElRadio,
-    ElSelect,
-    ElOption,
   },
   setup() {
     //edit일때 product index
@@ -488,14 +473,8 @@ export default defineComponent({
 
       //등록
       const status = await addProduct(data);
-      if (status === ResponseStatus.Ok) {
-        router.replace("/");
-      }
-      if (status === ResponseStatus.Conflict) {
-        alert("이미 등록된 매물입니다");
-      }
-      if (status === ResponseStatus.InternalServerError) {
-        alert("서버 오류로 처리할 수 없습니다");
+      if (status === ResponseStatus.Created) {
+        alert("등록되었습니다");
       }
     };
 
@@ -574,6 +553,12 @@ hr {
 .flex-column {
   display: flex;
   flex-direction: column;
+  align-items: center;
+}
+
+.flex-row {
+  display: flex;
+  flex-direction: row;
   align-items: center;
 }
 span {

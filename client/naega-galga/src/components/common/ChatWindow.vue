@@ -56,7 +56,6 @@
               <span class="time">{{ item.createdAt }}</span>
             </div>
           </div>
-
           <div class="item" v-else>
             <div class="box">
               <p class="msg">{{ item.message }}</p>
@@ -66,7 +65,6 @@
         </div>
       </div>
     </div>
-
     <div class="message-input" style="display: inline-flex">
       <el-input v-model="inputMsg" @keyup.enter="sendMessage" />
       <img
@@ -77,8 +75,12 @@
         @click="sendMessage"
       />
     </div>
-    <div id="clock-icon" @click="openReserve">
-      <img src="@/assets/image/icon-clock.png" width="30" />
+    <div id="clock-icon">
+      <img
+        src="@/assets/image/icon-clock.png"
+        @click="openReserve"
+        width="30"
+      />
     </div>
   </div>
   <!-- --------------chat room end-------------- -->
@@ -132,23 +134,13 @@
   <!-- --------------reserve end-------------- -->
 </template>
 <script lang="ts">
-import { defineComponent, ref, watch, reactive, computed } from "vue";
-import { ChatDotRound } from "@element-plus/icons-vue";
+import { defineComponent, ref, reactive, computed, watch } from "vue";
+import { ChatDotRound, CircleCloseFilled } from "@element-plus/icons-vue";
 import { getChatRooms, getChatContent } from "@/api/chatApi";
 import { checkReserve } from "@/api/chatApi";
 import { useStore } from "vuex";
 import Stomp from "webstomp-client";
 import SockJS from "sockjs-client";
-
-import {
-  ElSelect,
-  ElOption,
-  ElIcon,
-  ElButton,
-  ElCalendar,
-  ElScrollbar,
-  ElInput,
-} from "element-plus";
 
 export default defineComponent({
   props: {
@@ -157,36 +149,35 @@ export default defineComponent({
     getChatOpen: { type: Boolean },
   },
   components: {
-    ElSelect,
-    ElOption,
-    ElIcon,
-    ElButton,
-    ElCalendar,
-    ElScrollbar,
-    ElInput,
     ChatDotRound,
+    CircleCloseFilled,
   },
-  setup(props) {
+  setup() {
     const store = useStore();
     const userIndex = computed(() => store.getters["userStore/userIndex"]);
-    const nowOpIndex = ref(); // 현재 채팅의 상대 인덱스
-    const nowOpName = ref(); // 현재 채팅의 상대 이름
-    const nowRoomIndex = ref(); // 현재 채팅의 상대 인덱스
+    const nowOpIndex = computed(() => store.getters["chatStore/opIndex"]); // 현재 채팅의 상대 인덱스
+    const nowOpName = computed(() => store.getters["chatStore/opName"]); // 현재 채팅의 상대 이름
+
+    const nowRoomIndex = computed(
+      () => store.getters["chatStore/chatRoomIndex"]
+    );
+
+    const isOpenChat = computed(
+      () => store.getters["chatStore/isChatRoomOpen"]
+    );
+
     const isOpenList = ref(false); // 채팅 목록 열림 여부
-    const isOpenChat = ref(false); // 채팅방 열림 여부
     const isNewChat = ref(false); // 새로운 채팅 여부
     const isOpenReserve = ref(false); // 예약 창 열림 여부
     const inputMsg = ref("");
 
     watch(
-      () => props.getChatOpen,
+      () => nowOpIndex.value,
       () => {
-        console.log(props.getChatUserIndex + " " + props.getChatUserName);
-        nowOpIndex.value = props.getChatUserIndex;
-        nowOpName.value = props.getChatUserName;
-        openChat();
-      },
-      { deep: true }
+        if (isOpenChat.value) {
+          openChat();
+        }
+      }
     );
 
     // ------------------------------------채팅 start------------------------------------
@@ -224,8 +215,8 @@ export default defineComponent({
 
     const setOpIndex = (index: number) => {
       // 목록에서 열 때
-      nowOpIndex.value = chatRooms[index].opIndex; // 현재 채팅 상대 업데이트해주고
-      nowOpName.value = chatRooms[index].opName;
+      store.commit("chatStore/CHANGE_OP_INDEX", chatRooms[index].opIndex); // 현재 채팅 상대 업데이트해주고
+      store.commit("chatStore/CHANGE_OP_NAME", chatRooms[index].opName);
       openChat(); // 채팅방 열기
     };
 
@@ -234,26 +225,32 @@ export default defineComponent({
       if (nowOpIndex.value == userIndex.value) {
         return;
       }
-      chatContents.splice(0); // 채팅방 내용 초기화(전에 열었던 채팅 목록 남아있음)
-      connect();
-      isOpenChat.value = true;
 
+      chatContents.splice(0); // 채팅방 내용 초기화(전에 열었던 채팅 목록 남아있음)
+
+      store.commit("chatStore/CHANGE_CHATROOM_STATUS", true);
       const list = await getChatContent(nowOpIndex.value);
-      nowRoomIndex.value = list.data.chatRoomIndex;
+      store.commit("chatStore/CHANGE_CHATROOM_INDEX", list.data.chatRoomIndex);
 
       list.data.messageList.forEach(item => chatContents.push(item));
-      isOpenChat.value = true;
       isOpenChatRooms.value = false;
+
+      connect();
     };
 
     const CloseChat = () => {
       // 채팅 닫기 버튼
-      isOpenChat.value = false;
+      store.commit("chatStore/CHANGE_CHATROOM_STATUS", false);
+      store.commit("chatStore/CHANGE_OP_INDEX", -1);
       isOpenReserve.value = false;
       dateValue.value = new Date();
       ampm.value = "";
       hour.value = "";
       minute.value = "";
+      // socket.stompClient.disconnect(function () {
+      //   console.log("끊겠음");
+      //   console.log(socket.stompClient.command);
+      // });
     };
 
     // ------------------------------------채팅 end------------------------------------
@@ -261,23 +258,35 @@ export default defineComponent({
     let serverURL;
     let socket;
 
+    let socketConnectedIdx = -1;
+
     const connect = () => {
+      if (socketConnectedIdx == nowOpIndex.value) {
+        return;
+      }
+
+      console.log("소켓 연결 시도 !");
       serverURL = `${process.env.VUE_APP_API_BASE_URL}stomp`;
       socket = new SockJS(serverURL);
       socket.stompClient = Stomp.over(socket);
-      console.log(`소켓 연결을 시도 -> 서버 주소: ${serverURL}`);
+      socket.stompClient.debug = () => {
+        // 로그가 출력 되지 않게
+        ("");
+      };
+
       socket.stompClient.connect(
         {},
-        frame => {
+        () => {
+          socketConnectedIdx = nowOpIndex.value;
           socket.connected = true;
-          console.log("소켓 연결 성공 : ", frame);
+          console.log("소켓 연결 성공 : ");
           socket.stompClient.subscribe(
             `/sub/chat/room/${nowRoomIndex.value}`,
             res => {
-              console.log("구독으로 받은 메시지 : ", res.body);
               let str = JSON.parse(res.body);
-              if (str.message.sender != userIndex.value) {
+              if (str.message.sender !== userIndex.value) {
                 chatContents.push(str.message);
+                console.log("메세지 수신");
               }
             }
           );
@@ -329,7 +338,7 @@ export default defineComponent({
             createdAt: str,
           },
         };
-
+        console.log("메세지 송신");
         socket.stompClient.send(`/pub/chat/message`, JSON.stringify(msg), {});
 
         chatContents.push({
@@ -504,6 +513,7 @@ export default defineComponent({
   font-size: 15px;
 }
 #clock-icon {
+  cursor: pointer;
   padding: 10px;
 }
 .chat-room {

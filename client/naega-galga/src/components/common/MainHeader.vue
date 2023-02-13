@@ -1,6 +1,6 @@
 <template>
   <div id="nav" v-if="isHeaderShow">
-    <router-link to="/" id="title">내가갈가[家]</router-link>
+    <img src="@/assets/image/logo/NGGG.png" class="logo" @click="redirect" />
     <div class="home-btn" v-if="isLog == false">
       <!-- 로그인 안 했을 때 -->
       <el-button
@@ -24,10 +24,9 @@
         <el-button
           v-on:click="OpenMenu"
           id="my-btn"
-          circle
           color="#393B44"
-          size="large"
           height="20px"
+          circle
         >
           <el-icon size="40" color="#F1F3F8"><UserFilled /></el-icon
         ></el-button>
@@ -101,21 +100,10 @@ import ResponseStatus from "@/api/responseStatus";
 
 import { UserFilled } from "@element-plus/icons-vue";
 
-import {
-  ElDropdown,
-  ElDropdownMenu,
-  ElDropdownItem,
-  ElIcon,
-  ElButton,
-} from "element-plus";
+import {} from "element-plus";
 
 export default defineComponent({
   components: {
-    ElDropdown,
-    ElDropdownMenu,
-    ElDropdownItem,
-    ElIcon,
-    ElButton,
     UserFilled,
   },
   setup() {
@@ -130,7 +118,10 @@ export default defineComponent({
     // isLog.value = computed(() => store.getters["userStore/isLogin"]).value;
     // console.log(isLog.value);
     // console.log(isLog.value);
-
+    const redirect = () => {
+      store.commit("chatStore/CHANGE_CHATROOM_STATUS", false);
+      router.push("/");
+    };
     const OpenMenu = () => {
       isMenu.value = true;
     };
@@ -173,6 +164,7 @@ export default defineComponent({
       close,
       Logout,
       changeEmpty,
+      redirect,
     };
   },
 
@@ -193,6 +185,13 @@ export default defineComponent({
 </script>
 
 <style scoped>
+.logo {
+  height: 80px;
+}
+
+.logo:hover {
+  cursor: pointer;
+}
 .el-dropdown {
   float: right;
   right: 20px;
@@ -259,12 +258,16 @@ export default defineComponent({
 }
 
 #nav {
-  padding: 30px 50px 30px 50px;
+  padding: 25px 50px;
   font-size: 40px;
-  text-decoration: none;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
 }
 
 #title {
+  cursor: pointer;
   white-space: nowrap;
   color: black;
   text-decoration: none;
@@ -287,14 +290,14 @@ export default defineComponent({
 #login-btn,
 #join-btn {
   /* float: right; */
-  margin-left: 20px;
-  margin-top: 20px;
   bottom: 30px;
   color: white;
 }
 
 .home-btn {
   float: right;
+  display: flex;
+  flex-direction: row;
 }
 
 .el-button--large {

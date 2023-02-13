@@ -7,11 +7,11 @@
         v-model="input"
         placeholder="검색"
         size="large"
-        @keyup.enter="getList()"
+        @keyup.enter="getList"
         style="width: 100%"
       >
         <template #append>
-          <el-button :icon="Search" @click="getList()" />
+          <el-button :icon="Search" @click="getList" />
         </template>
       </el-input>
     </div>
@@ -44,10 +44,7 @@ import { reactive, ref, defineComponent, onBeforeUpdate } from "vue";
 import { Search } from "@element-plus/icons-vue";
 import { searchProduct } from "@/api/productApi";
 
-import { ElScrollbar, ElAside, ElInput, ElButton } from "element-plus";
-
 export default defineComponent({
-  components: { ElScrollbar, ElAside, ElInput, ElButton },
   setup(_, context) {
     interface Product {
       productIndex: number;
@@ -63,27 +60,23 @@ export default defineComponent({
     }
     let input = ref("");
 
-    // const beforeInput = ref("");
     const { emit } = context;
     const whereIs = index => {
       emit("addr_idx", index);
-      emit("productClick", true);
     };
     let productList = reactive<Array<Product>>([]);
 
-    const getList = async () => {
+    const getList = async e => {
+      if (e.isComposing || e.keyCode === 229) {
+        return;
+      }
+
       productList.splice(0);
       const list = await searchProduct(input.value);
 
       list.data.forEach((product: Product) => productList.push(product));
+      console.log(list.data);
       emit("productList", productList);
-      //검색 ->  목록 가져오기
-      // if (input.value === beforeInput.value) {
-      //   beforeInput.value = input.value;
-      //   return;
-      // }
-
-      // beforeInput.value = input.value;
     };
 
     return {

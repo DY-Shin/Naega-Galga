@@ -7,5 +7,10 @@ export default {
       component: () =>
         import("@/components/meeting/one-on-one/OneOnOneMeeting.vue"),
     },
+    {
+      path: "one-on-many/:id",
+      component: () =>
+        import("@/components/meeting/one-on-many/OneOnManyMeeting.vue"),
+    },
   ],
 };

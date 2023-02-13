@@ -6,9 +6,9 @@
       :rules="rules"
       class="joinform"
       label-width="29%"
+      label-position="left"
       status-icon
       scroll-to-error
-      label-position="left"
     >
       <div class="center-div">
         <img
@@ -43,22 +43,25 @@
           v-model="fullUserPhone.first_user_phone"
           placeholder="010"
           style="flex: 3"
+          maxlength="3"
         ></el-input>
 
         <p style="flex: 1; text-align: center; margin: 0px">-</p>
 
         <el-input
           v-model="fullUserPhone.second_user_phone"
-          placeholder="0000"
+          placeholder="1234"
           style="flex: 4"
+          maxlength="4"
         ></el-input>
 
         <p style="flex: 1; text-align: center; margin: 0px">-</p>
 
         <el-input
           v-model="fullUserPhone.third_user_phone"
-          placeholder="0000"
+          placeholder="5678"
           style="flex: 4"
+          maxlength="4"
         ></el-input>
       </el-form-item>
 
@@ -69,15 +72,8 @@
         ></address-search-button>
       </el-form-item>
 
-      <el-form-item
-        label="주소"
-        prop="address_required"
-        style="margin-bottom: 1px"
-      >
+      <el-form-item label="주소" prop="user_address">
         <el-input v-model="fullAddress.roadAddress" readonly></el-input>
-      </el-form-item>
-
-      <el-form-item prop="user_address">
         <el-input
           v-model="fullAddress.detailAddress"
           placeholder="상세 주소를 입력해주세요."
@@ -89,11 +85,10 @@
         <el-checkbox label="예" v-model="visible" />
       </el-form-item>
 
-      <el-form-item prop="corporate_registration_number">
+      <el-form-item v-show="visible" prop="corporate_registration_number">
         <el-input
-          v-show="visible"
           v-model="joinform.corporate_registration_number"
-          placeholder="사업자 번호를 입력해주세요."
+          placeholder="'-' 를 뺀 10자리 사업자 번호를 입력해주세요."
         ></el-input>
       </el-form-item>
 
@@ -122,7 +117,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, ref } from "vue";
+import { defineComponent, reactive, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import type { FormInstance, FormRules } from "element-plus";
 
@@ -145,6 +140,15 @@ export default defineComponent({
 
     const joinformRef = ref<FormInstance>();
 
+    watch(
+      () => visible.value,
+      (_, prev) => {
+        if (prev) {
+          joinform.corporate_registration_number == null;
+        }
+      }
+    );
+
     const setRoadAddress = (address: string) => {
       fullAddress.roadAddress = address;
     };
@@ -156,20 +160,18 @@ export default defineComponent({
     });
 
     const user_phone = ref(
-      fullUserPhone.first_user_phone +
-        "-" +
-        fullUserPhone.second_user_phone +
-        "-" +
-        fullUserPhone.third_user_phone
+      `${fullUserPhone.first_user_phone} +
+        ${fullUserPhone.second_user_phone} +
+        ${fullUserPhone.third_user_phone}`
     );
 
     const fullAddress = reactive({
       roadAddress: "",
-      detailAddress: "",
+      detailAddress: null,
     });
 
     const user_address = ref(
-      fullAddress.roadAddress + " " + fullAddress.detailAddress
+      `${fullAddress.roadAddress} ${fullAddress.detailAddress}`
     );
 
     const joinform = reactive({
@@ -210,7 +212,7 @@ export default defineComponent({
       }
     };
 
-    const password_confirm = (rule: any, value: any, callback: any) => {
+    const password_confirm_rule = (rule: any, value: any, callback: any) => {
       if (value === "") {
         callback(new Error("비밀번호 확인은 반드시 입력해주세요"));
       } else if (joinform.password_confirm.length < 8) {
@@ -242,29 +244,46 @@ export default defineComponent({
       }
     };
 
-    const phone_confirm = (rule: any, value: any, callback: any) => {
+    const phone_rule = (rule: any, value: any, callback: any) => {
       if (
         fullUserPhone.first_user_phone == "" ||
         fullUserPhone.second_user_phone == "" ||
         fullUserPhone.third_user_phone == ""
       ) {
         callback(new Error("핸드폰 번호는 반드시 입력해주세요"));
-        // } else if () {
-        //   callback(new Error("Please input the phone"));
-        // } else if () {
-        //   callback(new Error("Please input the phone"));
+      } else if (
+        validation.phone(fullUserPhone.first_user_phone) == false ||
+        validation.phone(fullUserPhone.second_user_phone) == false ||
+        validation.phone(fullUserPhone.third_user_phone) == false
+      ) {
+        callback(new Error("핸드폰 번호는 숫자만 가능합니다!"));
       } else {
         callback();
       }
     };
 
-    const address_confirm = (rule: any, value: any, callback: any) => {
-      if (!fullAddress.roadAddress || !fullAddress.detailAddress) {
+    const address_rule = (rule: any, value: any, callback: any) => {
+      if (
+        fullAddress.roadAddress &&
+        fullAddress.detailAddress?.["length"] == 0
+      ) {
         callback(new Error("주소는 반드시 입력해주세요"));
-        // } else if () {
-        //   callback(new Error("Please input the phone"));
-        // } else if () {
-        //   callback(new Error("Please input the phone"));
+      } else {
+        callback();
+      }
+    };
+
+    const registration_number_rule = (rule: any, value: any, callback: any) => {
+      if (!joinform.corporate_registration_number && visible.value == true) {
+        callback(new Error("사업자이시면 사업자 번호는 반드시 입력해주세요"));
+      } else if (
+        validation.registration_number(
+          joinform.corporate_registration_number
+        ) == false
+      ) {
+        callback(new Error("사업자 번호는 10자리 숫자입니다."));
+      } else if (joinform.corporate_registration_number?.["length"] != 10) {
+        callback(new Error("사업자 번호는 10자리 숫자입니다."));
       } else {
         callback();
       }
@@ -290,7 +309,7 @@ export default defineComponent({
       password_confirm: [
         {
           required: true,
-          validator: password_confirm,
+          validator: password_confirm_rule,
           trigger: "blur",
         },
       ],
@@ -305,14 +324,22 @@ export default defineComponent({
 
       user_phone: [
         {
-          validator: phone_confirm,
           required: true,
+          validator: phone_rule,
           trigger: "blur",
         },
       ],
       user_address: [
         {
-          validator: address_confirm,
+          required: true,
+          validator: address_rule,
+        },
+      ],
+      corporate_registration_number: [
+        {
+          required: true,
+          validator: registration_number_rule,
+          trigger: "blur",
         },
       ],
     });

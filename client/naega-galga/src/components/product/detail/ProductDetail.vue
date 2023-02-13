@@ -18,11 +18,11 @@
       <explanation-box :productIndex="productIndex"></explanation-box>
     </div>
     <h1 class="margin-bottom-large semi-bold">매물 정보</h1>
-    <product-info
+    <product-info-component
       :product="productInfo.product"
       :building="productInfo.building"
       :seller="productInfo.seller"
-    ></product-info>
+    ></product-info-component>
     <h1 class="margin-top-large margin-bottom-large semi-bold">옵션</h1>
     <product-option-list
       :options="productInfo.options"
@@ -32,29 +32,26 @@
 </template>
 
 <script lang="ts">
+import { computed, onMounted, reactive } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { useStore } from "vuex";
+
+import { deleteProduct, getProduct } from "@/api/productApi";
+import ResponseStatus from "@/api/responseStatus";
+
 import ProductImageList from "@/components/product/detail/ProductImageList.vue";
 import ProductOptionList from "@/components/product/detail/ProductOptionList.vue";
 import RightSummaryBox from "@/components/product/detail/RightSummaryBox.vue";
 import ProductInfoComponent from "@/components/product/detail/ProductInfo.vue";
 import ExplanationBox from "@/components/product/detail/ExplanationBox.vue";
-import { computed, onMounted, reactive } from "vue";
-import { useRoute, useRouter } from "vue-router";
-import { deleteProduct, getProduct } from "@/api/productApi";
-import ResponseStatus from "@/api/responseStatus";
-import { useStore } from "vuex";
-
-import { ElRow, ElCol, ElButton } from "element-plus";
 
 export default {
   components: {
     ProductImageList,
     ProductOptionList,
     RightSummaryBox,
-    ProductInfo: ProductInfoComponent,
+    ProductInfoComponent,
     ExplanationBox,
-    ElRow,
-    ElCol,
-    ElButton,
   },
   setup() {
     const router = useRouter();
@@ -106,19 +103,20 @@ export default {
     });
 
     onMounted(async () => {
-      try {
-        const response = await getProduct(productIndex);
-        if (response.status === ResponseStatus.Ok) {
-          //product 값 갱신
-          const data = response.data;
-          productInfo.seller = data.seller;
-          productInfo.product = data.product;
-          productInfo.building = data.building;
-          productInfo.options = data.options;
-          productInfo.imagePaths = data.imagePaths;
-        }
-      } catch (error) {
-        alert("서버 오류로 실행할 수 없습니다\n잠시 후 다시 시도 해주세요");
+      const response = await getProduct(productIndex);
+      if (response.status === ResponseStatus.Ok) {
+        //product 값 갱신
+        const data = response.data;
+        productInfo.seller = data.seller;
+        productInfo.product = data.product;
+        productInfo.building = data.building;
+        productInfo.options = data.options;
+        productInfo.imagePaths = data.imagePaths;
+      }
+
+      if (response.status === ResponseStatus.NoContent) {
+        alert("정보를 찾을 수 없습니다");
+        router.back();
       }
     });
 
@@ -145,9 +143,6 @@ export default {
       }
       if (status === ResponseStatus.NoContent) {
         alert("잘못된 요청입니다");
-      }
-      if (status === ResponseStatus.InternalServerError) {
-        alert("서버 오류로 실행할 수 없습니다");
       }
     };
 

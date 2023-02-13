@@ -52,33 +52,18 @@
 
 <script lang="ts">
 import { toRef, ref } from "vue";
-import ko from "element-plus/dist/locale/ko.mjs";
 import { useRoute } from "vue-router";
+
 import { addExplanation } from "@/api/explanationApi";
 import ResponseStatus from "@/api/responseStatus";
 
-import {
-  ElConfigProvider,
-  ElButton,
-  ElSelect,
-  ElOption,
-  ElDialog,
-  ElCalendar,
-} from "element-plus";
+import ko from "element-plus/dist/locale/ko.mjs";
 
 export default {
   props: {
     isShow: {
       type: Boolean,
     },
-  },
-  components: {
-    ElConfigProvider,
-    ElButton,
-    ElSelect,
-    ElOption,
-    ElDialog,
-    ElCalendar,
   },
   setup(props, context) {
     const route = useRoute();
@@ -119,11 +104,12 @@ export default {
       const dateString = `${year}-${month}-${day} ${hour}:${minutes}:00.000`;
 
       const response = await addExplanation(productIndex, dateString);
+
       if (response.status === ResponseStatus.Created) {
         closeDialog();
       }
-      if (response.status === ResponseStatus.Conflict) {
-        alert("이미 등록된 정보입니다");
+      if (response.status === ResponseStatus.NoContent) {
+        alert("잘못된 요청입니다");
       }
     };
 
@@ -177,5 +163,13 @@ export default {
 
 .margin-right {
   margin-right: 20px;
+}
+.el-calendar {
+  background-color: var(--el-bg-color);
+}
+
+.el-calendar-table td.is-today {
+  background-color: var(--el-color-black);
+  color: var(--el-color-white);
 }
 </style>
