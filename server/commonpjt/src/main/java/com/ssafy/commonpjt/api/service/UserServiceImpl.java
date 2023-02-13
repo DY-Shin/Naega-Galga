@@ -126,6 +126,7 @@ public class UserServiceImpl implements UserService {
 
     // 유저 정보 검색
     @Override
+    @Transactional
     public UserInfoDTO getInfo(String userId) throws Exception {
         User user = userRepository.findByUserId(userId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
         return new UserInfoDTO(user);
@@ -133,6 +134,7 @@ public class UserServiceImpl implements UserService {
 
     // 내 정보 검색
     @Override
+    @Transactional
     public UserInfoDTO getMyInfo() throws Exception {
         User user = userRepository.findByUserId(SecurityUtil.getLoginUsername()).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
         return new UserInfoDTO(user);
@@ -156,6 +158,7 @@ public class UserServiceImpl implements UserService {
 
     // 내가 등록한 매물 목록 조회
     @Override
+    @Transactional
     public List<?> getMyProductList() throws Exception {
         User user = userRepository.findByUserId(SecurityUtil.getLoginUsername()).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
         return productRepository.findAllByProductSeller(user);
@@ -163,6 +166,7 @@ public class UserServiceImpl implements UserService {
 
     // 다른 유저가 등록한 매물 목록 조회
     @Override
+    @Transactional
     public List<?> getUserProductList(String userId) throws Exception {
         User user = userRepository.findByUserId(userId).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
         return productRepository.findAllByProductSeller(user);
@@ -222,8 +226,9 @@ public class UserServiceImpl implements UserService {
                 }
                 meetingList.add(reserve);
             } else {
+                ReserveResponseDTO reserve;
                 if (meeting.getOwner().getUserIndex() == user.getUserIndex()) {
-                    ReserveResponseDTO reserve = ReserveResponseDTO.builder()
+                    reserve = ReserveResponseDTO.builder()
                             .meetingIndex(meeting.getMeetingIndex())
                             .type("Meeting")
                             .role("Owner")
@@ -231,9 +236,8 @@ public class UserServiceImpl implements UserService {
                             .reserveAt(meeting.getReserveAt())
                             .guest(new GuestDTO(meeting.getGuest()))
                             .build();
-                    meetingList.add(reserve);
                 } else {
-                    ReserveResponseDTO reserve = ReserveResponseDTO.builder()
+                    reserve = ReserveResponseDTO.builder()
                             .meetingIndex(meeting.getMeetingIndex())
                             .type("Meeting")
                             .role("Guest")
@@ -241,8 +245,8 @@ public class UserServiceImpl implements UserService {
                             .reserveAt(meeting.getReserveAt())
                             .owner(new OwnerDTO(meeting.getOwner()))
                             .build();
-                    meetingList.add(reserve);
                 }
+                meetingList.add(reserve);
             }
         }
         return meetingList;
