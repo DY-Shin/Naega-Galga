@@ -17,6 +17,7 @@
             type="primary"
             :icon="Calendar"
             class="button-size"
+            @click="onClickAddExplanation"
           />
           <el-button
             v-if="canDeleteExplanation"
