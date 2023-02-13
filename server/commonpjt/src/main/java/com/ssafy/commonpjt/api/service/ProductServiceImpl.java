@@ -17,9 +17,7 @@ import java.io.FileOutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Service
 @Slf4j
@@ -43,7 +41,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Autowired
     private ObjectMapper objectMapper;
-    private String imagePath = "C:/D106/product/img/";
+    private String imagePath = "product/img/";
 
     private Product findProductByAddress(String productDetail, String jibunAddress){
         return productRepository.findByProductDetailAndBuildingBuildingAddress(productDetail, jibunAddress);
@@ -61,8 +59,6 @@ public class ProductServiceImpl implements ProductService {
         StringBuilder imageFilePathListStr = new StringBuilder();      //구분자 -> ,
 
         //이미지 파일 저장
-        //TODO : 프로젝트 파일에 넣을건지, 배포 하면 절대경로에서 상대경로로 바꿔야됨
-        //경로 -> product/img/productRoadAddress/productDetail/i.png
         for(int i=0, size=fileList.size(); i<size; i++){
             StringBuilder fullPathSb = new StringBuilder(imagePath);
             StringBuilder tmpSb = new StringBuilder();
@@ -81,15 +77,12 @@ public class ProductServiceImpl implements ProductService {
             String fileExtension = fileExtensionSplit[1];
 
             tmpSb.append(i).append(".").append(fileExtension);
-            log.info("file extension : " + fileExtension);
-            log.info("file path : " + tmpSb.toString());
 
             imageFilePathListStr.append(tmpSb.toString());
             //마지막 파일이 아니면 구분자 추가
             if(i!=size-1){
                 imageFilePathListStr.append(",");
             }
-
 
             fullPathSb.append(tmpSb.toString());
             System.out.println(fullPathSb.toString());
