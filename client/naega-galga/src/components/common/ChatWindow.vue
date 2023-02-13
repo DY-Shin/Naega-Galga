@@ -90,7 +90,9 @@
   <!-- --------------reserve start-------------- -->
   <div v-if="isOpenReserve" class="reserveWindow">
     <div style="text-align: center">
-      <el-calendar v-model="dateValue" @click="getDate" />
+      <el-config-provider :locale="ko">
+        <el-calendar v-model="dateValue" @click="getDate" />
+      </el-config-provider>
       <form id="reserveForm">
         <div style="padding: 5px 10px 15px">
           {{ year }}년 {{ month }}월 {{ date }}일
@@ -144,6 +146,8 @@ import { checkReserve } from "@/api/chatApi";
 import { useStore } from "vuex";
 import Stomp from "webstomp-client";
 import SockJS from "sockjs-client";
+
+import ko from "element-plus/dist/locale/ko.mjs";
 
 export default defineComponent({
   props: {
@@ -422,6 +426,7 @@ export default defineComponent({
     };
     // ------------------------------------달력 예약 end------------------------------------
     return {
+      ko,
       isNewChat,
       inputMsg,
       OpenChatRooms,
