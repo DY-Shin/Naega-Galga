@@ -174,13 +174,17 @@ public class UserServiceImpl implements UserService {
     public List<?> getMyReserve() throws Exception {
         User user = userRepository.findByUserId(SecurityUtil.getLoginUsername()).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_USER));
         List<Meeting> ownerMeeting = meetingRepository.findAllByOwner(user);
-        List<Explanation> guestMeeting = explanationRepository.findAllByReserveUser(user);
+        List<Meeting> guestMeeting = meetingRepository.findAllByGuest(user);
+        List<Explanation> guestExplanation = explanationRepository.findAllByReserveUser(user);
         List<Integer> meetingIndexList = new ArrayList<>();
         List<ReserveResponseDTO> meetingList = new ArrayList<>();
         for (Meeting meeting : ownerMeeting) {
             meetingIndexList.add(meeting.getMeetingIndex());
         }
-        for (Explanation explanation : guestMeeting) {
+        for (Meeting meeting : guestMeeting) {
+            meetingIndexList.add(meeting.getMeetingIndex());
+        }
+        for (Explanation explanation : guestExplanation) {
             meetingIndexList.add(explanation.getMeeting().getMeetingIndex());
         }
         for (int index : meetingIndexList) {
