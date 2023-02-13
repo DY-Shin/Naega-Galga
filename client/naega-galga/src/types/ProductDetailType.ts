@@ -43,4 +43,14 @@ interface ProductInfo {
   imagePaths: string[];
 }
 
-export { Seller, Building, Product, Options, ProductInfo };
+interface ProductSummry {
+  productIndex: number;
+  productType: string;
+  price: string;
+  floor: string;
+  managePrice: number;
+  sellerId: string;
+  sellerIndex: number;
+}
+
+export { Seller, Building, Product, Options, ProductInfo, ProductSummry };
