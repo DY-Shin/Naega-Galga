@@ -1,6 +1,6 @@
 <template>
   <el-col id="card_padding" :span="12">
-    <el-card :body-style="{ padding: '20px' }">
+    <el-card @click="product" :body-style="{ padding: '20px' }">
       <!-- 구매자&판매자 공통 부분 -->
       <p class="explanation-time">{{ explainTime }}</p>
       <p class="explanation-address">
@@ -70,10 +70,20 @@ export default defineComponent({
       router.push(`${explanationItem.meetingUrl}`);
     };
 
+    const product = () => {
+      router.push({ path: `../product/${explanationItem.meetingIndex}` });
+    };
+
     const imagePath = "productRoadAddress/productDetail/index.png";
     const imageDisplay = `${process.env.VUE_APP_API_BASE_URL}/image/display?path=${imagePath}`;
 
-    return { explanationItem, goExplanation, explainTime, imageDisplay };
+    return {
+      explanationItem,
+      goExplanation,
+      explainTime,
+      imageDisplay,
+      product,
+    };
   },
 });
 </script>

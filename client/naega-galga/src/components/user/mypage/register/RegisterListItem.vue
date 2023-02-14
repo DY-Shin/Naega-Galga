@@ -1,7 +1,7 @@
 <template>
   <el-col id="card_padding" :span="8">
-    <el-card :body-style="{ padding: '0px' }">
-      <div @click="product">
+    <el-card @click="product" :body-style="{ padding: '0px' }">
+      <div>
         <img
           :src="imageDisplay"
           class="image"
