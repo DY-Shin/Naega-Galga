@@ -1,5 +1,4 @@
 <template>
-  <h2 style="margin-top: 60px">예약된 설명회</h2>
   <el-col id="card_padding" :span="12">
     <el-card :body-style="{ padding: '20px' }">
       <!-- 구매자&판매자 공통 부분 -->
@@ -36,7 +35,7 @@
         <el-button
           round
           class="meeting-button"
-          type="success"
+          type="primary"
           @click="goExplanation"
           >설명회 참여하기</el-button
         >
