@@ -94,6 +94,8 @@ public class SearchServiceImpl implements SearchService{
             for(Integer idx : buildings) {
                 List<Product> product = productRepository.productFetchJoin(idx);
                 for(Product productInfo : product) {
+                    String[] photo = productInfo.getProductPhoto().split(",");
+                    productInfo.setProductPhoto(photo[0]);
                     searchResult.add(SearchProductResponseDTO.toDTO(productInfo, meetingRepository.existsByProduct(productInfo)));
                 }
             }
