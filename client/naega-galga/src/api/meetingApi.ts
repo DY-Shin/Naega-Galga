@@ -16,9 +16,8 @@ const leaveOutOneOnOneMeetingInfo = async (
   tokenValue: string
 ) => {
   const response = await axios.post(
-    "/api/meeting/one-on-one",
+    `/api/meeting/one-on-one/${meetingIndexValue}`,
     {
-      meetingIndex: meetingIndexValue,
       userIndex: userIndexValue,
       token: tokenValue,
     },
