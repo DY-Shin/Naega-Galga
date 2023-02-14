@@ -60,6 +60,8 @@ export default defineComponent({
     const isMine = computed(
       () => myIndex.value === props.summaryValue?.sellerIndex
     );
+
+    //on click event
     const onClickOpenChat = () => {
       let productInfo = {
         userIndex: props.summaryValue?.sellerIndex,
