@@ -23,7 +23,10 @@
       >
         <div class="right-box" @click="whereIs(index)">
           <div class="img-content">
-            <div class="list-img"></div>
+            <!-- <div > -->
+            <img class="list-img" :src="photoList[index]" />
+
+            <!-- </div> -->
             <div class="list-online-icon" v-if="item.presentation">
               <div class="text">온라인 설명회</div>
             </div>
@@ -46,6 +49,23 @@ import { searchProduct } from "@/api/productApi";
 
 export default defineComponent({
   setup(_, context) {
+    const photoList: string[] = [];
+    photoList.push(
+      "https://cdn.pixabay.com/photo/2016/11/18/17/20/living-room-1835923_960_720.jpg"
+    );
+    photoList.push(
+      "https://cdn.pixabay.com/photo/2015/10/20/18/57/furniture-998265_960_720.jpg"
+    );
+    photoList.push(
+      "https://cdn.pixabay.com/photo/2017/03/28/12/10/chairs-2181947_960_720.jpg"
+    );
+    photoList.push(
+      "https://cdn.pixabay.com/photo/2017/08/02/01/01/living-room-2569325_960_720.jpg"
+    );
+    photoList.push(
+      "https://cdn.pixabay.com/photo/2016/08/26/15/06/home-1622401_960_720.jpg"
+    );
+
     interface Product {
       productIndex: number;
       sellerIndex: number;
@@ -86,6 +106,7 @@ export default defineComponent({
       whereIs,
       Search,
       onBeforeUpdate,
+      photoList,
     };
   },
 });
@@ -105,7 +126,7 @@ export default defineComponent({
 
 .home-info-box {
   height: 100px;
-  padding: 40px 0;
+  padding: 45px 0;
 }
 .home-addr {
   font-weight: 500;
@@ -120,7 +141,7 @@ export default defineComponent({
   color: black;
   font-size: 20px;
   text-align: left;
-  margin: 15px 0;
+  margin: 18px 0;
 }
 .home-size {
   color: black;
@@ -137,19 +158,14 @@ export default defineComponent({
   width: 50%;
 }
 
-.right-box {
-  /* float: left; */
-}
-
 .list-img {
   position: relative;
+  float: left;
   left: 20px;
   top: 40px;
   text-align: center;
-  padding: 60px 0;
   width: 200px;
   height: auto;
-  background-color: #d9d9d9;
   border-radius: 5px;
 }
 
