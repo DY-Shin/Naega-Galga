@@ -68,7 +68,4 @@ public class Product {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "seller_index", referencedColumnName = "user_index")
     private User productSeller;
-
-    @OneToMany(mappedBy = "product")
-    private List<WishList> wishList = new ArrayList<>();
 }
