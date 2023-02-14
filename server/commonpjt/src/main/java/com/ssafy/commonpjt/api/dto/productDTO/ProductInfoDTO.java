@@ -1,9 +1,6 @@
 package com.ssafy.commonpjt.api.dto.productDTO;
 
-import com.ssafy.commonpjt.db.entity.Building;
-import com.ssafy.commonpjt.db.entity.Options;
 import com.ssafy.commonpjt.db.entity.Product;
-import com.ssafy.commonpjt.db.entity.User;
 import lombok.*;
 
 @Getter
@@ -17,6 +14,7 @@ public class ProductInfoDTO {
     private String productPrice;
     private int productManageCost;
     private String productSize;
+    private String productAddress;
     private String productPhoto;
 
     @Builder
@@ -27,6 +25,7 @@ public class ProductInfoDTO {
         this.productPrice = product.getProductPrice();
         this.productManageCost = product.getProductManageCost();
         this.productSize = product.getProductSize();
+        this.productAddress = product.getBuilding().getBuildingAddress();
         this.productPhoto = product.getProductPhoto();
     }
 }
