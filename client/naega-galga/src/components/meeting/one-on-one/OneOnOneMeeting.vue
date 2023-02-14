@@ -134,24 +134,20 @@ export default {
     index.meeting = computed(() => parseInt(route.params.id[0])).value;
 
     const getMeetingInfo = async (meetingIndex: number) => {
-      try {
-        const response = await getOneOnOneMeetingInfo(meetingIndex);
-        const data = response.data;
+      const response = await getOneOnOneMeetingInfo(meetingIndex);
+      const data = response.data;
 
-        index.seller = data.sellerIndex;
-        index.buyer = data.buyderIndex;
-        token = data.token;
+      index.seller = data.sellerIndex;
+      index.buyer = data.buyderIndex;
+      token = data.token;
 
-        if (index.seller === index.my) {
-          isSeller.value = true;
-          myVideo = sellerVideo;
-        }
+      if (index.seller === index.my) {
+        isSeller.value = true;
+        myVideo = sellerVideo;
+      }
 
-        if (response.status === ResponseStatus.Ok) {
-          setSession();
-        }
-      } catch (error) {
-        alert("서버 오류로 실행할 수 없습니다\n잠시 후 다시 시도해 주세요.");
+      if (response.status === ResponseStatus.Ok) {
+        setSession();
       }
     };
 
@@ -285,15 +281,18 @@ export default {
 
     const onClickExit = async () => {
       if (confirm("정말 나가시겠습니까?")) {
-        const response = await leaveOutOneOnOneMeetingInfo(
-          index.meeting,
-          index.my,
-          token
-        );
+        try {
+          const response = await leaveOutOneOnOneMeetingInfo(
+            index.meeting,
+            index.my,
+            token
+          );
 
-        if (response.status === ResponseStatus.Ok) {
-          leaveSession();
-          router.back();
+          if (response.status === ResponseStatus.Ok) {
+            leaveSession();
+          }
+        } finally {
+          router.replace("/user/reservation");
         }
       }
     };
