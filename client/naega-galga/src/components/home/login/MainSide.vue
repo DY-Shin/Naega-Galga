@@ -74,10 +74,9 @@ export default defineComponent({
         return;
       }
 
+      const list = await searchProduct(input.value);
       productList.splice(0);
       photoList.splice(0);
-      const list = await searchProduct(input.value);
-
       list.data.forEach((product: Product) => productList.push(product));
       for (let i = 0; i < productList.length; i++) {
         let path = productList[i].photo;
