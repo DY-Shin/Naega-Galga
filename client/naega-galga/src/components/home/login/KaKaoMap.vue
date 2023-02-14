@@ -213,7 +213,6 @@ export default defineComponent({
         store.commit("chatStore/GET_PRODUCT_INFO", productInfo);
         store.commit("chatStore/CHANGE_CHATROOM_STATUS", true);
         store.commit("chatStore/CHANGE_GET_CHAT_CONTENT", true);
-        store.commit("chatStore/CHANGE_ASK_STATUS", true);
         console.log("click");
       };
       bottombox.appendChild(chatbtn);
