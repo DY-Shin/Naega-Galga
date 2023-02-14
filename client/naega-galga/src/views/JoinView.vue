@@ -15,7 +15,7 @@
           class="center-item logo"
           fit:fill
           src="@/assets/image/logo/NGGG.png"
-          style="width: 100px; height: 100px"
+          style="height: 100px"
         />
       </div>
 
@@ -41,9 +41,9 @@
       <el-form-item label="핸드폰 번호" prop="user_phone" style="display: flex">
         <el-input
           v-model="fullUserPhone.first_user_phone"
-          placeholder="010"
           style="flex: 3"
           maxlength="3"
+          disabled
         ></el-input>
 
         <p style="flex: 1; text-align: center; margin: 0px">-</p>
@@ -65,7 +65,7 @@
         ></el-input>
       </el-form-item>
 
-      <el-form-item style="margin: 0px">
+      <el-form-item style="margin-bottom: 1px">
         <address-search-button
           class="address-search-button"
           @getRoadAddress="setRoadAddress"
@@ -88,7 +88,8 @@
       <el-form-item v-show="visible" prop="corporate_registration_number">
         <el-input
           v-model="joinform.corporate_registration_number"
-          placeholder=" '-' 를 뺀 10자리 사업자 번호를 입력해주세요."
+          placeholder="'-' 를 뺀 10자리 사업자 번호를 입력해주세요."
+          maxlength="10"
         ></el-input>
       </el-form-item>
 
@@ -117,7 +118,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, ref } from "vue";
+import { defineComponent, reactive, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import type { FormInstance, FormRules } from "element-plus";
 
@@ -145,17 +146,15 @@ export default defineComponent({
     };
 
     const fullUserPhone = reactive({
-      first_user_phone: null,
+      first_user_phone: "010",
       second_user_phone: null,
       third_user_phone: null,
     });
 
     const user_phone = ref(
-      fullUserPhone.first_user_phone +
-        "-" +
-        fullUserPhone.second_user_phone +
-        "-" +
-        fullUserPhone.third_user_phone
+      `${fullUserPhone.first_user_phone} +
+        ${fullUserPhone.second_user_phone} +
+        ${fullUserPhone.third_user_phone}`
     );
 
     const fullAddress = reactive({
@@ -164,7 +163,7 @@ export default defineComponent({
     });
 
     const user_address = ref(
-      fullAddress.roadAddress + " " + fullAddress.detailAddress
+      `${fullAddress.roadAddress} ${fullAddress.detailAddress}`
     );
 
     const joinform = reactive({
@@ -239,13 +238,13 @@ export default defineComponent({
 
     const phone_rule = (rule: any, value: any, callback: any) => {
       if (
-        fullUserPhone.first_user_phone == "" ||
-        fullUserPhone.second_user_phone == "" ||
-        fullUserPhone.third_user_phone == ""
+        !fullUserPhone.second_user_phone != null &&
+        fullUserPhone.second_user_phone?.["length"] != "4"
       ) {
-        callback(new Error("핸드폰 번호는 반드시 입력해주세요"));
+        callback(new Error("올바르지 않은 핸드폰 번호입니다."));
+      } else if (fullUserPhone.third_user_phone == "") {
+        callback(new Error("올바르지 않은 핸드폰 번호입니다."));
       } else if (
-        validation.phone(fullUserPhone.first_user_phone) == false ||
         validation.phone(fullUserPhone.second_user_phone) == false ||
         validation.phone(fullUserPhone.third_user_phone) == false
       ) {
@@ -256,8 +255,13 @@ export default defineComponent({
     };
 
     const address_rule = (rule: any, value: any, callback: any) => {
-      if (fullAddress.roadAddress && !fullAddress.detailAddress) {
-        callback(new Error("주소는 반드시 입력해주세요"));
+      if (!fullAddress.roadAddress) {
+        callback(new Error("주소는 반드시 입력해주세요."));
+      } else if (
+        fullAddress.roadAddress &&
+        fullAddress.detailAddress?.["length"] == 0
+      ) {
+        callback(new Error("주소는 반드시 입력해주세요."));
       } else {
         callback();
       }
@@ -271,8 +275,15 @@ export default defineComponent({
           joinform.corporate_registration_number
         ) == false
       ) {
-        callback(new Error("사업자 번호는 10자리 숫자입니다."));
-      } else if (joinform.corporate_registration_number?.["length"] != 10) {
+        callback(
+          new Error(
+            "사업자 번호는 숫자로만 이루어져 있습니다. 다시 입력해주세요."
+          )
+        );
+      } else if (
+        joinform.corporate_registration_number?.["length"] != 10 &&
+        joinform.corporate_registration_number != null
+      ) {
         callback(new Error("사업자 번호는 10자리 숫자입니다."));
       } else {
         callback();
@@ -360,6 +371,16 @@ export default defineComponent({
       router.push({ path: "/" });
     };
 
+    watch(
+      () => visible.value,
+      (_, prev) => {
+        if (prev) {
+          joinform.corporate_registration_number = null;
+          console.log(joinform.corporate_registration_number);
+        }
+      }
+    );
+
     return {
       visible,
       joinformRef,
@@ -377,11 +398,16 @@ export default defineComponent({
 </script>
 
 <style scoped>
+.wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 .joinform {
   width: 33%;
   min-width: 500px;
 
-  padding-bottom: 60px;
+  padding-bottom: 20px;
   padding-left: 50px;
   padding-right: 50px;
 
@@ -403,12 +429,6 @@ export default defineComponent({
 }
 .center-item {
   display: inline-block;
-}
-
-.wrapper {
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
 
 .scrollbar {

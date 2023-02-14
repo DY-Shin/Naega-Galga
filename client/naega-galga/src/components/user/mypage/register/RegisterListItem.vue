@@ -1,17 +1,25 @@
 <template>
   <el-col id="card_padding" :span="8">
     <el-card :body-style="{ padding: '0px' }">
-      <img
-        src="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png"
-        class="image"
-      />
+      <div @click="product">
+        <img
+          src="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png"
+          class="image"
+          style="width: 100%; height: auto"
+          fit="cover"
+        />
+      </div>
+
       <div id="card_explain">
+        <p style="font-size: large">
+          {{ registItem.productType }} {{ registItem.productPrice }}
+        </p>
+        <p style="font-size: small">
+          관리비 : {{ registItem.productManageCost }}만원
+        </p>
+        <p>평수 : {{ registItem.productSize }}m²</p>
         <p>{{ registItem.productFloor }}</p>
-        <p>{{ registItem.productType }}</p>
-        <p>{{ registItem.productPrice }}</p>
-        <p>{{ registItem.productManageCost }}</p>
-        <p>{{ registItem.productSize }}</p>
-        <p>{{ registItem.productPhoto }}</p>
+        <p></p>
       </div>
     </el-card>
   </el-col>
@@ -19,33 +27,36 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { ElCol, ElCard } from "element-plus";
+import { useRouter } from "vue-router";
 
 export default defineComponent({
   name: "RegisterListItem",
   props: {
     regist: { type: Object },
   },
-  components: {
-    ElCol,
-    ElCard,
-  },
   setup(props) {
     const registItem = { ...props.regist };
+    const router = useRouter();
+
+    const product = () => {
+      router.push({ path: `../product/${registItem.productIndex}` });
+    };
+
     console.log(registItem);
-    return { registItem };
+    return { registItem, product };
   },
 });
 </script>
 
-<style>
+<style scoped>
 #card_padding {
-  padding-bottom: 20px;
+  margin-bottom: 20px;
 }
 
 #card_explain {
-  padding-left: 20px;
-  padding-right: 20px;
-  padding-bottom: 20px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 30px;
+  padding-right: 30px;
 }
 </style>

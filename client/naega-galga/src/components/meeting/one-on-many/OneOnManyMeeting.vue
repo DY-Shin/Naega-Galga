@@ -1,11 +1,23 @@
 <template>
-  <ov-video style="border: 1px solid"></ov-video>
-  <chat-box @sendMessage="sendMessage" :message-list="messageList"></chat-box>
+  <div class="container">
+    <div class="video-group">
+      <ov-video class="seller-video" :streamManager="publisher"></ov-video>
+    </div>
 
-  <el-button round type="danger" @click="onClickExit">
-    <el-icon><Close /></el-icon>
-    <span class="button-text">나가기</span>
-  </el-button>
+    <div class="flex-column">
+      <chat-box
+        @sendMessage="sendMessage"
+        :message-list="messageList"
+      ></chat-box>
+    </div>
+  </div>
+
+  <div class="control-buttons">
+    <el-button round type="danger" @click="onClickExit">
+      <el-icon><Close /></el-icon>
+      <span class="button-text">나가기</span>
+    </el-button>
+  </div>
 </template>
 
 <script lang="ts">
@@ -26,6 +38,7 @@ import ChatBox from "@/components/meeting/one-on-one/ChatBox.vue";
 import { Message } from "@/types/MeetingChatType";
 
 import { getOneOnManyMeetingInfo } from "@/api/meetingApi";
+// import { Close } from "@element-plus/icons-vue";
 
 export default defineComponent({
   name: "JoinView",
@@ -71,6 +84,7 @@ export default defineComponent({
     let ov;
     let session;
     // let mainStreamManager;
+
     const publisher = ref();
     let subscribers: string[] = [];
 
@@ -158,6 +172,23 @@ export default defineComponent({
       setSession();
     });
 
+    //media control
+    const myMicMute = ref(false);
+    const myVideoMute = ref(false);
+    const isChatMode = ref(true);
+
+    const muteMic = () => {
+      myMicMute.value = !myMicMute.value;
+      publisher.value.publishAudio(myMicMute.value);
+    };
+    const muteVideo = () => {
+      myVideoMute.value = !myVideoMute.value;
+      publisher.value.publishVideo(myMicMute.value);
+    };
+    const toggleChatMode = () => {
+      isChatMode.value = !isChatMode.value;
+    };
+
     const onClickExit = () => {
       if (confirm("정말 나가시겠습니까?")) {
         leaveSession();
@@ -165,16 +196,45 @@ export default defineComponent({
       }
     };
 
-    return { onClickExit, sendMessage, messageList };
+    return {
+      onClickExit,
+      sendMessage,
+      messageList,
+      muteMic,
+      muteVideo,
+      toggleChatMode,
+    };
   },
 });
 </script>
 
-<style>
+<style scoped>
 .container {
   display: flex;
+  flex-direction: row;
+  height: 80vh;
 }
-
+.video-group {
+  position: relative;
+}
+.seller-video {
+  width: 60vw;
+  height: 80vh;
+  border: 1px solid;
+}
+.flex-column {
+  display: flex;
+  flex-direction: column;
+  margin-left: 1.5rem;
+}
+.control-buttons {
+  margin-top: 20px;
+  margin-left: 33vw;
+  margin-right: 33vw;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
 @media only screen and (max-width: 500px) {
   .container {
     display: flex;

@@ -32,7 +32,7 @@
 </template>
 
 <script lang="ts">
-import { computed, onMounted, reactive } from "vue";
+import { computed, reactive } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useStore } from "vuex";
 
@@ -56,12 +56,31 @@ export default {
   setup() {
     const router = useRouter();
     const route = useRoute();
+
+    //store
     const store = useStore();
     const userIndex = store.getters["userStore/userIndex"];
-
-    const productIndex = parseInt(route.params.id[0]);
-    //TODO : userStore 정리되면 적용
     const isMine = computed(() => productInfo.seller.userIndex === userIndex);
+
+    //get product info
+    const productIndex = parseInt(route.params.id[0]);
+    async function getProductDetail() {
+      const response = await getProduct(productIndex);
+      if (response.status === ResponseStatus.Ok) {
+        //product 값 갱신
+        const data = response.data;
+        productInfo.seller = data.seller;
+        productInfo.product = data.product;
+        productInfo.building = data.building;
+        productInfo.options = data.options;
+        productInfo.imagePaths = data.imagePaths;
+      }
+
+      if (response.status === ResponseStatus.NoContent) {
+        alert("정보를 찾을 수 없습니다");
+        router.back();
+      }
+    }
 
     let productInfo = reactive({
       seller: {
@@ -101,23 +120,7 @@ export default {
       },
       imagePaths: [],
     });
-
-    onMounted(async () => {
-      try {
-        const response = await getProduct(productIndex);
-        if (response.status === ResponseStatus.Ok) {
-          //product 값 갱신
-          const data = response.data;
-          productInfo.seller = data.seller;
-          productInfo.product = data.product;
-          productInfo.building = data.building;
-          productInfo.options = data.options;
-          productInfo.imagePaths = data.imagePaths;
-        }
-      } catch (error) {
-        alert("서버 오류로 실행할 수 없습니다\n잠시 후 다시 시도 해주세요");
-      }
-    });
+    getProductDetail();
 
     const summaryValue = computed(() => ({
       productIndex: productIndex,
@@ -127,10 +130,9 @@ export default {
       managePrice: productInfo.product.productManageCost,
       sellerIndex: productInfo.seller.userIndex,
       sellerId: productInfo.seller.userId,
-      //TODO : 예약 완료하고 여기 값 넣을것
-      explanationDate: "2022.01.31",
     }));
 
+    //on click event
     const onClickDeleteProduct = async () => {
       if (!confirm("정말 삭제하시겠습니까?")) {
         return;
@@ -142,9 +144,6 @@ export default {
       }
       if (status === ResponseStatus.NoContent) {
         alert("잘못된 요청입니다");
-      }
-      if (status === ResponseStatus.InternalServerError) {
-        alert("서버 오류로 실행할 수 없습니다");
       }
     };
 
