@@ -6,6 +6,12 @@
       <p class="explanation-address">
         {{ explanationItem?.product?.productAddress }} 설명회
       </p>
+      <img
+        :src="imageDisplay"
+        class="image"
+        style="width: 100%; height: auto"
+        fit="cover"
+      />
 
       <!-- 내가 구매자인 경우 -->
       <div v-if="explanationItem.role == 'Guest'">
@@ -30,7 +36,6 @@
       </div>
 
       <!-- 구매자&판매자 공통 부분 -->
-      <p>건물 사진 : {{ explanation?.product?.productPhoto }}</p>
       <div class="button-wrapper">
         <el-button
           round
@@ -65,7 +70,10 @@ export default defineComponent({
       router.push(`${explanationItem.meetingUrl}`);
     };
 
-    return { explanationItem, goExplanation, explainTime };
+    const imagePath = "productRoadAddress/productDetail/index.png";
+    const imageDisplay = `${process.env.VUE_APP_API_BASE_URL}/image/display?path=${imagePath}`;
+
+    return { explanationItem, goExplanation, explainTime, imageDisplay };
   },
 });
 </script>

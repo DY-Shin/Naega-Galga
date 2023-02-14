@@ -3,7 +3,7 @@
     <el-card :body-style="{ padding: '0px' }">
       <div @click="product">
         <img
-          src="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png"
+          :src="imageDisplay"
           class="image"
           style="width: 100%; height: auto"
           fit="cover"
@@ -42,8 +42,10 @@ export default defineComponent({
       router.push({ path: `../product/${registItem.productIndex}` });
     };
 
-    console.log(registItem);
-    return { registItem, product };
+    const imagePath = "productRoadAddress/productDetail/index.png";
+    const imageDisplay = `${process.env.VUE_APP_API_BASE_URL}/image/display?path=${imagePath}`;
+
+    return { registItem, product, imageDisplay };
   },
 });
 </script>
