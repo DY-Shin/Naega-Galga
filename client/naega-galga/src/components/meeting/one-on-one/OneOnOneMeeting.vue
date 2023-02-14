@@ -82,17 +82,20 @@
 import { ref, reactive, computed, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useStore } from "vuex";
+import { isMobileScreen } from "@/use/useMediaQuery";
 import {
   getOneOnOneMeetingInfo,
   leaveOutOneOnOneMeetingInfo,
 } from "@/api/meetingApi";
+
 import OvVideo from "./OvVideo.vue";
-import { OpenVidu, SignalOptions } from "openvidu-browser";
 import ChatBox from "@/components/meeting/one-on-one/ChatBox.vue";
-import { Message } from "@/types/MeetingChatType";
-import { isMobileScreen } from "@/use/useMediaQuery";
 import KakaoMap from "@/components/meeting/one-on-one/KakaoMap.vue";
+
+import { Message } from "@/types/MeetingChatType";
 import { MapCenterLatLng } from "@/types/MapTypes";
+
+import { OpenVidu, SignalOptions } from "openvidu-browser";
 
 import {
   Microphone,
@@ -101,6 +104,7 @@ import {
   VideoPause,
   ChatRound,
   LocationFilled,
+  Close,
 } from "@element-plus/icons-vue";
 import ResponseStatus from "@/api/responseStatus";
 
@@ -114,6 +118,7 @@ export default {
     VideoPause,
     ChatRound,
     LocationFilled,
+    Close,
     KakaoMap,
   },
   setup() {
