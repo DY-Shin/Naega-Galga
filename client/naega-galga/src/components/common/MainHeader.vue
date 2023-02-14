@@ -46,16 +46,6 @@
             </router-link></el-dropdown-item
           >
           <el-dropdown-item
-            index="2-2"
-            style="
-              --el-dropdown-menuItem-hover-fill: #dedfe0;
-              --el-dropdown-menuItem-hover-color: #73767a;
-            "
-            ><router-link to="/user/register" class="drop-text"
-              >등록된 매물</router-link
-            ></el-dropdown-item
-          >
-          <el-dropdown-item
             index="2-3"
             style="
               --el-dropdown-menuItem-hover-fill: #dedfe0;
@@ -64,16 +54,20 @@
             ><router-link to="/user/reservation" class="drop-text"
               >예약 목록</router-link
             ></el-dropdown-item
-          ><el-dropdown-item
-            index="2-3"
+          >
+
+          <el-dropdown-item
+            index="2-2"
             style="
               --el-dropdown-menuItem-hover-fill: #dedfe0;
               --el-dropdown-menuItem-hover-color: #73767a;
             "
-            ><router-link to="/user/wish" class="drop-text"
-              >찜 목록</router-link
+            ><router-link to="/user/register" class="drop-text"
+              >등록한 매물</router-link
             ></el-dropdown-item
-          ><el-dropdown-item
+          >
+
+          <el-dropdown-item
             index="2-3"
             style="
               --el-dropdown-menuItem-hover-fill: #dedfe0;
