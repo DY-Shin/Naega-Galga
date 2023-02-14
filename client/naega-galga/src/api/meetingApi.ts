@@ -10,6 +10,26 @@ const getOneOnOneMeetingInfo = async (meetingIndex: number) => {
   return response;
 };
 
+const leaveOutOneOnOneMeetingInfo = async (
+  meetingIndexValue: number,
+  userIndexValue: number,
+  tokenValue: string
+) => {
+  const response = await axios.post(
+    `/api/meeting/one-on-one/${meetingIndexValue}`,
+    {
+      userIndex: userIndexValue,
+      token: tokenValue,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${localStorageManager.getAccessToken()}`,
+      },
+    }
+  );
+  return response;
+};
+
 const getOneOnManyMeetingInfo = async (explanationIndex: number) => {
   const response = await axios.get(
     `api/meeting/one-on-many/${explanationIndex}`,
@@ -22,4 +42,8 @@ const getOneOnManyMeetingInfo = async (explanationIndex: number) => {
   return response;
 };
 
-export { getOneOnOneMeetingInfo, getOneOnManyMeetingInfo };
+export {
+  getOneOnOneMeetingInfo,
+  leaveOutOneOnOneMeetingInfo,
+  getOneOnManyMeetingInfo,
+};
