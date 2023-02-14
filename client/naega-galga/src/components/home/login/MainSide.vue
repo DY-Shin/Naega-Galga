@@ -25,7 +25,8 @@
           <div class="img-content">
             <!-- <div > -->
             <img class="list-img" :src="photoList[index]" />
-
+            <div>{{ photoList[index] }}</div>
+            <!-- <img class="list-img" :src="photoList[index]" /> -->
             <!-- </div> -->
             <div class="list-online-icon" v-if="item.presentation">
               <div class="text">온라인 설명회</div>
@@ -50,21 +51,21 @@ import { searchProduct } from "@/api/productApi";
 export default defineComponent({
   setup(_, context) {
     const photoList: string[] = [];
-    photoList.push(
-      "https://cdn.pixabay.com/photo/2016/11/18/17/20/living-room-1835923_960_720.jpg"
-    );
-    photoList.push(
-      "https://cdn.pixabay.com/photo/2015/10/20/18/57/furniture-998265_960_720.jpg"
-    );
-    photoList.push(
-      "https://cdn.pixabay.com/photo/2017/03/28/12/10/chairs-2181947_960_720.jpg"
-    );
-    photoList.push(
-      "https://cdn.pixabay.com/photo/2017/08/02/01/01/living-room-2569325_960_720.jpg"
-    );
-    photoList.push(
-      "https://cdn.pixabay.com/photo/2016/08/26/15/06/home-1622401_960_720.jpg"
-    );
+    // photoList.push(
+    //   "https://cdn.pixabay.com/photo/2016/11/18/17/20/living-room-1835923_960_720.jpg"
+    // );
+    // photoList.push(
+    //   "https://cdn.pixabay.com/photo/2015/10/20/18/57/furniture-998265_960_720.jpg"
+    // );
+    // photoList.push(
+    //   "https://cdn.pixabay.com/photo/2017/03/28/12/10/chairs-2181947_960_720.jpg"
+    // );
+    // photoList.push(
+    //   "https://cdn.pixabay.com/photo/2017/08/02/01/01/living-room-2569325_960_720.jpg"
+    // );
+    // photoList.push(
+    //   "https://cdn.pixabay.com/photo/2016/08/26/15/06/home-1622401_960_720.jpg"
+    // );
 
     interface Product {
       productIndex: number;
@@ -92,9 +93,16 @@ export default defineComponent({
       }
 
       productList.splice(0);
+      photoList.splice(0);
       const list = await searchProduct(input.value);
 
       list.data.forEach((product: Product) => productList.push(product));
+      for (let i = 0; i < productList.length; i++) {
+        let path = productList[i].photo;
+        photoList.push(
+          `${process.env.VUE_APP_API_BASE_URL}image/display?path=${path}`
+        );
+      }
       console.log(list.data);
       emit("productList", productList);
     };
@@ -156,16 +164,17 @@ export default defineComponent({
   float: left;
   height: 100%;
   width: 50%;
+  align-items: center;
 }
 
 .list-img {
   position: relative;
   float: left;
   left: 20px;
-  top: 40px;
-  text-align: center;
+  /* top: 40px; */
+
   width: 200px;
-  height: auto;
+  height: 100%;
   border-radius: 5px;
 }
 
