@@ -269,7 +269,7 @@ export default defineComponent({
       }
 
       console.log("소켓 연결 시도 !");
-      serverURL = `${process.env.VUE_APP_API_BASE_URL}stomp`;
+      serverURL = `${process.env.VUE_APP_API_BASE_URL}api/stomp`;
       socket = new SockJS(serverURL);
       socket.stompClient = Stomp.over(socket);
 
