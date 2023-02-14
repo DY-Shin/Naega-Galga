@@ -1,6 +1,5 @@
 <template>
   <h1>등록한 매물</h1>
-  <!-- {{ registList.all }} -->
   <hr />
   <el-row :gutter="20">
     <register-list-item
@@ -45,7 +44,7 @@ export default defineComponent({
 });
 </script>
 
-<style>
+<style scoped>
 #product_set {
   padding-top: 20px;
   padding-bottom: 10px;

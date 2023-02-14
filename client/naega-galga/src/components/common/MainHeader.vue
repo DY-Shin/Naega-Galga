@@ -70,15 +70,6 @@
               --el-dropdown-menuItem-hover-fill: #dedfe0;
               --el-dropdown-menuItem-hover-color: #73767a;
             "
-            ><router-link to="/user/wish" class="drop-text"
-              >찜 목록</router-link
-            ></el-dropdown-item
-          ><el-dropdown-item
-            index="2-3"
-            style="
-              --el-dropdown-menuItem-hover-fill: #dedfe0;
-              --el-dropdown-menuItem-hover-color: #73767a;
-            "
             ><router-link to="/" class="drop-text"
               ><span @click="Logout">로그아웃</span></router-link
             ></el-dropdown-item
