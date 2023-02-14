@@ -16,7 +16,7 @@
         placeholder="기존 비밀번호를 입력해주세요."
         show-password
       />
-      <el-button @click="confirmPassword" class="button-size"
+      <el-button type="primary" @click="confirmPassword" class="button-size"
         >비밀번호 확인
       </el-button>
     </el-form-item>
@@ -50,7 +50,7 @@
         placeholder="새 비밀번호를 다시 입력해주세요."
         show-password
       />
-      <el-button @click="sendChangePassword" class="button-size"
+      <el-button @click="sendChangePassword" type="primary" class="button-size"
         >비밀번호 변경
       </el-button>
     </el-form-item>
