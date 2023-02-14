@@ -14,9 +14,9 @@
         autoplay
         muted
         width="350"
-        style="box-shadow: rgba(0, 0, 0, 0.2) 0px 5px 15px; border-radius: 5px"
+        style="box-shadow: rgba(0, 0, 0, 0.2) 0px 5px 15px; border-radius: 10px"
       >
-        <source src="@/assets/image/main-content/main-1.mp4" type="video/mp4" />
+        <source src="@/assets/video/main-1.mp4" type="video/mp4" />
       </video>
     </div>
     <div>
@@ -44,34 +44,29 @@
         style="
           vertical-align: middle;
           box-shadow: rgba(0, 0, 0, 0.2) 0px 5px 15px;
-          border-radius: 5px;
+          border-radius: 10px;
         "
       >
-        <source src="@/assets/image/main-content/main-2.mp4" type="video/mp4" />
+        <source src="@/assets/video/main-2.mp4" type="video/mp4" />
       </video>
     </div>
   </div>
 
-  <div class="box flex-column">
+  <div class="box flex-row">
     <div>
-      <!-- <img
-        src="https://cdn.pixabay.com/photo/2016/11/22/19/11/brick-wall-1850095_960_720.jpg"
-        alt="img"
-        width="450"
-        height="600"
-        vertical:middle
-      /> -->
-      <!-- <video
+      <video
         loop
         autoplay
-        width="550"
+        muted
+        width="350"
         style="
           vertical-align: middle;
           box-shadow: rgba(0, 0, 0, 0.2) 0px 5px 15px;
+          border-radius: 10px;
         "
       >
-        <source src="@/assets/image/main-content/main-3.mp4" type="video/mp4" />
-      </video> -->
+        <source src="@/assets/video/main-3.mp4" type="video/mp4" />
+      </video>
     </div>
     <div>
       <div class="main-text">판매자에게 문의하세요.</div>
