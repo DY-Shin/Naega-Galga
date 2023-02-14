@@ -1,17 +1,25 @@
 <template>
   <h1>예약 목록</h1>
   <hr />
-  <meeting-item
-    v-for="meeting in reservateList.meeting"
-    :key="meeting.meetingIndex"
-    :meeting="meeting"
-  />
+  <h2>예약된 미팅</h2>
+  <el-row :gutter="20">
+    <meeting-item
+      v-for="meeting in reservateList.meeting"
+      :key="meeting.meetingIndex"
+      :meeting="meeting"
+    />
+  </el-row>
 
-  <explanation-item
-    v-for="item in reservateList.explanation"
-    :key="item.meetingIndex"
-    :explanation="item"
-  />
+  <hr />
+
+  <h2 style="margin-top: 60px">예약된 설명회</h2>
+  <el-row :gutter="20">
+    <explanation-item
+      v-for="item in reservateList.explanation"
+      :key="item.meetingIndex"
+      :explanation="item"
+    />
+  </el-row>
 </template>
 
 <script lang="ts">

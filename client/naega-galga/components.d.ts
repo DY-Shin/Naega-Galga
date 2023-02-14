@@ -8,7 +8,6 @@ export {}
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
     AddressSearchButton: typeof import('./src/components/common/AddressSearchButton.vue')['default']
-    AlertComponent: typeof import('./src/components/common/AlertComponent.vue')['default']
     ChatBox: typeof import('./src/components/meeting/one-on-one/ChatBox.vue')['default']
     ChatWindow: typeof import('./src/components/common/ChatWindow.vue')['default']
     ElAside: typeof import('element-plus/es')['ElAside']
