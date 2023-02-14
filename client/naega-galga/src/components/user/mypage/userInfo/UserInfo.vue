@@ -34,7 +34,9 @@
 
         <div class="content" v-show="!info.corporate_registration_number"></div>
 
-        <el-button @click="putUserInfo" class="button-size">수정하기</el-button>
+        <el-button @click="putUserInfo" type="primary" class="button-size"
+          >수정하기</el-button
+        >
       </el-form-item>
     </el-form>
 
@@ -107,7 +109,10 @@
           v-model="changeform.corporate_registration_number"
           placeholder=" '-' 를 뺀 10자리 사업자 번호를 입력해주세요."
         ></el-input>
-        <el-button @click="submitForm(changeformRef)" class="button-size"
+        <el-button
+          @click="submitForm(changeformRef)"
+          type="primary"
+          class="button-size"
           >저장하기</el-button
         >
       </el-form-item>

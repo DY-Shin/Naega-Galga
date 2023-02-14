@@ -16,8 +16,12 @@
             @keyup.enter="goLogin"
           />
         </el-form-item>
-        <el-button class="signup-button" @click="signup">회원가입</el-button>
-        <el-button class="login-button" @click="goLogin">로그인</el-button>
+        <el-button class="signup-button" type="primary" @click="signup"
+          >회원가입</el-button
+        >
+        <el-button class="login-button" type="primary" @click="goLogin"
+          >로그인</el-button
+        >
       </div>
     </el-form>
     <div />
@@ -56,10 +60,12 @@ export default defineComponent({
     const goLogin = async () => {
       const response = await login(loginform);
       const status = response.status;
+
+      localStorageManager.setAccessToken(response.data.accessToken);
+      localStorageManager.setRefreshToken(response.data.refreshToken);
+
       if (status === ResponseStatus.Ok) {
         store.commit("userStore/CHECK_TOKEN");
-        localStorageManager.setAccessToken(response.data.accessToken);
-        localStorageManager.setRefreshToken(response.data.refreshToken);
 
         const composition = async () => {
           const response = await getUserInfo();
