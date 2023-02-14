@@ -64,6 +64,11 @@ export default {
       const kakaoCoords = new window.kakao.maps.LatLng(coords.y, coords.x);
       window.map.setCenter(kakaoCoords);
       window.map.setLevel(5);
+      const marker = new window.kakao.maps.Marker({
+        position: kakaoCoords,
+      });
+
+      marker.setMap(window.map);
     }
 
     //판매자용
