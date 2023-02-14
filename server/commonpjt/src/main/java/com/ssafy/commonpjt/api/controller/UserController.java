@@ -36,7 +36,6 @@ public class UserController {
 
     // 로그아웃
     @PostMapping("logout")
-//    @PreAuthorize("hasAnyRole('USER')")
     @ResponseStatus(HttpStatus.OK)
     public void logout(@Validated @RequestBody UserLogoutDTO logout) throws Exception {
         userService.logout(logout);
@@ -44,7 +43,6 @@ public class UserController {
 
     // 회원 탈퇴
     @PostMapping("delete")
-//    @PreAuthorize("hasAnyRole('USER')")
     @ResponseStatus(HttpStatus.OK)
     public void delete(@Validated @RequestBody UserLogoutDTO logout) throws Exception {
         userService.delete(logout);
@@ -52,14 +50,12 @@ public class UserController {
 
     // 내 정보 조회
     @GetMapping("")
-//    @PreAuthorize("hasAnyRole('USER')")
     public ResponseEntity<?> getMyUserInfo(HttpServletResponse response) throws Exception {
         return ResponseEntity.ok(userService.getMyInfo());
     }
 
     // 내가 등록한 매물 목록 조회
     @GetMapping("me/products")
-//    @PreAuthorize("hasAnyRole('USER')")
     public ResponseEntity<?> getMyProductList(HttpServletResponse response) throws Exception {
         return ResponseEntity.ok(userService.getMyProductList());
     }
@@ -74,6 +70,12 @@ public class UserController {
     @GetMapping("{userId}/products")
     public ResponseEntity<?> getUserProductList(@Validated @PathVariable("userId") String userId) throws Exception {
         return ResponseEntity.ok(userService.getUserProductList(userId));
+    }
+
+    // 예약 목록 조회
+    @GetMapping("me/reservations")
+    public ResponseEntity<?> getMyReservations(HttpServletResponse response) throws Exception {
+        return ResponseEntity.ok(userService.getMyReserve());
     }
 
     // 내 정보 수정
@@ -98,7 +100,7 @@ public class UserController {
 
     // 아이디 찾기
     @PostMapping("find/id")
-    public ResponseEntity<?> findMyUserId(@Validated @RequestBody FindIdDTO findIdDTO) throws Exception {
+    public ResponseEntity<?> findMyUserId(@Validated @RequestBody FindIdDTO findIdDTO) {
         return ResponseEntity.ok(userService.findMyUserId(findIdDTO.getUserName()));
     }
 
@@ -107,5 +109,11 @@ public class UserController {
     public ResponseEntity<?> findMyPassword(@Validated @RequestBody FindPasswordDTO findPasswordDTO) throws Exception {
         userService.findMyPassword(findPasswordDTO);
         return ResponseEntity.ok("Password Changed");
+    }
+
+    // 토큰 만료시 재발급
+    @PostMapping("reissue")
+    public TokenDTO reissue(@Validated @RequestBody TokenDTO tokenDTO) throws Exception {
+        return userService.reissue(tokenDTO);
     }
 }

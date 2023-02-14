@@ -19,6 +19,12 @@ public interface MeetingRepository extends JpaRepository<Meeting, Integer> {
 
     Meeting findByProductAndOwner(Product product, User owner);
 
+    Optional<Meeting> findByMeetingIndex(Integer meetingIndex);
+
+    List<Meeting> findAllByOwner(User owner);
+
+    List<Meeting> findAllByGuest(User guest);
+
     Meeting findByProduct(Product product);
 
     List<Meeting> findAllByProduct(Product product);

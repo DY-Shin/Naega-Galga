@@ -45,9 +45,6 @@ public class User implements UserDetails {
     @Column(nullable = false, length = 100)
     private String userAddress;
 
-    @OneToMany(mappedBy = "user", orphanRemoval = true)
-    private List<WishList> wishList = new ArrayList<>();
-
     @OneToMany(mappedBy = "productSeller", orphanRemoval = true)
     private List<Product> productSeller = new ArrayList<>();
 
