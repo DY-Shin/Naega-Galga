@@ -11,9 +11,8 @@
       </div>
 
       <div id="card_explain">
-        {{ registItem }}
         <p style="font-size: large">
-          {{ registItem.productType }}{{ registItem.productPrice }}
+          {{ registItem.productType }} {{ registItem.productPrice }}
         </p>
         <p style="font-size: small">
           관리비 : {{ registItem.productManageCost }}만원
@@ -49,7 +48,7 @@ export default defineComponent({
 });
 </script>
 
-<style>
+<style scoped>
 #card_padding {
   margin-bottom: 20px;
 }
