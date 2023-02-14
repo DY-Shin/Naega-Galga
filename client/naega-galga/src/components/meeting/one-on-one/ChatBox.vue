@@ -47,7 +47,7 @@ export default {
   setup(props, context) {
     const messageListRef = toRef(props, "messageList");
     const inputtedMessage = ref("");
-    // const messageBoxRef = ref();
+    const messageBoxRef = ref();
     const { emit } = context;
 
     const onTextAreaKeyUp = event => {
@@ -70,9 +70,9 @@ export default {
         text: message,
         sendedTime: new Date(),
       });
+
+      messageBoxRef.value.scrollTop = messageBoxRef.value.scrollHeight;
       inputtedMessage.value = "";
-      //TODO : 안됨 고칠것
-      // messageBoxRef.value.scrollTop = messageBoxRef.value.scrollHeight;
     };
 
     const onClickSendMessage = () => {
@@ -102,7 +102,7 @@ export default {
   flex: 1;
   margin-top: 1rem;
   width: 28vw;
-  background-color: rgba(236, 245, 255, 0.5);
+  background-color: #fafafa;
 }
 
 #message-box-container {
@@ -147,19 +147,21 @@ export default {
 }
 .message-box {
   padding: 6px 10px;
-  border-radius: 6px;
+  border-radius: 20px;
   position: relative;
-  background: var(--el-color-warning-light-7);
+  background: #ffffff;
   color: #6c6c6c;
   font-size: 12px;
+  padding: 8px 15px;
   margin-right: 20px;
   margin-top: 5px;
   max-width: 40%;
   word-break: break-all;
   white-space: pre-wrap;
+  border: 1px solid rgb(111, 111, 111);
 }
 .message-partner {
-  background: var(--el-color-primary-light-7);
+  background: rgb(223, 223, 223);
   align-self: flex-start;
   margin-left: 20px;
 }
