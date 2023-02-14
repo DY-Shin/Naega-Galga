@@ -271,8 +271,8 @@ export default defineComponent({
       console.log("소켓 연결 시도 !");
       serverURL = `${process.env.VUE_APP_API_BASE_URL}stomp`;
       socket = new SockJS(serverURL);
-      // socket.close();
       socket.stompClient = Stomp.over(socket);
+
       socket.stompClient.debug = () => {
         // 로그가 출력 되지 않게
         ("");
@@ -283,22 +283,16 @@ export default defineComponent({
         () => {
           let addr = `/sub/chat/room/${nowRoomIndex.value}`;
 
-          socket.stompClient.current;
           socketConnectedIdx = nowOpIndex.value;
           socket.connected = true;
           console.log("소켓 연결 성공 : ");
-          let sub = socket.stompClient.subscribe(addr, res => {
+          socket.stompClient.subscribe(addr, res => {
             let str = JSON.parse(res.body);
             if (str.message.sender !== userIndex.value) {
               chatContents.push(str.message);
               console.log("메세지 수신");
             }
           });
-
-          if (!isOpenChat.value) {
-            sub.unsubscribe();
-            console.log("구취");
-          }
         },
         error => {
           // 소켓 연결 실패
