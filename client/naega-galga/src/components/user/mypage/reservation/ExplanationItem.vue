@@ -1,11 +1,17 @@
 <template>
   <el-col id="card_padding" :span="12">
-    <el-card :body-style="{ padding: '20px' }">
+    <el-card @click="product" :body-style="{ padding: '20px' }">
       <!-- 구매자&판매자 공통 부분 -->
       <p class="explanation-time">{{ explainTime }}</p>
       <p class="explanation-address">
         {{ explanationItem?.product?.productAddress }} 설명회
       </p>
+      <img
+        :src="imageDisplay"
+        class="image"
+        style="width: 100%; height: auto"
+        fit="cover"
+      />
 
       <!-- 내가 구매자인 경우 -->
       <div v-if="explanationItem.role == 'Guest'">
@@ -30,7 +36,6 @@
       </div>
 
       <!-- 구매자&판매자 공통 부분 -->
-      <p>건물 사진 : {{ explanation?.product?.productPhoto }}</p>
       <div class="button-wrapper">
         <el-button
           round
@@ -65,7 +70,19 @@ export default defineComponent({
       router.push(`${explanationItem.meetingUrl}`);
     };
 
-    return { explanationItem, goExplanation, explainTime };
+    const product = () => {
+      router.push({ path: `../product/${explanationItem.meetingIndex}` });
+    };
+
+    const imageDisplay = `${process.env.VUE_APP_API_BASE_URL}/image/display?path=${explanationItem?.product?.productPhoto}`;
+
+    return {
+      explanationItem,
+      goExplanation,
+      explainTime,
+      imageDisplay,
+      product,
+    };
   },
 });
 </script>
