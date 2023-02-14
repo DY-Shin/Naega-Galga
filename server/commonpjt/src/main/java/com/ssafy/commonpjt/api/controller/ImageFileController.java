@@ -21,7 +21,7 @@ import java.nio.file.Paths;
 @RequestMapping("/image")
 public class ImageFileController {
 
-    private String imagePath = "C:/D106/product/img/";
+    private String imagePath = "product/img/";
     @GetMapping("/display")
     public ResponseEntity<?> displayImage(@RequestParam(value="path")String path){
         StringBuilder imagepathSb = new StringBuilder(imagePath);
