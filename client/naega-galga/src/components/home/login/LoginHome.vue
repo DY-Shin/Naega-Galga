@@ -12,7 +12,6 @@
         ></ka-kao-map>
       </el-container>
     </el-container>
-    <chat-window></chat-window>
   </div>
 </template>
 
@@ -20,13 +19,16 @@
 import { defineComponent, ref } from "vue";
 import MainSide from "@/components/home/login/MainSide.vue";
 import KaKaoMap from "@/components/home/login/KaKaoMap.vue";
-import ChatWindow from "@/components/common/ChatWindow.vue";
+import { useStore } from "vuex";
 
 export default defineComponent({
   name: "addressInfo",
-  components: { MainSide, KaKaoMap, ChatWindow },
+  components: { MainSide, KaKaoMap },
 
   setup() {
+    const store = useStore();
+    store.commit("chatStore/CHANGE_CHATROOM_STATUS", false);
+
     const idxProxy = ref();
     const sendIdx = (sendIdx: number) => {
       idxProxy.value = sendIdx;

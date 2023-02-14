@@ -14,20 +14,25 @@
     <div class="font-medium margin-top">
       {{ summary.sellerId }}
     </div>
-    <div class="margin-top width-full">
-      <el-button type="primary" class="width-full">문의하기</el-button>
+    <div v-if="!isMine" class="margin-top width-full">
+      <el-button type="primary" class="width-full" @click="onClickOpenChat"
+        >문의하기</el-button
+      >
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from "vue";
+import { computed, defineComponent, PropType } from "vue";
+import { useStore } from "vuex";
 import { Plus } from "@element-plus/icons-vue";
+
+import { ProductSummry } from "@/types/ProductDetailType";
 
 export default defineComponent({
   props: {
     summaryValue: {
-      type: Object,
+      type: Object as PropType<ProductSummry>,
       value: {
         productIndex: Number,
         productType: String,
@@ -40,7 +45,6 @@ export default defineComponent({
     },
   },
   setup(props) {
-    // const userIndex = 1;
     const summary = computed(() => {
       const obj = { ...props.summaryValue };
       return {
@@ -51,9 +55,29 @@ export default defineComponent({
       };
     });
 
+    const store = useStore();
+    const myIndex = computed(() => store.getters["userStore/userIndex"]);
+    const isMine = computed(
+      () => myIndex.value === props.summaryValue?.sellerIndex
+    );
+
+    //on click event
+    const onClickOpenChat = () => {
+      let productInfo = {
+        userIndex: props.summaryValue?.sellerIndex,
+        userName: props.summaryValue?.sellerId,
+      };
+
+      store.commit("chatStore/GET_PRODUCT_INFO", productInfo);
+      store.commit("chatStore/CHANGE_CHATROOM_STATUS", true);
+      store.commit("chatStore/CHANGE_GET_CHAT_CONTENT", true);
+    };
+
     return {
-      summary,
       Plus,
+      summary,
+      isMine,
+      onClickOpenChat,
     };
   },
 });

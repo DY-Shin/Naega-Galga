@@ -1,7 +1,10 @@
 <template>
   <div class="wrapper">
-    <el-form :model="loginform" class="loginForm" label-width="100px">
-      <img fit:fill src="@/assets/image/logo/NGGG.png" style="height: 80px" />
+    <el-form :model="loginform" class="loginForm" label-width="25%">
+      <img
+        src="@/assets/image/logo/NGGG.png"
+        style="height: 100px; margin-bottom: 20px"
+      />
       <div class="logincontnet">
         <el-form-item label="아이디">
           <el-input v-model="loginform.id" />
@@ -13,8 +16,12 @@
             @keyup.enter="goLogin"
           />
         </el-form-item>
-        <el-button class="signup-button" @click="signup">회원가입</el-button>
-        <el-button class="login-button" @click="goLogin">로그인</el-button>
+        <el-button class="signup-button" type="primary" @click="signup"
+          >회원가입</el-button
+        >
+        <el-button class="login-button" type="primary" @click="goLogin"
+          >로그인</el-button
+        >
       </div>
     </el-form>
     <div />
@@ -53,10 +60,12 @@ export default defineComponent({
     const goLogin = async () => {
       const response = await login(loginform);
       const status = response.status;
+
+      localStorageManager.setAccessToken(response.data.accessToken);
+      localStorageManager.setRefreshToken(response.data.refreshToken);
+
       if (status === ResponseStatus.Ok) {
         store.commit("userStore/CHECK_TOKEN");
-        localStorageManager.setAccessToken(response.data.accessToken);
-        localStorageManager.setRefreshToken(response.data.refreshToken);
 
         const composition = async () => {
           const response = await getUserInfo();
@@ -67,16 +76,8 @@ export default defineComponent({
           }
         };
         composition();
-
         router.push({ path: "/" });
       }
-      if (status === ResponseStatus.Forbidden) {
-        console.log("forbidden");
-      }
-      if (status === ResponseStatus.InternalServerError) {
-        console.log("InternalServerError");
-      }
-      console.log(status);
     };
 
     return { loginform, signup, goLogin, url };
@@ -86,12 +87,12 @@ export default defineComponent({
 
 <style scoped>
 .loginForm {
-  width: 25%;
+  width: 20%;
 
-  padding-top: 30px;
+  padding-top: 40px;
   padding-bottom: 30px;
-  padding-left: 30px;
-  padding-right: 30px;
+  padding-left: 40px;
+  padding-right: 40px;
 
   text-align: center;
 
@@ -104,6 +105,6 @@ export default defineComponent({
   justify-content: center;
   align-items: center;
 
-  height: 80vh;
+  height: 85vh;
 }
 </style>

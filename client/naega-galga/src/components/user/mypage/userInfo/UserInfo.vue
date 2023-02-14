@@ -1,15 +1,15 @@
 <template>
   <div id="mypagedetail">
-    <span>
-      <h1>내 정보</h1>
-      <h1>보안</h1>
-    </span>
+    <h1>내 정보</h1>
     <hr />
+
     <!-- 유저 정보를 보여주는 부분 -->
-    <el-form v-if="!isChange" label-width="17%" label-position="left">
+
+    <el-form v-if="!isChange" label-width="22%" label-position="left">
       <el-form-item label="아이디">
         {{ info.user_id }}
       </el-form-item>
+
       <el-form-item label="이름">
         {{ info.user_name }}
       </el-form-item>
@@ -24,7 +24,7 @@
         {{ info.user_address }}
       </el-form-item>
       <el-form-item label="사업자 번호">
-        <div class="content">
+        <div class="content" v-show="info.corporate_registration_number">
           {{ info.corporate_registration_number?.slice(0, 3) }}
           -
           {{ info.corporate_registration_number?.slice(3, 5) }}
@@ -32,7 +32,11 @@
           {{ info.corporate_registration_number?.slice(5, 10) }}
         </div>
 
-        <el-button @click="putUserInfo">수정하기</el-button>
+        <div class="content" v-show="!info.corporate_registration_number"></div>
+
+        <el-button @click="putUserInfo" type="primary" class="button-size"
+          >수정하기</el-button
+        >
       </el-form-item>
     </el-form>
 
@@ -42,7 +46,7 @@
       ref="changeformRef"
       :model="changeform"
       :rules="rules"
-      label-width="17%"
+      label-width="22%"
       label-position="left"
     >
       <el-form-item label="아이디">
@@ -60,6 +64,7 @@
             placeholder="010"
             style="flex: 3"
             maxlength="3"
+            disabled
           ></el-input>
           <p style="flex: 1; text-align: center; margin: 0px">-</p>
           <el-input
@@ -79,15 +84,15 @@
       </el-form-item>
 
       <el-form-item label="주소" prop="user_address">
-        <div style="width: 60%; display: flex">
-          <el-input v-model="fullAddress.roadAddress" readonly></el-input>
-          <el-form-item style="margin: 0px">
-            <address-search-button
-              class="address-search-button"
-              @getRoadAddress="setRoadAddress"
-            ></address-search-button>
-          </el-form-item>
-        </div>
+        <el-input
+          class="content"
+          v-model="fullAddress.roadAddress"
+          readonly
+        ></el-input>
+        <address-search-button
+          class="address-search-button button-size"
+          @getRoadAddress="setRoadAddress"
+        ></address-search-button>
 
         <el-form-item class="content">
           <el-input
@@ -104,12 +109,18 @@
           v-model="changeform.corporate_registration_number"
           placeholder=" '-' 를 뺀 10자리 사업자 번호를 입력해주세요."
         ></el-input>
-        <el-button @click="submitForm(changeformRef)">저장하기</el-button>
+        <el-button
+          @click="submitForm(changeformRef)"
+          type="primary"
+          class="button-size"
+          >저장하기</el-button
+        >
       </el-form-item>
     </el-form>
   </div>
 
-  <hr />
+  <hr style="margin-bottom: 100px" />
+
   <h1>비밀번호 변경</h1>
 
   <hr />
@@ -170,21 +181,13 @@ export default defineComponent({
     const info = computed(() => store.state.userStore.user_info);
 
     const fullUserPhone = reactive({
-      first_user_phone: null,
+      first_user_phone: "010",
       second_user_phone: null,
       third_user_phone: null,
     });
 
-    // const user_phone = ref(
-    //   fullUserPhone.first_user_phone +
-    //     "-" +
-    //     fullUserPhone.second_user_phone +
-    //     "-" +
-    //     fullUserPhone.third_user_phone
-    // );
-
     const user_phone = ref(
-      `${fullUserPhone.first_user_phone} ${fullUserPhone.second_user_phone} - ${fullUserPhone.third_user_phone}`
+      `${fullUserPhone.first_user_phone} ${fullUserPhone.second_user_phone} ${fullUserPhone.third_user_phone}`
     );
 
     const fullAddress = reactive({
@@ -193,7 +196,7 @@ export default defineComponent({
     });
 
     const user_address = ref(
-      fullAddress.roadAddress + " " + fullAddress.detailAddress
+      `${fullAddress.roadAddress} ${fullAddress.detailAddress}`
     );
 
     const changeform = reactive({
@@ -221,13 +224,13 @@ export default defineComponent({
 
     const phone_rule = (rule: any, value: any, callback: any) => {
       if (
-        fullUserPhone.first_user_phone == "" ||
-        fullUserPhone.second_user_phone == "" ||
-        fullUserPhone.third_user_phone == ""
+        !fullUserPhone.second_user_phone != null &&
+        fullUserPhone.second_user_phone?.["length"] != "4"
       ) {
-        callback(new Error("핸드폰 번호는 반드시 입력해주세요"));
+        callback(new Error("올바르지 않은 핸드폰 번호입니다."));
+      } else if (fullUserPhone.third_user_phone == "") {
+        callback(new Error("올바르지 않은 핸드폰 번호입니다."));
       } else if (
-        validation.phone(fullUserPhone.first_user_phone) == false ||
         validation.phone(fullUserPhone.second_user_phone) == false ||
         validation.phone(fullUserPhone.third_user_phone) == false
       ) {
@@ -238,8 +241,13 @@ export default defineComponent({
     };
 
     const address_rule = (rule: any, value: any, callback: any) => {
-      if (fullAddress.roadAddress && fullAddress.detailAddress == "") {
-        callback(new Error("주소는 반드시 입력해주세요"));
+      if (!fullAddress.roadAddress) {
+        callback(new Error("주소는 반드시 입력해주세요."));
+      } else if (
+        fullAddress.roadAddress &&
+        fullAddress.detailAddress?.["length"] == 0
+      ) {
+        callback(new Error("주소는 반드시 입력해주세요."));
       } else {
         callback();
       }
@@ -329,10 +337,19 @@ export default defineComponent({
 
 <style scoped>
 .content {
-  width: 60%;
+  width: 70%;
+}
+
+.button-size {
+  margin-left: 5px;
+  width: 22%;
 }
 
 hr scoped {
   border: solid 2px gray;
+}
+
+.el-form-item__label {
+  font-size: large;
 }
 </style>

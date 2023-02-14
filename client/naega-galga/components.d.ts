@@ -8,7 +8,6 @@ export {}
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
     AddressSearchButton: typeof import('./src/components/common/AddressSearchButton.vue')['default']
-    AlertComponent: typeof import('./src/components/common/AlertComponent.vue')['default']
     ChatBox: typeof import('./src/components/meeting/one-on-one/ChatBox.vue')['default']
     ChatWindow: typeof import('./src/components/common/ChatWindow.vue')['default']
     ElAside: typeof import('element-plus/es')['ElAside']
@@ -41,6 +40,7 @@ declare module '@vue/runtime-core' {
     ElUpload: typeof import('element-plus/es')['ElUpload']
     ExplanationAddDialog: typeof import('./src/components/product/detail/ExplanationAddDialog.vue')['default']
     ExplanationBox: typeof import('./src/components/product/detail/ExplanationBox.vue')['default']
+    ExplanationItem: typeof import('./src/components/user/mypage/reservation/ExplanationItem.vue')['default']
     HomeIntro: typeof import('./src/components/home/logout/HomeIntro.vue')['default']
     JoinTerms: typeof import('./src/components/user/mypage/JoinTerms.vue')['default']
     KakaoMap: typeof import('./src/components/meeting/one-on-one/KakaoMap.vue')['default']
@@ -50,6 +50,7 @@ declare module '@vue/runtime-core' {
     MainFooter: typeof import('./src/components/common/MainFooter.vue')['default']
     MainHeader: typeof import('./src/components/common/MainHeader.vue')['default']
     MainSide: typeof import('./src/components/home/login/MainSide.vue')['default']
+    MeetingItem: typeof import('./src/components/user/mypage/reservation/MeetingItem.vue')['default']
     OneOnManyMeeting: typeof import('./src/components/meeting/one-on-many/OneOnManyMeeting.vue')['default']
     OneOnOneMeeting: typeof import('./src/components/meeting/one-on-one/OneOnOneMeeting.vue')['default']
     OvVideo: typeof import('./src/components/meeting/one-on-one/OvVideo.vue')['default']
@@ -62,8 +63,6 @@ declare module '@vue/runtime-core' {
     ProductOptionList: typeof import('./src/components/product/detail/ProductOptionList.vue')['default']
     RegisterList: typeof import('./src/components/user/mypage/register/RegisterList.vue')['default']
     RegisterListItem: typeof import('./src/components/user/mypage/register/RegisterListItem.vue')['default']
-    ReservationDateList: typeof import('./src/components/user/mypage/reservation/ReservationDateList.vue')['default']
-    ReservationDateListItem: typeof import('./src/components/user/mypage/reservation/ReservationDateListItem.vue')['default']
     ReservationList: typeof import('./src/components/user/mypage/reservation/ReservationList.vue')['default']
     RightSummaryBox: typeof import('./src/components/product/detail/RightSummaryBox.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
@@ -71,7 +70,5 @@ declare module '@vue/runtime-core' {
     UserDeleteDialog: typeof import('./src/components/user/mypage/userInfo/UserDeleteDialog.vue')['default']
     UserInfo: typeof import('./src/components/user/mypage/userInfo/UserInfo.vue')['default']
     UserSideBar: typeof import('./src/components/user/mypage/UserSideBar.vue')['default']
-    WishList: typeof import('./src/components/user/mypage/wish/WishList.vue')['default']
-    WishListItem: typeof import('./src/components/user/mypage/wish/WishListItem.vue')['default']
   }
 }
