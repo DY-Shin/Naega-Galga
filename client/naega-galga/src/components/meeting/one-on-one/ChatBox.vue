@@ -21,9 +21,9 @@
         rows="3"
         cols="50"
         class="message-input"
-        @keydown="onTextAreaKeyUp"
+        @keyup.enter="sendMessage"
       ></textarea>
-      <el-button type="primary" @click="onClickSendMessage" class="send-button">
+      <el-button type="primary" @click="sendMessage" class="send-button">
         <el-icon class="send-icon"><Promotion /></el-icon>
       </el-button>
     </div>
@@ -50,24 +50,14 @@ export default {
     const messageBoxRef = ref();
     const { emit } = context;
 
-    const onTextAreaKeyUp = event => {
-      if (event.key === "Enter") {
-        event.preventDefault();
-        //shift + enter
-        if (event.shiftKey) {
-          inputtedMessage.value += "\n";
-          return;
-        }
-        sendMessage(inputtedMessage.value);
+    const sendMessage = () => {
+      if (!inputtedMessage.value) {
         return;
       }
-    };
-
-    const sendMessage = (message: string) => {
       //메세지 전송
       emit("sendMessage", {
         isMine: true,
-        text: message,
+        text: inputtedMessage.value,
         sendedTime: new Date(),
       });
 
@@ -75,15 +65,10 @@ export default {
       inputtedMessage.value = "";
     };
 
-    const onClickSendMessage = () => {
-      sendMessage(inputtedMessage.value);
-    };
-
     return {
       messageListRef,
       inputtedMessage,
-      onTextAreaKeyUp,
-      onClickSendMessage,
+      sendMessage,
     };
   },
 };
