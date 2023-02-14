@@ -63,6 +63,9 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "owner", orphanRemoval = true)
     private List<Meeting> meetingOwner = new ArrayList<>();
 
+    @OneToMany(mappedBy = "reserveUser", orphanRemoval = true)
+    private List<Explanation> reserveUser = new ArrayList<>();
+
     // 권한 설정을 외래 키로 부여
     @Column
     @ElementCollection(fetch = FetchType.EAGER)

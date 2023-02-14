@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 public class JwtTokenProvider {
 
     private final Key key;
-    private static final long ACCESS_TOKEN_EXPIRE_TIME = 30 * 60 * 1000L; // 30분
+    private static final long ACCESS_TOKEN_EXPIRE_TIME = 48 * 30 * 60 * 1000L; // 48 * 30분 = 1일
     private static final long REFRESH_TOKEN_EXPIRE_TIME = 7 * 24 * 60 * 60 * 1000L; // 7일
 
     // application.yml 에서 설정한 secret Key 값으로 토큰 생성
