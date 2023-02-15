@@ -2,7 +2,7 @@
   <div id="chat-box" class="border shadow">
     <div id="message-box-container" ref="messageBoxRef">
       <div v-for="(message, index) in messageListRef" :key="index">
-        <div v-if="message.isMine" class="message-box-holder">
+        <div v-if="message.index === myIndex" class="message-box-holder">
           <div class="message-box">
             {{ message.text }}
           </div>
@@ -15,14 +15,7 @@
       </div>
     </div>
     <div id="message-input-box">
-      <textarea
-        v-model="inputtedMessage"
-        autofocus
-        rows="3"
-        cols="50"
-        class="message-input"
-        @keyup.enter="sendMessage"
-      ></textarea>
+      <el-input v-model="inputtedMessage" @keyup.enter="sendMessage"></el-input>
       <el-button type="primary" @click="sendMessage" class="send-button">
         <el-icon class="send-icon"><Promotion /></el-icon>
       </el-button>
@@ -31,20 +24,23 @@
 </template>
 
 <script lang="ts">
-import { toRef, ref, PropType } from "vue";
-import { Message } from "@/types/MeetingChatType";
+import { toRef, ref, PropType, computed } from "vue";
+import { MeetingMessage } from "@/types/MeetingChatType";
 
 import { ElButton, ElIcon } from "element-plus";
 import { Promotion } from "@element-plus/icons-vue";
+import { useStore } from "vuex";
 
 export default {
   props: {
     messageList: {
-      type: Array as PropType<Array<Message>>,
+      type: Array as PropType<Array<MeetingMessage>>,
     },
   },
   components: { ElButton, ElIcon, Promotion },
   setup(props, context) {
+    const store = useStore();
+    const myIndex = computed(() => store.getters["userStore/userIndex"]).value;
     const messageListRef = toRef(props, "messageList");
     const inputtedMessage = ref("");
     const messageBoxRef = ref();
@@ -54,18 +50,21 @@ export default {
       if (!inputtedMessage.value) {
         return;
       }
+      const message = inputtedMessage.value;
+      inputtedMessage.value = "";
+
       //메세지 전송
       emit("sendMessage", {
-        isMine: true,
-        text: inputtedMessage.value,
+        index: myIndex,
+        text: message,
         sendedTime: new Date(),
       });
 
       messageBoxRef.value.scrollTop = messageBoxRef.value.scrollHeight;
-      inputtedMessage.value = "";
     };
 
     return {
+      myIndex,
       messageListRef,
       inputtedMessage,
       sendMessage,

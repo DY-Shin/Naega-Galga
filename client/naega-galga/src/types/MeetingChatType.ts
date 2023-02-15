@@ -4,4 +4,10 @@ interface Message {
   sendedTime: Date;
 }
 
-export { Message };
+interface MeetingMessage {
+  index: number;
+  text: string;
+  sendedTime: Date;
+}
+
+export { Message, MeetingMessage };
