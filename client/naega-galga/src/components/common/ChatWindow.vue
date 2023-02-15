@@ -16,7 +16,7 @@
   </el-button>
   <!-- --------------chat icon end-------------- -->
   <!-- --------------chat list start-------------- -->
-  <el-scrollbar v-show="isOpenChatRooms" class="chat-list" height="400px">
+  <el-scrollbar v-show="isOpenChatRooms" class="chat-list" height="300px">
     <div v-for="(item, index) in chatRooms" :key="item.chatRoomIndex">
       <button @click="setOpIndex(index)" class="chat-list-item">
         {{ item.opName }}
@@ -268,7 +268,7 @@ export default defineComponent({
       }
 
       console.log("소켓 연결 시도 !");
-      serverURL = `${process.env.VUE_APP_API_BASE_URL}stomp`;
+      serverURL = `${process.env.VUE_APP_API_BASE_URL}api/stomp`;
       socket = new SockJS(serverURL);
       socket.stompClient = Stomp.over(socket);
 

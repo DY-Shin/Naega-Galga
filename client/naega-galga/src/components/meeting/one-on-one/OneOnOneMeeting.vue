@@ -79,17 +79,23 @@
 </template>
 
 <script lang="ts">
-import { ref, reactive, onMounted, computed, watch } from "vue";
+import { ref, reactive, computed, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useStore } from "vuex";
-import { getOneOnOneMeetingInfo } from "@/api/meetingApi";
-import OvVideo from "./OvVideo.vue";
-import { OpenVidu, SignalOptions } from "openvidu-browser";
-import ChatBox from "@/components/meeting/one-on-one/ChatBox.vue";
-import { Message } from "@/types/MeetingChatType";
 import { isMobileScreen } from "@/use/useMediaQuery";
+import {
+  getOneOnOneMeetingInfo,
+  leaveOutOneOnOneMeetingInfo,
+} from "@/api/meetingApi";
+
+import OvVideo from "./OvVideo.vue";
+import ChatBox from "@/components/meeting/one-on-one/ChatBox.vue";
 import KakaoMap from "@/components/meeting/one-on-one/KakaoMap.vue";
+
+import { Message } from "@/types/MeetingChatType";
 import { MapCenterLatLng } from "@/types/MapTypes";
+
+import { OpenVidu, SignalOptions } from "openvidu-browser";
 
 import {
   Microphone,
@@ -98,6 +104,7 @@ import {
   VideoPause,
   ChatRound,
   LocationFilled,
+  Close,
 } from "@element-plus/icons-vue";
 import ResponseStatus from "@/api/responseStatus";
 
@@ -111,6 +118,7 @@ export default {
     VideoPause,
     ChatRound,
     LocationFilled,
+    Close,
     KakaoMap,
   },
   setup() {
@@ -127,28 +135,28 @@ export default {
       meeting: -1,
     });
     let isSeller = ref(false);
+    index.my = computed(() => store.getters["userStore/userIndex"]).value;
+    index.meeting = computed(() => parseInt(route.params.id[0])).value;
 
     const getMeetingInfo = async (meetingIndex: number) => {
-      try {
-        const response = await getOneOnOneMeetingInfo(meetingIndex);
-        const data = response.data;
+      const response = await getOneOnOneMeetingInfo(meetingIndex);
+      const data = response.data;
 
-        index.seller = data.sellerIndex;
-        index.buyer = data.buyderIndex;
-        token = data.token;
+      index.seller = data.sellerIndex;
+      index.buyer = data.buyderIndex;
+      token = data.token;
 
-        if (index.seller === index.my) {
-          isSeller.value = true;
-          myVideo = sellerVideo;
-        }
+      if (index.seller === index.my) {
+        isSeller.value = true;
+        myVideo = sellerVideo;
+      }
 
-        if (response.status === ResponseStatus.Ok) {
-          setSession();
-        }
-      } catch (error) {
-        alert("서버 오류로 실행할 수 없습니다\n잠시 후 다시 시도해 주세요.");
+      if (response.status === ResponseStatus.Ok) {
+        setSession();
       }
     };
+
+    getMeetingInfo(index.meeting);
 
     const sellerVideo = document.querySelector("video#sellerVideo");
     const buyerVideo = document.querySelector("video#buyderVideo");
@@ -204,13 +212,6 @@ export default {
       });
       session.publish(publisher);
     };
-
-    onMounted(async () => {
-      index.my = computed(() => store.getters["userStore/userIndex"]).value;
-      index.meeting = computed(() => parseInt(route.params.id[0])).value;
-
-      await getMeetingInfo(index.meeting);
-    });
 
     //map
     const centerLatLng = reactive({ x: 33.450701, y: 126.570667 });
@@ -283,18 +284,23 @@ export default {
       window.removeEventListener("beforeunload", leaveSession);
     };
 
-    const onClickExit = () => {
+    const onClickExit = async () => {
       if (confirm("정말 나가시겠습니까?")) {
-        leaveSession();
-        router.back();
+        try {
+          const response = await leaveOutOneOnOneMeetingInfo(
+            index.meeting,
+            index.my,
+            token
+          );
+
+          if (response.status === ResponseStatus.Ok) {
+            leaveSession();
+          }
+        } finally {
+          router.replace("/user/reservation");
+        }
       }
     };
-
-    //미디어 기기 가져오기
-    // const openMediaDevices = async constraints =>
-    //   await navigator.mediaDevices.getUserMedia(constraints);
-
-    // onMounted(async () => {});
 
     return {
       isMobileScreen,

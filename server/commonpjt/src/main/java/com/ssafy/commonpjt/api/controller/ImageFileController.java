@@ -18,10 +18,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 @RestController
-@RequestMapping("/image")
+@RequestMapping("/api/image")
 public class ImageFileController {
 
-    private String imagePath = "C:/D106/product/img/";
+    private String imagePath = "product/img/";
     @GetMapping("/display")
     public ResponseEntity<?> displayImage(@RequestParam(value="path")String path){
         StringBuilder imagepathSb = new StringBuilder(imagePath);

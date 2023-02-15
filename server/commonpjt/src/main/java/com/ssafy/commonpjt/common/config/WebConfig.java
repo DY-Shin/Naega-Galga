@@ -20,10 +20,9 @@ public class WebConfig implements WebMvcConfigurer {
             HttpMethod.DELETE.name());
     }
 
-    //TODO : resource 접근 허용, 배포시 경로 수정할것
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/**")
-                .addResourceLocations("file:C:/D106/product/img/");
+                .addResourceLocations("file:/product/img/");
     }
 }

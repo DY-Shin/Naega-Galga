@@ -1,16 +1,40 @@
 <template>
-  <div @click="product">미팅하러가기</div>
-  <div v-if="meetingItem.guest == null">이 사람은 구매자입니다.</div>
-  <div v-if="meetingItem.guest != null">이 사람은 판매자입니다.</div>
+  <el-col id="card_padding" :span="12">
+    <el-card :body-style="{ padding: '20px' }">
+      <!-- 구매자&판매자 공통 부분 -->
+      <p class="meeting-time">{{ meetingTime }}</p>
 
-  <div>
-    <p>{{ meetingItem }}</p>
-    <p>{{ meetingItem.type }}</p>
-    <p>{{ meetingItem.role }}</p>
-    <p>{{ meetingItem.reserveAt }}</p>
-    <p>{{ meetingItem.meetingUrl }}</p>
-    <p>{{ meetingItem.guest }}</p>
-  </div>
+      <!-- 내가 구매자인 경우 -->
+      <div v-if="meetingItem.role == 'Guest'">
+        <p>판매자 : {{ meetingItem?.owner?.userName }}</p>
+        <p>연락처 : {{ meetingItem?.owner?.userPhone }}</p>
+        <!-- <p>판매자가 파는 집 주소 : {{ meetingItem?.owner?.userAddress }}</p> -->
+        <p v-if="meetingItem?.owner?.corporateRegistrationNumber != null">
+          사업자번호 :
+          {{ meetingItem?.owner?.corporateRegistrationNumber.slice(0, 3) }}-{{
+            meetingItem?.owner?.corporateRegistrationNumber.slice(3, 5)
+          }}-{{ meetingItem?.owner?.corporateRegistrationNumber.slice(5, 10) }}
+        </p>
+      </div>
+
+      <!-- 내가 판매자인 경우 -->
+      <div v-if="meetingItem.role == 'Owner'">
+        <p>예약자 : {{ meetingItem?.guest?.userName }}</p>
+        <p>예약자 연락처 : {{ meetingItem?.guest?.userPhone }}</p>
+      </div>
+
+      <!-- 구매자&판매자 공통 부분 -->
+      <div class="button-wrapper">
+        <el-button
+          round
+          class="meeting-button"
+          type="primary"
+          @click="goMeeting"
+          >미팅하러가기</el-button
+        >
+      </div>
+    </el-card>
+  </el-col>
 </template>
 
 <script lang="ts">
@@ -27,10 +51,28 @@ export default defineComponent({
     const meetingItem = { ...props.meeting };
     const router = useRouter();
 
-    const product = () => {
+    const meetingTime = new Date(meetingItem.reserveAt).toLocaleString();
+
+    const goMeeting = () => {
       router.push(`${meetingItem.meetingUrl}`);
     };
-    return { meetingItem, product };
+    return { meetingItem, goMeeting, meetingTime };
   },
 });
 </script>
+
+<style scoped>
+.meeting-time {
+  text-align: center;
+  margin-bottom: 30px;
+}
+.button-wrapper {
+  text-align: center;
+}
+
+.meeting-button {
+  width: 75%;
+  display: inline-block;
+  margin-top: 10px;
+}
+</style>

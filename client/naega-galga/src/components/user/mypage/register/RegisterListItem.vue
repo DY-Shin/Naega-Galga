@@ -1,9 +1,9 @@
 <template>
   <el-col id="card_padding" :span="8">
-    <el-card :body-style="{ padding: '0px' }">
-      <div @click="product">
+    <el-card @click="product" :body-style="{ padding: '0px' }">
+      <div>
         <img
-          src="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png"
+          :src="imageDisplay"
           class="image"
           style="width: 100%; height: auto"
           fit="cover"
@@ -11,9 +11,8 @@
       </div>
 
       <div id="card_explain">
-        {{ registItem }}
         <p style="font-size: large">
-          {{ registItem.productType }}{{ registItem.productPrice }}
+          {{ registItem.productType }} {{ registItem.productPrice }}
         </p>
         <p style="font-size: small">
           관리비 : {{ registItem.productManageCost }}만원
@@ -43,13 +42,14 @@ export default defineComponent({
       router.push({ path: `../product/${registItem.productIndex}` });
     };
 
-    console.log(registItem);
-    return { registItem, product };
+    const imageDisplay = `${process.env.VUE_APP_API_BASE_URL}api/image/display?path=${registItem.productPhoto}`;
+
+    return { registItem, product, imageDisplay };
   },
 });
 </script>
 
-<style>
+<style scoped>
 #card_padding {
   margin-bottom: 20px;
 }
