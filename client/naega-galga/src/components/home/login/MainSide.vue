@@ -21,9 +21,8 @@
         :key="item.productIndex"
         class="scrollbar-demo-item"
       >
-        <div class="right-box" @click="whereIs(index)">
+        <div @click="whereIs(index)">
           <div class="img-content">
-            <!-- <div > -->
             <img class="list-img" :src="photoList[index]" />
             <div class="list-online-icon" v-if="item.presentation">
               <div class="text">온라인 설명회</div>
@@ -114,9 +113,9 @@ export default defineComponent({
 }
 
 .home-info-box {
-  height: 150px;
-  float: right;
-  margin: 40px 60px 0 0;
+  width: 200px;
+  float: left;
+  margin-top: 45px;
 }
 .home-addr {
   font-weight: 500;
@@ -174,7 +173,6 @@ export default defineComponent({
 }
 .scrollbar-demo-item {
   border-top: 1px solid #bdbdbd;
-  /* display: flex; */
   align-items: center;
   height: 200px;
   text-align: center;
