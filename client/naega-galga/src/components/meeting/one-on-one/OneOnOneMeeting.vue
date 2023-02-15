@@ -48,7 +48,6 @@
       <el-icon v-else><Mute /></el-icon>
       <span class="button-text" v-if="myMicMute">ON</span>
       <span class="button-text" v-else>OFF</span>
-      <el-icon size="10"><ArrowUp /></el-icon>
     </el-button>
     <el-button v-model="myVideoMute" round @click="muteVideo">
       <el-icon v-if="myVideoMute"><VideoCamera /></el-icon>
@@ -94,12 +93,12 @@ import { OpenVidu, SignalOptions } from "openvidu-browser";
 
 import {
   Microphone,
-  ArrowUp,
   VideoCamera,
   VideoPause,
   ChatRound,
   LocationFilled,
   Close,
+  Mute,
 } from "@element-plus/icons-vue";
 import ResponseStatus from "@/api/responseStatus";
 
@@ -107,7 +106,7 @@ export default {
   components: {
     ChatBox,
     Microphone,
-    ArrowUp,
+    Mute,
     VideoCamera,
     VideoPause,
     ChatRound,
@@ -272,7 +271,7 @@ export default {
     };
     const muteVideo = () => {
       myVideoMute.value = !myVideoMute.value;
-      publisher.value.publishVideo(myMicMute.value);
+      publisher.value.publishVideo(myVideoMute.value);
     };
     const toggleChatMode = () => {
       isChatMode.value = !isChatMode.value;
