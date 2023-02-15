@@ -80,7 +80,7 @@
 
 <script lang="ts">
 import { ref, reactive, computed, watch } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 import { isMobileScreen } from "@/use/useMediaQuery";
 import {
@@ -124,7 +124,6 @@ export default {
   setup() {
     //--------------------------화상 미팅방 정보
     const store = useStore();
-    const route = useRoute();
     const router = useRouter();
 
     let token: string;
@@ -136,7 +135,9 @@ export default {
     });
     let isSeller = ref(false);
     index.my = computed(() => store.getters["userStore/userIndex"]).value;
-    index.meeting = computed(() => parseInt(route.params.id[0])).value;
+    const str = window.location.href;
+    const strList = str.split("/");
+    index.meeting = parseInt(strList[strList.length - 1]);
 
     const getMeetingInfo = async (meetingIndex: number) => {
       const response = await getOneOnOneMeetingInfo(meetingIndex);
