@@ -5,7 +5,7 @@
         <img
           :src="imageDisplay"
           class="image"
-          style="width: 100%; height: auto"
+          style="width: 100%; height: 200px"
           fit="cover"
         />
       </div>
@@ -41,8 +41,10 @@ export default defineComponent({
     const product = () => {
       router.push({ path: `../product/${registItem.productIndex}` });
     };
+    const imagePathSplit = registItem.productPhoto.split(",");
+    const imageDisplay = `${process.env.VUE_APP_API_BASE_URL}api/image/display?path=${imagePathSplit[0]}`;
 
-    const imageDisplay = `${process.env.VUE_APP_API_BASE_URL}/image/display?path=${registItem.productPhoto}`;
+    console.log(imagePathSplit[0]);
 
     return { registItem, product, imageDisplay };
   },
