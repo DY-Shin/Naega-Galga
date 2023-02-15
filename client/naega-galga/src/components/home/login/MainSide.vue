@@ -81,7 +81,7 @@ export default defineComponent({
       for (let i = 0; i < productList.length; i++) {
         let path = productList[i].photo;
         photoList.push(
-          `${process.env.VUE_APP_API_BASE_URL}image/display?path=${path}`
+          `${process.env.VUE_APP_API_BASE_URL}/api/image/display?path=${path}`
         );
       }
       console.log(list.data);
