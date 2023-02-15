@@ -33,7 +33,7 @@
 
 <script lang="ts">
 import { computed, reactive } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 
 import { deleteProduct, getProduct } from "@/api/productApi";
@@ -55,7 +55,6 @@ export default {
   },
   setup() {
     const router = useRouter();
-    const route = useRoute();
 
     //store
     const store = useStore();
@@ -63,7 +62,9 @@ export default {
     const isMine = computed(() => productInfo.seller.userIndex === userIndex);
 
     //get product info
-    const productIndex = parseInt(route.params.id[0]);
+    const str = window.location.href;
+    const strList = str.split("/");
+    let productIndex = parseInt(strList[strList.length - 1]);
     async function getProductDetail() {
       const response = await getProduct(productIndex);
       if (response.status === ResponseStatus.Ok) {
