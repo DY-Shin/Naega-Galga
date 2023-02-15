@@ -279,7 +279,7 @@ export default {
 
     //exit
     const leaveSession = () => {
-      if (session.value) {
+      if (session.value !== undefined) {
         session.value.disconnect();
       }
 
@@ -287,6 +287,7 @@ export default {
       publisher.value = undefined;
       subscriber.value = null;
       ov.value = undefined;
+      mainStreamManager.value = undefined;
 
       window.removeEventListener("beforeunload", leaveSession);
     };
