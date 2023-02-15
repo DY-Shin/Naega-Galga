@@ -1,6 +1,5 @@
 <template>
   <el-aside>
-    <!-- search bar start -->
     <div class="search-bar" style="text-align: center">
       <el-input
         class="search-input"
@@ -106,12 +105,10 @@ export default defineComponent({
   height: 80px;
   border-bottom: 1px solid #bdbdbd;
 }
-
 .search-input {
   width: 450px;
   padding: 20px;
 }
-
 .home-info-box {
   width: 200px;
   float: left;
@@ -158,7 +155,6 @@ export default defineComponent({
   height: 130px;
   border-radius: 5px;
 }
-
 .list-online-icon {
   /* 온라인 설명회 아이콘 */
   color: white;
@@ -178,7 +174,6 @@ export default defineComponent({
   text-align: center;
   color: var(--el-color-primary);
 }
-
 .el-aside {
   width: 500px;
   height: 100%;
