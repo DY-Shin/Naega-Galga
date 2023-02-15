@@ -20,7 +20,7 @@ axios.interceptors.response.use(
       router.push("/");
     }
     if (status === ResponseStatus.InternalServerError) {
-      router.replace("/login");
+      alert("서버 오류로 요청을 실행할 수 없습니다.");
     }
     return Promise.reject(error);
   }
