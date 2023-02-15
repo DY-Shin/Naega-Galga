@@ -73,8 +73,9 @@ export default defineComponent({
     const product = () => {
       router.push({ path: `../product/${explanationItem.meetingIndex}` });
     };
-
-    const imageDisplay = `${process.env.VUE_APP_API_BASE_URL}api/image/display?path=${explanationItem?.product?.productPhoto}`;
+    const imagePathSplit = explanationItem.product.productPhoto.split(",");
+    console.log(imagePathSplit[0]);
+    const imageDisplay = `${process.env.VUE_APP_API_BASE_URL}api/image/display?path=${imagePathSplit[0]}`;
 
     return {
       explanationItem,
