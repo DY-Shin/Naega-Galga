@@ -158,8 +158,7 @@ export default defineComponent({
       content.className = "overlaybox";
 
       let img = document.createElement("img");
-      img.src =
-        "https://cdn.pixabay.com/photo/2023/01/07/07/16/houses-7702757_1280.jpg";
+      img.src = `${process.env.VUE_APP_API_BASE_URL}api/image/display?path=${product.photo}`;
       img.width = 280;
       img.height = 200;
       img.className = "overlayimg";
@@ -215,6 +214,7 @@ export default defineComponent({
         store.commit("chatStore/CHANGE_GET_CHAT_CONTENT", true);
         console.log("click");
       };
+
       bottombox.appendChild(chatbtn);
 
       let clearbox = document.createElement("div");
