@@ -31,7 +31,7 @@
           </div>
           <div class="home-info-box">
             <div class="home-addr">{{ item.roadAddr }}</div>
-            <div class="home-rooms">{{ item.rooms }} {{ item.size }}</div>
+            <div class="home-rooms">{{ item.rooms }} {{ item.size }}m²</div>
             <div class="home-price">{{ item.price }}</div>
           </div>
         </div>
@@ -114,8 +114,9 @@ export default defineComponent({
 }
 
 .home-info-box {
-  height: 100px;
-  padding: 45px 0;
+  height: 150px;
+  float: right;
+  margin: 40px 60px 0 0;
 }
 .home-addr {
   font-weight: 500;
@@ -130,7 +131,7 @@ export default defineComponent({
   color: black;
   font-size: 20px;
   text-align: left;
-  margin: 18px 0;
+  margin: 25px 0;
 }
 .home-size {
   color: black;
