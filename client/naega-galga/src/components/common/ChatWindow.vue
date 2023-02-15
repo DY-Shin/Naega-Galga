@@ -16,7 +16,7 @@
   </el-button>
   <!-- --------------chat icon end-------------- -->
   <!-- --------------chat list start-------------- -->
-  <el-scrollbar v-show="isOpenChatRooms" class="chat-list" height="400px">
+  <el-scrollbar v-show="isOpenChatRooms" class="chat-list" height="300px">
     <div v-for="(item, index) in chatRooms" :key="item.chatRoomIndex">
       <button @click="setOpIndex(index)" class="chat-list-item">
         {{ item.opName }}
@@ -233,11 +233,10 @@ export default defineComponent({
         return;
       }
 
-      chatContents.splice(0); // 채팅방 내용 초기화(전에 열었던 채팅 목록 남아있음)
-
       store.commit("chatStore/CHANGE_CHATROOM_STATUS", true);
       const list = await getChatContent(nowOpIndex.value);
       store.commit("chatStore/CHANGE_CHATROOM_INDEX", list.data.chatRoomIndex);
+      chatContents.splice(0); // 채팅방 내용 초기화(전에 열었던 채팅 목록 남아있음)
 
       list.data.messageList.forEach(item => chatContents.push(item));
       isOpenChatRooms.value = false;

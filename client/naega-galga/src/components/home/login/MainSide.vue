@@ -23,14 +23,15 @@
       >
         <div class="right-box" @click="whereIs(index)">
           <div class="img-content">
-            <div class="list-img"></div>
+            <!-- <div > -->
+            <img class="list-img" :src="photoList[index]" />
             <div class="list-online-icon" v-if="item.presentation">
               <div class="text">온라인 설명회</div>
             </div>
           </div>
           <div class="home-info-box">
             <div class="home-addr">{{ item.roadAddr }}</div>
-            <div class="home-rooms">{{ item.rooms }} {{ item.size }}</div>
+            <div class="home-rooms">{{ item.rooms }} {{ item.size }}m²</div>
             <div class="home-price">{{ item.price }}</div>
           </div>
         </div>
@@ -46,6 +47,8 @@ import { searchProduct } from "@/api/productApi";
 
 export default defineComponent({
   setup(_, context) {
+    const photoList: string[] = [];
+
     interface Product {
       productIndex: number;
       sellerIndex: number;
@@ -71,10 +74,16 @@ export default defineComponent({
         return;
       }
 
-      productList.splice(0);
       const list = await searchProduct(input.value);
-
+      productList.splice(0);
+      photoList.splice(0);
       list.data.forEach((product: Product) => productList.push(product));
+      for (let i = 0; i < productList.length; i++) {
+        let path = productList[i].photo;
+        photoList.push(
+          `${process.env.VUE_APP_API_BASE_URL}api/image/display?path=${path}`
+        );
+      }
       console.log(list.data);
       emit("productList", productList);
     };
@@ -86,6 +95,7 @@ export default defineComponent({
       whereIs,
       Search,
       onBeforeUpdate,
+      photoList,
     };
   },
 });
@@ -104,8 +114,9 @@ export default defineComponent({
 }
 
 .home-info-box {
-  height: 100px;
-  padding: 40px 0;
+  height: 150px;
+  float: right;
+  margin: 40px 60px 0 0;
 }
 .home-addr {
   font-weight: 500;
@@ -120,7 +131,7 @@ export default defineComponent({
   color: black;
   font-size: 20px;
   text-align: left;
-  margin: 15px 0;
+  margin: 25px 0;
 }
 .home-size {
   color: black;
@@ -135,21 +146,17 @@ export default defineComponent({
   float: left;
   height: 100%;
   width: 50%;
-}
-
-.right-box {
-  /* float: left; */
+  align-items: center;
 }
 
 .list-img {
   position: relative;
+  float: left;
   left: 20px;
-  top: 40px;
-  text-align: center;
-  padding: 60px 0;
+  top: 35px;
+
   width: 200px;
-  height: auto;
-  background-color: #d9d9d9;
+  height: 100%;
   border-radius: 5px;
 }
 
