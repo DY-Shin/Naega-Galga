@@ -26,7 +26,6 @@
         v-if="!isMobileScreen"
         @sendMessage="sendMessage"
         :message-list="messageList"
-        @changeSellerPosition="changeSellerPosition"
       ></chat-box>
       <div v-else>
         <div v-if="!isChatMode" class="map border shadow">
@@ -88,7 +87,7 @@ import ChatBox from "@/components/meeting/one-on-one/ChatBox.vue";
 import KakaoMap from "@/components/meeting/one-on-one/KakaoMap.vue";
 import UserVideo from "@/components/meeting/one-on-one/UserVideo.vue";
 
-import { Message } from "@/types/MeetingChatType";
+import { MeetingMessage } from "@/types/MeetingChatType";
 import { MapCenterLatLng } from "@/types/MapTypes";
 
 import { OpenVidu, SignalOptions } from "openvidu-browser";
@@ -179,6 +178,17 @@ export default {
         console.warn(exception);
       });
 
+      session.value.on(`signal:chat`, (event: any) => {
+        const msg = JSON.parse(event.data).message;
+        if (msg.index !== index.my) {
+          messageList.push({
+            index: msg.index,
+            text: msg.text,
+            sendedTime: msg.sendedTime,
+          });
+        }
+      });
+
       session.value.connect(token, { clientData: index.my }).then(() => {
         console.log(token);
         let publisherObj = ov.value.initPublisher(undefined, {
@@ -222,18 +232,18 @@ export default {
     }
 
     //--------------------------chat
-    const messageList: Array<Message> = reactive([]);
+    const messageList: Array<MeetingMessage> = reactive([]);
 
     //새로운 문자열이 추가될때마다 시간 기준으로 정렬
     watch(
       () => messageList.length,
       () =>
         messageList.sort(
-          (a: Message, b: Message) =>
+          (a: MeetingMessage, b: MeetingMessage) =>
             a.sendedTime.valueOf() - b.sendedTime.valueOf()
         )
     );
-    const sendMessage = (message: Message) => {
+    const sendMessage = (message: MeetingMessage) => {
       messageList.push(message);
       const signalOptions: SignalOptions = {
         data: JSON.stringify({ message }),
