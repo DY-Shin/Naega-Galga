@@ -42,7 +42,7 @@ export default defineComponent({
       router.push({ path: `../product/${registItem.productIndex}` });
     };
 
-    const imageDisplay = `${process.env.VUE_APP_API_BASE_URL}/image/display?path=${registItem.productPhoto}`;
+    const imageDisplay = `${process.env.VUE_APP_API_BASE_URL}api/image/display?path=${registItem.productPhoto}`;
 
     return { registItem, product, imageDisplay };
   },

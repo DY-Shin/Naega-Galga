@@ -18,7 +18,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 @RestController
-@RequestMapping("/image")
+@RequestMapping("/api/image")
 public class ImageFileController {
 
     private String imagePath = "product/img/";
