@@ -165,9 +165,17 @@ export default {
 
       session.value = ov.value.initSession();
 
+      session.value.on("signal:map", (event: any) => {
+        const msg = JSON.parse(event.data).message;
+        const data = msg.data;
+        centerLatLng.x = data.x;
+        centerLatLng.y = data.y;
+      });
+
       session.value.on("streamCreated", ({ stream }) => {
         const subscriberObj = session.value.subscribe(stream);
         subscriber.value = subscriberObj;
+        changeSellerPosition(centerLatLng);
       });
 
       session.value.on("streamDestroyed", () => {
