@@ -1,24 +1,20 @@
 <template>
   <div class="container">
-    <div class="video-group">
-      <ov-video
+    <div v-if="session" class="video-group">
+      <user-video
         id="seller-video"
-        class="border shadow"
-        autoplay
-        playinline
+        :stream-manager="!isSeller ? publisher : subscriber"
+        @click="
+          updateMainVideoStreamManager(!isSeller ? publisher : subscriber)
+        "
+      />
+      <user-video
+        id="buyer-video"
         :stream-manager="isSeller ? publisher : subscriber"
-      ></ov-video>
-      <div>
-        <ov-video
-          id="buyer-video"
-          class="border"
-          autoplay
-          playinline
-          :stream-manager="isSeller ? subscriber : publisher"
-        ></ov-video>
-      </div>
+        @click="updateMainVideoStreamManager(isSeller ? publisher : subscriber)"
+      />
     </div>
-    <div class="flex-column">
+    <div class="float-right flex-column">
       <div v-if="!isMobileScreen" class="map border shadow">
         <kakao-map
           :centerLatLng="centerLatLng"
@@ -88,9 +84,9 @@ import {
   leaveOutOneOnOneMeetingInfo,
 } from "@/api/meetingApi";
 
-import OvVideo from "./OvVideo.vue";
 import ChatBox from "@/components/meeting/one-on-one/ChatBox.vue";
 import KakaoMap from "@/components/meeting/one-on-one/KakaoMap.vue";
+import UserVideo from "@/components/meeting/one-on-one/UserVideo.vue";
 
 import { Message } from "@/types/MeetingChatType";
 import { MapCenterLatLng } from "@/types/MapTypes";
@@ -110,7 +106,6 @@ import ResponseStatus from "@/api/responseStatus";
 
 export default {
   components: {
-    OvVideo,
     ChatBox,
     Microphone,
     ArrowUp,
@@ -120,6 +115,7 @@ export default {
     LocationFilled,
     Close,
     KakaoMap,
+    UserVideo,
   },
   setup() {
     //--------------------------화상 미팅방 정보
@@ -149,70 +145,63 @@ export default {
 
       if (index.seller === index.my) {
         isSeller.value = true;
-        myVideo = sellerVideo;
       }
 
       if (response.status === ResponseStatus.Ok) {
-        setSession();
+        joinSession();
       }
     };
 
     getMeetingInfo(index.meeting);
 
-    const sellerVideo = document.querySelector("video#sellerVideo");
-    const buyerVideo = document.querySelector("video#buyderVideo");
-    let myVideo = buyerVideo;
-
     //--------------------------open-vidu things
-    let ov;
-    let session;
+    const ov = ref();
+    const session = ref();
+    const mainStreamManager = ref();
     const publisher = ref();
     const subscriber = ref();
 
-    const setSession = async () => {
-      ov = new OpenVidu();
-      session = ov.initSession();
+    function joinSession() {
+      ov.value = new OpenVidu();
 
-      //새로운 stream을 받을때마다
-      session.on("streamCreated", ({ stream }) => {
-        subscriber.value = session.subscribe(stream);
+      session.value = ov.value.initSession();
+
+      session.value.on("streamCreated", ({ stream }) => {
+        const subscriberObj = session.value.subscribe(stream);
+        subscriber.value = subscriberObj;
       });
-      //stream이 끊어졌을때마다
-      session.on("streamDestroyed", () => {
-        if (subscriber.value) {
-          subscriber.value = null;
-        }
+
+      session.value.on("streamDestroyed", () => {
+        subscriber.value = null;
       });
-      session.on("exception", ({ exception }) => {
+
+      session.value.on("exception", ({ exception }) => {
         console.warn(exception);
       });
 
-      session.on(`signal:chat`, event => {
-        const msg = JSON.parse(event.data).message;
-        messageList.push({
-          isMine: false,
-          text: msg,
-          sendedTime: new Date(),
+      session.value.connect(token, { clientData: index.my }).then(() => {
+        console.log(token);
+        let publisherObj = ov.value.initPublisher(undefined, {
+          audioSource: undefined,
+          videoSource: undefined,
+          publishAudio: true,
+          publishVideo: true,
+          resolution: "640x480",
+          frameRate: 30,
+          insertMode: "APPEND",
+          mirror: false,
         });
-      });
 
-      session.on(`signal:map`, event => {
-        const latlng: MapCenterLatLng = JSON.parse(event.data).message;
-        centerLatLng.x = latlng.x;
-        centerLatLng.y = latlng.y;
-      });
+        mainStreamManager.value = publisherObj;
+        publisher.value = publisherObj;
 
-      await session.connect(token);
-      publisher.value = ov.initPublisher(myVideo, {
-        audioSource: undefined,
-        videoSource: undefined,
-        publishAudio: true,
-        publishVideo: true,
-        insertMode: "APPEND",
-        mirror: false,
+        // --- 6) Publish your stream ---
+
+        session.value.publish(publisher.value);
+
+        window.addEventListener("beforeunload", leaveSession);
       });
-      session.publish(publisher);
-    };
+    }
 
     //map
     const centerLatLng = reactive({ x: 33.450701, y: 126.570667 });
@@ -228,7 +217,7 @@ export default {
           type: "map",
           to: undefined,
         };
-        session.signal(signalOptions);
+        session.value.signal(signalOptions);
       }
     }
 
@@ -251,7 +240,7 @@ export default {
         type: "chat",
         to: undefined,
       };
-      session.signal(signalOptions);
+      session.value.signal(signalOptions);
     };
 
     //media control
@@ -273,11 +262,11 @@ export default {
 
     //exit
     const leaveSession = () => {
-      if (session) {
-        session.disconnect();
+      if (session.value) {
+        session.value.disconnect();
       }
 
-      session = undefined;
+      session.value = undefined;
       publisher.value = undefined;
       subscriber.value = null;
       ov.value = undefined;
@@ -303,11 +292,20 @@ export default {
       }
     };
 
+    function updateMainVideoStreamManager(stream) {
+      if (mainStreamManager.value === stream) {
+        return;
+      }
+      mainStreamManager.value = stream;
+    }
+
     return {
+      updateMainVideoStreamManager,
       isMobileScreen,
       isSeller,
       publisher,
       subscriber,
+      session,
       messageList,
       sendMessage,
       //지도
@@ -329,6 +327,10 @@ export default {
 </script>
 
 <style scoped>
+.float-right {
+  float: right;
+}
+
 .container {
   display: flex;
   flex-direction: row;
@@ -336,7 +338,9 @@ export default {
 }
 
 .video-group {
-  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 
 .no-video-text-position {
@@ -361,24 +365,14 @@ export default {
 }
 
 #seller-video {
-  width: 60vw;
-  height: 80vh;
-  z-index: 1;
+  width: 33vw;
   object-fit: cover;
-  box-shadow: 5px 5px 5px #ebeef5;
-  background-color: #fafafa;
+  margin-right: 10px;
 }
 
 #buyer-video {
-  width: 20%;
-  height: 15%;
-  z-index: 10;
-  position: absolute;
-  bottom: 0;
-  right: 1px;
-  border-bottom: none;
+  width: 33vw;
   object-fit: cover;
-  background-color: #fafafa;
 }
 
 .map {
