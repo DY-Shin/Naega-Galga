@@ -1,19 +1,23 @@
 <template>
-  <video autoplay ref="videoElRef"></video>
+  <video class="video" autoplay />
 </template>
 
-<script lang="ts">
-import { ref } from "vue";
-
+<script>
 export default {
+  name: "OvVideo",
+
   props: {
     streamManager: Object,
   },
 
-  setup(props) {
-    const videoElRef = ref(null);
-
-    props.streamManager?.addVideoElement(videoElRef);
+  mounted() {
+    this.streamManager.addVideoElement(this.$el);
   },
 };
 </script>
+
+<style scoped>
+.video {
+  width: 100%;
+}
+</style>
