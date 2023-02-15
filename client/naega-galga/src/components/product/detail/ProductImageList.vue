@@ -39,7 +39,7 @@ export default {
       const arr: ImageData[] = [];
       imagePathsRef.value?.forEach(path => {
         arr.push({
-          src: `${process.env.VUE_APP_API_BASE_URL}/api/image/display?path=${path}`,
+          src: `${process.env.VUE_APP_API_BASE_URL}api/image/display?path=${path}`,
         });
       });
       return arr;
