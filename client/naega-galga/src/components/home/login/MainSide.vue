@@ -1,6 +1,5 @@
 <template>
   <el-aside>
-    <!-- search bar start -->
     <div class="search-bar" style="text-align: center">
       <el-input
         class="search-input"
@@ -21,9 +20,8 @@
         :key="item.productIndex"
         class="scrollbar-demo-item"
       >
-        <div class="right-box" @click="whereIs(index)">
+        <div @click="whereIs(index)">
           <div class="img-content">
-            <!-- <div > -->
             <img class="list-img" :src="photoList[index]" />
             <div class="list-online-icon" v-if="item.presentation">
               <div class="text">온라인 설명회</div>
@@ -107,16 +105,14 @@ export default defineComponent({
   height: 80px;
   border-bottom: 1px solid #bdbdbd;
 }
-
 .search-input {
   width: 450px;
   padding: 20px;
 }
-
 .home-info-box {
-  height: 150px;
-  float: right;
-  margin: 40px 60px 0 0;
+  width: 200px;
+  float: left;
+  margin-top: 45px;
 }
 .home-addr {
   font-weight: 500;
@@ -159,7 +155,6 @@ export default defineComponent({
   height: 130px;
   border-radius: 5px;
 }
-
 .list-online-icon {
   /* 온라인 설명회 아이콘 */
   color: white;
@@ -174,13 +169,11 @@ export default defineComponent({
 }
 .scrollbar-demo-item {
   border-top: 1px solid #bdbdbd;
-  /* display: flex; */
   align-items: center;
   height: 200px;
   text-align: center;
   color: var(--el-color-primary);
 }
-
 .el-aside {
   width: 500px;
   height: 100%;
