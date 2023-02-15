@@ -156,7 +156,7 @@ export default defineComponent({
   top: 35px;
 
   width: 200px;
-  height: 100%;
+  height: 130px;
   border-radius: 5px;
 }
 
