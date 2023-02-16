@@ -75,24 +75,6 @@
       </div>
     </div>
   </div>
-
-  <div class="box flex-row background-color-grey margin-bottom-minus">
-    <div>
-      <div class="main-text">온라인 설명회에 참여하세요.</div>
-      <div class="sub-text">
-        매물에 온라인 설명회가 예정되어있다면 <br />누구라도 참여할 수 있어요.
-      </div>
-    </div>
-    <div>
-      <img
-        src="https://cdn.pixabay.com/photo/2016/11/22/19/11/brick-wall-1850095_960_720.jpg"
-        alt="img"
-        width="700"
-        height="400"
-        vertical:middle
-      />
-    </div>
-  </div>
 </template>
 <script lang="ts">
 export default {
