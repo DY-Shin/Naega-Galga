@@ -3,14 +3,12 @@ package com.ssafy.commonpjt.api.controller;
 import com.ssafy.commonpjt.api.dto.meetingDTO.RequestEnterOneOnOneDTO;
 import com.ssafy.commonpjt.api.dto.meetingDTO.RequestExitOneOnOneDTO;
 import com.ssafy.commonpjt.api.dto.meetingDTO.ResponseEnterOneOnOneDTO;
-import com.ssafy.commonpjt.api.dto.meetingDTO.ResponseExitOneOnOneDTO;
 import com.ssafy.commonpjt.api.service.OneOnOneService;
 import io.openvidu.java.client.OpenVidu;
 import io.openvidu.java.client.OpenViduHttpException;
 import io.openvidu.java.client.OpenViduJavaClientException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -63,15 +61,13 @@ public class OneOnOneController {
     }
 
     @PostMapping("/{meetingIndex}")
-    public ResponseEntity<ResponseExitOneOnOneDTO> exitOneOnOne(@PathVariable int meetingIndex) {
+    public ResponseEntity<?> exitOneOnOne(@PathVariable int meetingIndex) throws OpenViduJavaClientException, OpenViduHttpException {
         RequestExitOneOnOneDTO requestExitOneOnOneDTO = new RequestExitOneOnOneDTO();
 
         requestExitOneOnOneDTO.setSessionId(String.valueOf(meetingIndex));
         requestExitOneOnOneDTO.setOpenVidu(this.openVidu);
-        requestExitOneOnOneDTO.setUserList(this.findUsersInTheSessionByToken);
-        requestExitOneOnOneDTO.setSessionList(this.findSessionTokenByMeetingIndex);
 
-        ResponseExitOneOnOneDTO responseExitOneOnOneDTO = oneOnOneService.exitOneOnOne(requestExitOneOnOneDTO);
-        return new ResponseEntity<>(responseExitOneOnOneDTO, HttpStatus.OK);
+        oneOnOneService.exitOneOnOne(requestExitOneOnOneDTO);
+        return new ResponseEntity<>(null, HttpStatus.OK);
     }
 }

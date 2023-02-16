@@ -57,13 +57,13 @@ public class OneOnOneServiceImpl implements OneOnOneService {
         if (requestEnterOneOnOneDTO.getSessionList().get(Integer.parseInt(requestEnterOneOnOneDTO.getSessionId())) == null) {
             requestEnterOneOnOneDTO.getSessionList().put(Integer.parseInt(requestEnterOneOnOneDTO.getSessionId()), token);
         }
-
         //반환값 처리(sellerIndex & buyerIndex 저장)
         Optional<Meeting> optionalMeeting = meetingRepository.findById(Integer.parseInt(requestEnterOneOnOneDTO.getSessionId()));
         if (optionalMeeting.isPresent()) {
             Meeting meeting = optionalMeeting.get();
             responseEnterOneOnOneDTO.setBuyerIndex(meeting.getGuest().getUserIndex());
             responseEnterOneOnOneDTO.setSellerIndex(meeting.getOwner().getUserIndex());
+
         } else {
             //TODO: exception 처리
         }
@@ -72,12 +72,8 @@ public class OneOnOneServiceImpl implements OneOnOneService {
     }
 
     @Override
-    public ResponseExitOneOnOneDTO exitOneOnOne(RequestExitOneOnOneDTO requestExitOneOnOneDTO) {
-        ResponseExitOneOnOneDTO responseExitOneOnOneDTO = new ResponseExitOneOnOneDTO();
-        String token = requestExitOneOnOneDTO.getSessionList().get(Integer.parseInt(requestExitOneOnOneDTO.getSessionId()));
-        responseExitOneOnOneDTO.setToken(token);
-        int userIndex = requestExitOneOnOneDTO.getUserList().get(token)[0];
-        responseExitOneOnOneDTO.setUserIndex(userIndex);
-        return responseExitOneOnOneDTO;
+    public void exitOneOnOne(RequestExitOneOnOneDTO requestExitOneOnOneDTO) throws OpenViduJavaClientException, OpenViduHttpException {
+        String sessionId = requestExitOneOnOneDTO.getSessionId();
+        requestExitOneOnOneDTO.getOpenVidu().getActiveSession(sessionId).close();
     }
 }

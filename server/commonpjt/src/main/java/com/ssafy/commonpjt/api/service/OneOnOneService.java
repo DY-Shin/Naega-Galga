@@ -10,5 +10,5 @@ import io.openvidu.java.client.OpenViduJavaClientException;
 public interface OneOnOneService {
     ResponseEnterOneOnOneDTO enterOneOnOne(RequestEnterOneOnOneDTO requestEnterOneOnOneDTO) throws OpenViduJavaClientException, OpenViduHttpException;
 
-    ResponseExitOneOnOneDTO exitOneOnOne(RequestExitOneOnOneDTO requestExitOneOnOneDTO);
+    void exitOneOnOne(RequestExitOneOnOneDTO requestExitOneOnOneDTO) throws OpenViduJavaClientException, OpenViduHttpException;
 }
