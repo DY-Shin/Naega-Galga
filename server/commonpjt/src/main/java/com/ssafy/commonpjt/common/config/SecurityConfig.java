@@ -30,12 +30,14 @@ public class SecurityConfig {
                 .csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
+                .headers().frameOptions().sameOrigin()
+                .and()
                 .authorizeRequests()
                 .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
                 // 접속 URL 권한 설정
                 .antMatchers("/api/users", "/api/users/login", "/api/users/logout", "/api/users/delete", "/api/users/reissue", "/api/image/**").permitAll()
-                .antMatchers("/api/**")
-                .authenticated()
+//                .antMatchers("/api/**")
+//                .authenticated()
                 .and()
                 .addFilterBefore(new JwtTokenAuthenticationFilter(jwtTokenProvider, redisTemplate),
                         UsernamePasswordAuthenticationFilter.class);
