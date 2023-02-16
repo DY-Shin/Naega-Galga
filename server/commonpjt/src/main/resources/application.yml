@@ -1,0 +1,31 @@
+server:
+  port: 8085
+  servlet:
+    context-path: /
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://i8d106.p.ssafy.io:3306/naegagalga?serverTimezone=Asia/Seoul&useUnicode=true&characterEncoding=utf8
+    username: ssafyD106
+    password: ssafycommonD106
+
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+    open-in-view: false
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+
+  profiles:
+    include: key
+
+  redis:
+    host: i8d106.p.ssafy.io
+    port: 7963
+
+OPENVIDU_URL: https://i8d106.p.ssafy.io:8443/
+OPENVIDU_SECRET: MY_SECRET
