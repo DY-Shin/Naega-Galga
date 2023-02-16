@@ -26,3 +26,6 @@ spring:
   redis:
     host: i8d106.p.ssafy.io
     port: 7963
+
+OPENVIDU_URL: https://i8d106.p.ssafy.io:8443/
+OPENVIDU_SECRET: MY_SECRET

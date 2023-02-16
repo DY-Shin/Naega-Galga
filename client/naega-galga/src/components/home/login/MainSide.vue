@@ -30,7 +30,7 @@
           <div class="home-info-box">
             <div class="home-addr">{{ item.roadAddr }}</div>
             <div class="home-rooms">{{ item.rooms }} {{ item.size }}m²</div>
-            <div class="home-price">{{ item.price }}</div>
+            <div class="home-price">{{ item.type }} {{ item.price }}</div>
           </div>
         </div>
       </div>
