@@ -1,0 +1,6 @@
+kakao :
+  restapi :
+    key : b9839652776ab68d2d51ae5f9b2dc228
+
+jwt:
+  secret: VlwEyVBsYt9V7zq57TejMnVUyzblYcfPQye08f7MGVA9XkHa
