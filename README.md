@@ -1,10 +1,9 @@
 # 내가갈가[家]
 
-## 프로젝트 소개
+## 프로젝트 소개 UCC
 
-<video autoplay>
-  <source src="./etc-files/UCC.mp4" controls>
-</video>
+![](./etc-files/UCC.mp4)
+
 
 ## 개요
 
@@ -19,92 +18,75 @@
 SSAFY 8기 공통 프로젝트
 2023.01.03 ~ 2023.02.17
 
-## 주요 기능
+## 서비스 기능
 
 ---
 
 - 메인화면<br/>
 
-  <video autoplay>
-    <source src="./etc-files/비로그인-메인화면.mp4">
-  </video>
+  ![](./etc-files/비로그인-메인화면.mp4)
 
 - 회원가입<br/>
 
-  <video autoplay>
-    <source src="./etc-files/회원가입.mp4">
-  </video>
+  ![](./etc-files/회원가입.mp4)
 
   꼼꼼한 유효성 검사를 거친후 회원가입을 할 수 있습니다.
 
 - 로그인<br/>
+  
+  ![](./etc-files/로그인.mp4)
 
-  <video autoplay>
-    <source src="./etc-files/로그인.mp4">
-  </video>
+- 내 정보 조회<br/>
 
-- 내 정보<br/>
-
-  <video autoplay>
-    <source src="./etc-files/내 정보 조회.mp4">
-  </video>
+  ![](./etc-files/내-정보-조회.mp4)
 
 - 예약 목록<br/>
-  <img src="./etc-files/예약-목록.PNG"/>
+
+  ![](./etc-files/예약-목록.PNG)
+
+- 내가 등록한 부동산 매물 목록
+
+  ![](./etc-files/등록된-매물-목록.PNG)
 
 - 부동산 매물 등록<br/>
 
-  <video autoplay>
-    <source src="./etc-files/매물 정보 등록.mp4">
-  </video>
+  ![](./etc-files/매물-정보-등록.mp4)
 
   사용자는 자신이 판매하고자 하는 부동산 매물을 사이트에 등록할 수 있습니다. 반려동물, 엘리베이터 유무, 옵션 등 매물에 대한 자세한 정보를 등록할 수 있습니다.
 
 - 부동산 매물 검색<br/>
 
-  <video autoplay>
-    <source src="./etc-files/매물 검색.mp4">
-  </video>
+  ![](./etc-files/매물-검색.mp4)
 
   다른 사용자가 올린 매물을 검색할 수 있습니다. 지역을 기준으로 매물 정보를 검색하고 지도에서 확인할 수 있습니다.
 
 - 부동산 매물 정보 상세 조회<br/>
 
-  <video autoplay>
-    <source src="./etc-files/매물 상세 조회.mp4">
-  </video>
+  ![](./etc-files/매물-상세-조회.mp4)
 
   매물에 엘리베이터는 있는지, 반려동물은 키울 수 있는지, 건물의 전체 층수는 몇층인지 등에 대한 정보를 확인할 수 있습니다.
 
 - 부동산 매물 설명회<br/>
 
-  <video autoplay>
-    <source src="./etc-files/매물 상세 조회.mp4">
-  </video>
+  ![](./etc-files/설명회-등록-삭제.mp4)
 
   여러 사람에게 자신의 부동산 매물을 소개하고 싶다면 설명회를 등록해 참여할 사람을 모을 수 있습니다.
 
 - 판매자에게 문의<br/>
 
-  <video autoplay>
-    <source src="./etc-files/일대일채팅.mp4">
-  </video>
+  ![](./etc-files/일대일채팅.mp4)
 
   마음에 드는 매물을 찾으면 판매자에게 문의를 할 수 있습니다. 실시간 채팅을 지원합니다.
 
 - 미팅 예약<br/>
 
-  <video autoplay>
-    <source src="./etc-files/예약.mp4">
-  </video>
+  ![](./etc-files/예약.mp4)
 
   판매자와 미팅을 잡을 수 있습니다. 판매자와 문의를 해 날짜와 시간을 정하고 미팅을 잡으세요!
 
 - 화상 미팅<br/>
 
-  <video autoplay>
-    <source src="./etc-files/화상-채팅.mp4">
-  </video>
+  ![](./etc-files/화상-채팅.mp4)
 
   화상 미팅을 통해 직접 매물을 확인해보세요. 필요한 경우 채팅으로 소통할 수 있습니다.
 
