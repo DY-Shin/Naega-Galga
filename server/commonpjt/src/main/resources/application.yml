@@ -6,9 +6,9 @@ server:
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://i8d106.p.ssafy.io:3306/naegagalga?serverTimezone=Asia/Seoul&useUnicode=true&characterEncoding=utf8
-    username: ssafyD106
-    password: ssafycommonD106
+    url: db-url
+    username: name
+    password: password
 
   jpa:
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
@@ -24,8 +24,8 @@ spring:
     include: key
 
   redis:
-    host: i8d106.p.ssafy.io
+    host: server-url
     port: 7963
 
-OPENVIDU_URL: https://i8d106.p.ssafy.io:8443/
+OPENVIDU_URL: server-url
 OPENVIDU_SECRET: MY_SECRET
